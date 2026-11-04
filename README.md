@@ -111,40 +111,20 @@ Di luar periode pembatasan, aplikasi bebas digunakan tanpa kuota.
 ## 🧭 Core Concept
 
 ```
-          ┌───────────────────┐
-          │  Select App       │
-          └─────────┬─────────┘
-                    ↓
-          ┌───────────────────┐
-          │ Set Schedule      │
-          │ 07.00 – 21.00     │
-          └─────────┬─────────┘
-                    ↓
-          ┌───────────────────┐
-          │ Set Time Quota    │
-          │      2 Hours      │
-          └─────────┬─────────┘
-                    ↓
-          ┌───────────────────┐
-          │ Track Usage       │
-          └─────────┬─────────┘
-                    ↓
-             ┌──────┴──────┐
-             │             │
-         Quota > 0     Quota = 0
-             │             │
-             ↓             ↓
-         App Open      App Locked
-             │             │
-             └──────┬──────┘
-                    ↓
-              Schedule End
-                    ↓
-                Unlimited
-                    ↓
-              Next Schedule
-                    ↓
-               Reset Quota
+mermaid
+flowchart TD
+    A[Select App] --> B["Set Schedule<br>07.00 – 21.00"]
+    B --> C["Set Time Quota<br>2 Hours"]
+    C --> D[Track Usage]
+    D --> E{Quota}
+    E -->|"Quota > 0"| F[App Open]
+    E -->|"Quota = 0"| G[App Locked]
+    F --> H[Schedule End]
+    G --> H
+    H --> I[Unlimited]
+    I --> J[Next Schedule]
+    J --> K[Reset Quota]
+
 ```
 
 ---
