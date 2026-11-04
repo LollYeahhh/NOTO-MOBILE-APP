@@ -110,8 +110,7 @@ Di luar periode pembatasan, aplikasi bebas digunakan tanpa kuota.
 
 ## 🧭 Core Concept
 
-```
-mermaid
+```mermaid
 flowchart TD
     A[Select App] --> B["Set Schedule<br>07.00 – 21.00"]
     B --> C["Set Time Quota<br>2 Hours"]
