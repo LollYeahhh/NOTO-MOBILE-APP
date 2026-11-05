@@ -1,4 +1,4 @@
-package com.example.notoapp.ui.theme
+package id.noto.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
