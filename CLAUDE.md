@@ -6,6 +6,24 @@ Bahasa komunikasi dengan pemilik proyek: **Bahasa Indonesia**.
 
 ---
 
+## 0. ATURAN MUTLAK: desain FigCraft adalah acuan
+
+- **Desain dan animasi prototype di FigCraft adalah acuan mutlak.** Semua layar, state, komponen, teks, warna, ukuran, ikon, font, dan animasi prototype (termasuk splash 7 frame ±5,6 detik, smart animate, dan transisi sheet) harus **direplikasi persis** di aplikasi.
+- Tidak boleh ada yang dihapus, diganti, disederhanakan, atau "diperbaiki" tanpa persetujuan pemilik proyek.
+- Kalau ada bagian yang tidak bisa direplikasi persis di Android, **sebutkan dan tanyakan dulu**.
+- Kalau kode dan desain bertentangan, **desain yang menang**.
+- Pola lama di layar Beranda dan Statistik direplikasi apa adanya. Jangan dirapikan menjadi komponen baru di tampilan.
+- **Satu-satunya pengecualian:** StatusBar dan HomeIndicator bergaya iOS di desain hanyalah mockup. Di aplikasi, pakai system bar Android asli (edge-to-edge). Ruang tingginya (59 dan 34) tetap dipakai sebagai acuan jarak.
+
+### Verifikasi visual per layar
+Setelah tiap layar dibuat:
+1. Ambil screenshot frame aslinya dari FigCraft.
+2. Ambil screenshot hasilnya di emulator.
+3. Laporkan perbedaannya (ukuran, warna, jarak, teks).
+4. Perbaiki sampai sama sebelum tahap dinyatakan selesai.
+
+---
+
 ## 1. Aturan utama: tanya dulu, kerjakan kemudian
 
 Pemilik proyek ingin tahu dan menyetujui setiap langkah. **Jangan mengubah file, menjalankan perintah yang mengubah sesuatu, atau mengambil keputusan teknis sebelum rencananya disetujui.**
@@ -20,6 +38,7 @@ Pemilik proyek ingin tahu dan menyetujui setiap langkah. **Jangan mengubah file,
 ### Yang boleh dilakukan tanpa bertanya
 - Membaca file, mencari kode, dan menjelaskan isi kode
 - Menjalankan perintah baca-saja, misalnya `git status`, `git diff`, `git log`
+- Membaca desain di FigCraft (`inspect_document`, `get_node`, `screenshot`). **Jangan pernah mengubah file desain.**
 - Menjawab pertanyaan
 
 ### Yang HARUS ditanyakan lebih dulu
@@ -27,7 +46,7 @@ Pemilik proyek ingin tahu dan menyetujui setiap langkah. **Jangan mengubah file,
 - Menambah atau mengubah dependensi (file Gradle, `libs.versions.toml`)
 - Mengubah `AndroidManifest.xml`, izin (permission), atau konfigurasi build
 - Mengubah struktur folder atau nama package
-- Menjalankan build, instalasi ke HP, atau perintah `adb`
+- Menjalankan build, instalasi ke HP/emulator, atau perintah `adb`
 - Perintah git yang mengubah riwayat: `commit`, `push`, `reset`, `rebase`, `checkout` yang membuang perubahan
 - Memilih satu pendekatan teknis ketika ada lebih dari satu pilihan yang masuk akal
 
@@ -81,6 +100,7 @@ Dibuat    : (daftar file)
 Diubah    : (daftar file + ringkasan perubahan)
 Dihapus   : (daftar file, kalau ada)
 Dijalankan: (perintah yang dipakai dan hasilnya)
+Beda dengan desain: (hasil perbandingan screenshot FigCraft vs emulator)
 Belum diuji / belum yakin: (jujur kalau ada)
 Saran langkah berikutnya: (maksimal tiga)
 ```
@@ -110,9 +130,23 @@ Kalau build atau tes gagal, **tampilkan pesan error apa adanya**, jangan disembu
 - **Di luar jendela jadwal, aplikasi bebas dipakai tanpa batas** dan tidak ada penghitungan.
 - Kuota di-reset otomatis saat jendela jadwal dimulai lagi.
 
-**Fitur versi 1:** pemilihan aplikasi, manajemen jadwal, kuota screen time, pelacakan pemakaian real-time, penguncian otomatis, reset kuota otomatis, akses tanpa batas di luar jadwal, statistik pemakaian, notifikasi dan pengingat, aturan pembatasan kustom.
+**Model aturan (dari desain):**
+- Satu aturan berlaku untuk **sekelompok aplikasi** (misalnya "Sosmed") dengan **kuota bersama**.
+- Isi aturan: nama, aplikasi, **hari berlaku (Sen–Min)**, **jam terbatas** (mulai–selesai), dan **kuota** dengan satu nilai yang sama untuk semua hari aktif.
+- Status aturan: **Berlaku**, **Hampir Habis**, **Time Out**, **Di Luar Jadwal**, dan **Nonaktif** (dijeda pengguna).
+- Saat time out **tidak ada tombol tambahan waktu**.
 
-**Di luar cakupan versi 1** (jangan dikerjakan tanpa diminta): pemblokiran website, pemblokiran notifikasi aplikasi lain, `AccessibilityService`, akun pengguna, sinkronisasi cloud, iklan atau langganan.
+**Fitur versi 1:** semua yang ada di desain FigCraft, yaitu:
+- pemilihan aplikasi, manajemen jadwal, dan kuota screen time
+- pelacakan pemakaian real-time, penguncian otomatis, dan reset kuota otomatis
+- akses tanpa batas di luar jadwal
+- statistik (Screen Time, Minggu Ini, Bulan Ini)
+- notifikasi dan pengingat (pengingat sisa kuota, kuota habis, jadwal, ringkasan harian/mingguan, jam tenang)
+- aturan pembatasan kustom (bawaan aturan baru, jeda sebelum mematikan, kunci edit saat time out, latihan napas, tampilkan sisa waktu)
+- splash animasi
+- `AccessibilityService` (baris "Aksesibilitas" ada di desain Setelan). **Sebelum menulis kodenya, jelaskan dulu implikasi kebijakan Google Play dan alternatifnya.**
+
+**Di luar cakupan versi 1** (jangan dikerjakan tanpa diminta): pemblokiran website, pemblokiran notifikasi aplikasi lain, akun pengguna, sinkronisasi cloud, iklan atau langganan, dan mode gelap.
 
 ---
 
@@ -122,14 +156,19 @@ Kalau build atau tes gagal, **tampilkan pesan error apa adanya**, jangan disembu
 |---|---|
 | Bahasa | Kotlin |
 | UI | Jetpack Compose (Material 3) |
+| Arsitektur | MVVM |
 | Build | Gradle Kotlin DSL (`.kts`) |
+| Package | `id.noto.app` |
 | Min SDK | API 26 (Android 8.0) |
-| Penyimpanan | Room atau DataStore (tanyakan dulu sebelum memilih) |
-| Deteksi aplikasi di layar | `UsageStatsManager` (izin Usage Access) |
-| Pemblokiran | Layar pemblokir (Activity atau overlay) |
+| Penyimpanan | **Room** untuk aturan dan pemakaian, **DataStore** untuk setelan |
+| Deteksi aplikasi di layar | `UsageStatsManager` (izin Usage Access), ditambah `AccessibilityService` (lihat §5) |
+| Pemblokiran | Layar pemblokir (Activity atau overlay, tanyakan saat tahapnya tiba) |
 | Layanan latar belakang | Foreground service |
 | Penjadwalan | `AlarmManager` / `WorkManager` |
-| Perangkat uji | HP Android sungguhan (bukan emulator), termasuk HP Xiaomi |
+| Font | Poppins sebagai file `.ttf` di `res/font` |
+| Ikon | Diekspor dari FigCraft ke vector drawable (`res/drawable`) |
+| Pengecekan tampilan | Emulator dengan layar selebar 393 dp, dibandingkan dengan screenshot FigCraft |
+| Pengujian fungsi | HP Android sungguhan, termasuk HP Xiaomi |
 
 **Jangan menambah pustaka baru tanpa persetujuan.** Jelaskan dulu kenapa dibutuhkan dan apa alternatifnya.
 
@@ -137,19 +176,21 @@ Kalau build atau tes gagal, **tampilkan pesan error apa adanya**, jangan disembu
 
 ## 7. Struktur folder
 
-Di dalam `app/src/main/java/<package>/`:
+Di dalam `app/src/main/java/id/noto/app/`:
 
 ```
 MainActivity.kt
 ui/
   theme/        Color.kt, Type.kt, Theme.kt
+  components/   Komponen yang dipakai ulang (sesuai komponen FigCraft)
   navigation/   NavGraph.kt, BottomBar.kt
+  splash/       Animasi splash
   home/         Beranda
-  blocks/       Daftar blokir, buat/edit aturan, pilih aplikasi
+  blocks/       Daftar blokir, detail, buat/edit aturan, pilih aplikasi, sheet, layar terkunci
   stats/        Statistik
   settings/     Setelan, status izin
-  permission/   Bottom sheet izin
-data/           Room: entitas, DAO, repository
+  permission/   Bottom sheet izin (menunggu desain)
+data/           Room (entitas, DAO, repository) dan DataStore
 service/        Pemantau aplikasi, layar pemblokir
 util/           Format waktu dan helper
 ```
@@ -160,74 +201,93 @@ Kalau perlu menyimpang dari struktur ini, tanyakan dulu.
 
 ## 8. Desain
 
-**Sumber kebenaran desain adalah file Figma**, bukan dokumen ini:
-`https://www.figma.com/design/RGq2ZCSnPEm1tZ5qgcsqS8/NOTO-APP` (halaman "Noto Mobile App", frame 393 x 852).
+**Sumber kebenaran desain adalah file FigCraft** `D:\desain-claude\NOTO APP.figcraft` (Page 1, dibaca lewat MCP `figcraft-app`), bukan dokumen ini. Nilai di bawah diambil dari file itu dan dari `D:\desain-claude\CLAUDE.md`. **Kalau ada beda, ikuti FigCraft dan tanyakan.**
 
-Frame yang sudah ada: `Beranda Awal` (kosong, 99:110), `Beranda Isi` (4:2), `block` (107:113, belum berisi), `stats` (156:153, 187:472, 203:285; tiga versi, tanyakan mana yang final), dan komponen `nav` (56:468). Nilai di bawah diambil dari frame-frame itu. **Kalau ada beda dengan Figma, ikuti Figma dan tanyakan.**
+`D:\desain-claude\CLAUDE.md` berisi aturan kerja untuk **mendesain** di FigCraft (variabel `$var`, `style.apply`, `batch`, tata letak kanvas, dan sebagainya). Aturan kerja itu tidak berlaku untuk coding. Yang dipakai dari dokumen itu hanya **nilai desainnya**: warna, tipografi, spasi, komponen, teks, model aturan, dan timing animasi.
+
+### Layar
+Ada 21 layar ditambah 7 frame splash:
+- **Beranda:** Kosong, Terisi.
+- **Blokir:** Kosong, Daftar, Detail Aturan, Tambah Aturan, Tambah Aturan Terisi, Pilih Aplikasi, Sheet Atur Jadwal, Sheet Atur Kuota, Edit Aturan, Sheet Hapus Aturan, Terkunci Time Out.
+- **Statistik:** Screen Time, Minggu Ini, Bulan Ini.
+- **Setelan:** Utama, Notifikasi & Pengingat, Aturan Pembatasan, Sheet Jeda Mematikan.
+- **Splash:** 1 Jam, 2a/2b/2c Putar, 3 Mengecil, 4 Wordmark, 5 Tagline.
+
+Detail tiap layar, urutan dan timing splash, serta transisinya ada di `D:\desain-claude\CLAUDE.md` bagian "Layar" dan "Prototype".
 
 ### Tipografi
-- Font: **Poppins** (Regular, Medium, SemiBold, Bold). Satu keluarga font saja.
-- Status bar di Figma memakai SF Pro, itu hanya mockup iPhone dan **bukan** font aplikasi.
+Satu keluarga font: **Poppins**. Ukuran dalam `sp` sama dengan angka px di FigCraft.
 
-| Peran | Gaya | Ukuran |
+| Style | Ukuran/Line height | Ketebalan |
 |---|---|---|
-| Label navbar | Medium | 12 |
-| Judul bagian ("Blokir Aktif") | Regular | 12 |
-| Judul kartu ("Sosmed") | SemiBold | 12 |
-| Subjudul kartu | Regular | 10 |
-| Judul bagian di Statistik | SemiBold | 15 |
-| Nama aplikasi di daftar | SemiBold | 13 |
-| Judul layar kosong | SemiBold | 16 |
-| Angka besar (ringkasan) | Bold | 24 |
-| Angka sangat besar ("4h 13m") | Medium | 30 |
-| Teks kecil, label chart | Regular / Medium / SemiBold | 9-11 |
+| `NOTO/Angka Hero` | 24/32 | Bold |
+| `NOTO/Judul Kartu` | 16/24 | SemiBold |
+| `NOTO/Judul Item` | 14/20 | SemiBold |
+| `NOTO/Label` | 12/16 | Medium |
+| `NOTO/Teks` | 12/16 | Regular |
+| `NOTO/Kecil Label` | 10/14 | Medium |
+| `NOTO/Kecil Teks` | 10/14 | Regular |
+| `NOTO/Kecil Tebal` | 10/14 | SemiBold |
+| `NOTO/Eyebrow` | 10/14, KAPITAL, +0.5px | SemiBold |
 
-Satuan `sp` di Compose dipetakan langsung dari angka px di Figma.
+Layar dengan pola lama (Beranda, Statistik) bisa memakai ukuran di luar tabel ini. Untuk layar itu, **ikuti nilai aktual di FigCraft** (§0).
 
-### Palet warna (dari Figma)
+### Warna (berdasarkan peran)
 
-| Nama di Figma | Hex | Dipakai untuk |
+| Peran | Nama variabel | Hex |
 |---|---|---|
-| Putih | `#FFFFFF` | Latar layar, teks pada elemen sage |
-| Color | `#F2F4EE` | Header, navbar, kartu di Beranda |
-| Sage lebih muda | `#6E8F76` | Elemen aktif (pil tab aktif) |
-| Sage | `#5B7B6A` | Aksen di Statistik (ikon, bar, kartu ringkasan) |
-| Sage tua banget | `#1F2B25` | Teks utama, logo, ikon |
-| On Surface / High Emphasis | `#212121` | Ikon |
-| Icons Color | `#292929` | Garis ikon |
-| (tanpa nama) | `#424843` | Teks sekunder dan label kecil |
-| (tanpa nama) | `#42654E` | Angka dan teks aksen hijau |
-| (tanpa nama) | `#2B4E39` | Teks pada chip "Stabil" |
-| (tanpa nama) | `#EDEEE9`, `#F3F4EF` | Permukaan kartu di Statistik |
-| (tanpa nama) | `#DFE5D7` | Garis pemisah dan latar track |
-| (tanpa nama) | `#C8DFDB` | Track progres |
-| (tanpa nama) | `#ABBAAE` | Batang chart |
-| (tanpa nama) | `#C4ECCF` | Latar chip/badge |
-| (tanpa nama) | `#3368A0` | Penanda "32% turun" |
+| Latar layar | Putih | `#FFFFFF` |
+| Permukaan: kartu, header, nav, tab, latar layar Terkunci | Color | `#F2F4EE` |
+| Primer: tab/segmen/chip aktif, tombol utama, batang grafik, angka aksen | Hijau sage | `#5B7B6A` |
+| Primer muda: pill nav aktif, progress kuota, blok "Terbatas", badge Aktif | sage lebih muda | `#6E8F76` |
+| Teks utama, ikon, scrim (opacity 40%) | Sage tua banget | `#1F2B25` |
+| Teks sekunder, keterangan | sagenya ga nyage | `#424843` |
+| Garis pemisah, track, garis input/chip, blok "Bebas" | sage bocil | `#DFE5D7` |
+| Data pasif, toggle mati, placeholder, progress time out | sage pucet | `#ABBAAE` |
+| Latar badge info, track progress, panel info | Biru pucet | `#C8DFDB` |
+| Teks dan ikon info, badge tren | Biru semu | `#3368A0` |
+| Peringatan "hampir habis" (satu-satunya pemakaian) | Mustard | `#E6C15A` |
 
-Warna logo aplikasi (Instagram, TikTok, dll.) memakai warna aslinya masing-masing dan bukan bagian palet NOTO.
-
-**Belum ditentukan di Figma, tanyakan sebelum memakai:** warna status kuota (aman, hampir habis, terkunci), warna peringatan izin, warna tombol utama, dan **mode gelap** (belum ada desainnya, jangan dikerjakan).
+- Teks di atas Primer atau Primer muda memakai Putih. Teks di atas Mustard memakai Teks utama.
+- **Hindari merah**, termasuk untuk aksi hapus.
+- Hex langsung hanya untuk: logo merek aplikasi, efek blur dekoratif `#C4ECCF`, dan nilai aktual lain yang memang ada di FigCraft.
+- Mode gelap tidak ada desainnya, jadi jangan dikerjakan.
 
 ### Bentuk dan jarak
-- Frame 393 x 852. Margin kiri-kanan sekitar 16-17 dp.
-- Header: tinggi 114 (termasuk status bar 59), latar `#F2F4EE`, logo NOTO di kiri pada y = 74.
-- Navbar: 4 tab (Beranda, Blokir, Statistik, Setelan), latar `#F2F4EE`, tinggi isi sekitar 80 ditambah area home indicator 34.
-- Kartu di Beranda: lebar 361, tinggi 124, radius 11. Kartu di Statistik: radius 16. Item daftar: radius 12. Pil dan chip: radius penuh.
-- Isi kartu Beranda: judul + subjudul di kiri atas, ikon blokir dan menu titik tiga di kanan atas, deretan logo aplikasi 27 x 27 dengan jarak 5 di bagian bawah.
+- Frame lebar 393. Margin layar 16, jadi lebar konten 361.
+- Kelipatan spasi: 4 / 8 / 12 / 16 / 24.
+- Radius:
+  - 16 untuk kartu, tombol besar, dan sudut atas bottom sheet
+  - 12 untuk tombol utama, input, item di dalam kartu, Tab Periode, dan pill nav
+  - 9999 (penuh) untuk badge, chip, toggle, checkbox, dan track
+  - 2 untuk ujung batang grafik
+- Tanpa garis tepi dan tanpa bayangan. Kedalaman cukup dari kontras Permukaan di atas latar putih.
+- Header tinggi 114 (termasuk ruang status bar 59). Bottom Nav tinggi 114 (berisi nav 50 dan ruang HomeIndicator 34; posisi rinci ambil dari FigCraft).
+- Nilai rinci tiap komponen ada di FigCraft. Ambil dari sana, jangan mengarang.
 
-**Jangan mengarang warna, ukuran, atau gaya di luar Figma.** Kalau butuh yang belum ada, tanyakan.
+### Ikon dan logo
+- Ikon dan logo diekspor dari FigCraft sebagai vector drawable di `res/drawable` (`ic_*.xml`, `logo_*.xml`). Gradien (misalnya logo Instagram) didukung karena minSdk 26 (gradien vector butuh API 24+). Kalau ekspor vector memberi peringatan, pakai PNG/WebP hasil ekspor FigCraft, jangan disederhanakan.
+- **Logo pihak ketiga (`logo_*.xml`: Instagram, TikTok, YouTube, Discord, Pinterest, Gmail, dan lainnya) hanya data contoh untuk Preview dan data dummy. Hapus bersama data contohnya sebelum rilis.** Selama pengembangan tetap di `src/main/res/drawable` (jangan dipindah ke source set debug, karena kode di `src/main` merujuknya).
+- Di aplikasi nyata, ikon tiap aplikasi diambil dari sistem lewat `PackageManager` (Tahap 5). Komponen Item Aplikasi memakai kotak, ukuran, dan radius persis seperti desain, dengan isi ikon dari sistem.
+- Ikon cadangan bila ikon sistem gagal dimuat **belum ada di desain**. Jangan dibuat sendiri (lihat Pertanyaan terbuka di §13).
+
+### Lisensi aset
+- Font Poppins berlisensi SIL OFL 1.1. Teks lisensinya ada di `app/src/main/assets/Poppins-OFL.txt` (ikut masuk APK) dan salinannya di `licenses/Poppins-OFL.txt`.
+
+**Jangan mengarang warna, ukuran, atau gaya di luar FigCraft.** Kalau butuh yang belum ada, tanyakan.
 
 ---
 
 ## 9. Bahasa dan teks
 
-- Bahasa aplikasi: **Indonesia**, gaya santai tapi rapi, memakai "kamu" (bukan "Anda").
+- Bahasa aplikasi: **Indonesia**, gaya santai tapi rapi, memakai "kamu" (bukan "Anda"). Teks persis seperti di FigCraft.
 - **Semua teks yang tampil ke pengguna wajib ada di `strings.xml`**, tidak boleh ditulis langsung di kode.
   - `res/values/strings.xml` : bahasa Inggris (default)
   - `res/values-in/strings.xml` : bahasa Indonesia
-- Format jam: `07.00` (pakai titik). Format durasi: `1j 30m`.
-- Contoh nada: "Kuota habis. Dibuka lagi besok pukul 07.00", "Istirahat dulu, ya."
+- Format jam: `07.00`, rentang `07.00–21.00`.
+- Format durasi: `2j 15m`, `45m`, dan `1j` di sumbu grafik. **Jangan pakai `h`.**
+- Hari disingkat: Sen, Sel, Rab, Kam, Jum, Sab, Min. Detik ditulis lengkap ("10 detik").
+- Contoh nada: "Saatnya time out sejenak", "Tarik napas sebentar, yuk", "Yahh Kosong".
 
 ---
 
@@ -247,14 +307,16 @@ Warna logo aplikasi (Instagram, TikTok, dll.) memakai warna aslinya masing-masin
 
 Izin yang direncanakan untuk versi 1:
 
-1. Akses Pemakaian (Usage Access)
-2. Tampil di atas aplikasi lain (Overlay)
-3. Notifikasi
-4. Abaikan optimasi baterai
-5. Alarm tepat waktu (exact alarm)
-6. Khusus perangkat Xiaomi: izin tampil jendela pop-up di latar belakang
+1. Akses Pemakaian (Usage Access). Sudah ada di desain Setelan.
+2. Aksesibilitas (`AccessibilityService`). Sudah ada di desain Setelan; lihat catatan Google Play di §5.
+3. Tampil di atas aplikasi lain (Overlay)
+4. Notifikasi
+5. Abaikan optimasi baterai
+6. Alarm tepat waktu (exact alarm)
+7. Khusus perangkat Xiaomi: izin tampil jendela pop-up di latar belakang
 
-Perubahan apa pun pada izin atau `AndroidManifest.xml` **wajib dibahas dulu**. Jangan meminta izin di luar daftar ini.
+- **Izin 3–7 belum ada desainnya.** Jangan membuat UI-nya sendiri. Kumpulkan daftar izin yang benar-benar dibutuhkan, lalu serahkan ke pemilik proyek untuk didesain di FigCraft sebelum tahap izin dimulai.
+- Perubahan apa pun pada izin atau `AndroidManifest.xml` **wajib dibahas dulu**. Jangan meminta izin di luar daftar ini.
 
 ---
 
@@ -262,21 +324,27 @@ Perubahan apa pun pada izin atau `AndroidManifest.xml` **wajib dibahas dulu**. J
 
 - Satu perubahan logis, satu commit. Pesan commit singkat dan jelas.
 - **Jangan melakukan commit atau push tanpa persetujuan.**
-- Jangan memasukkan `.idea/`, `local.properties`, `build/`, dan `.gradle/` ke repositori.
+- Jangan memasukkan `.idea/`, `local.properties`, `build/`, `.gradle/`, dan `.omc/` ke repositori.
 - Jangan mengerjakan file yang sama bersamaan dengan agent lain. Kalau terlihat ada perubahan yang bukan buatanmu di `git status`, tanyakan dulu.
 
 ---
 
 ## 13. Urutan pengerjaan yang disepakati
 
-1. Tema: warna (`Color.kt`), font (`Type.kt`), `Theme.kt`
-2. Kerangka navigasi: navbar 4 tab dengan layar kosong
-3. Layar Beranda dengan data contoh
-4. Layar Blokir: daftar, buat/edit aturan, pilih aplikasi, jadwal, kuota
-5. Bottom sheet izin dan banner izin
-6. Penyimpanan data (Room/DataStore)
-7. Deteksi aplikasi, penghitung kuota, dan layar pemblokir
-8. Statistik dan notifikasi
-9. Pengujian di HP, termasuk penanganan baterai dan Xiaomi
+1. **Design system:** warna, font Poppins, text style, `Theme.kt`, ikon vector drawable
+2. **UI statis dan navigasi:** komponen dasar, Header, Bottom Nav 4 tab, splash animasi, dan transisi
+3. **Semua layar dengan data contoh:** Beranda, Blokir, Statistik, Setelan (dipecah per tab)
+4. **Database:** Room untuk aturan dan pemakaian, DataStore untuk setelan
+5. **Pemilihan aplikasi dan jadwal** yang berfungsi
+6. **Pelacakan pemakaian:** izin (setelah desainnya ada), foreground service, penghitung kuota
+7. **Penguncian:** layar Terkunci, reset kuota otomatis, Aksesibilitas
+8. **Notifikasi dan setelan** yang berfungsi, statistik dengan data asli
+9. **Pengujian di HP**, termasuk penanganan baterai dan Xiaomi
 
-Kerjakan **satu tahap per satu waktu**, dan minta persetujuan sebelum pindah ke tahap berikutnya.
+Kerjakan **satu tahap per satu waktu**, dan minta persetujuan sebelum pindah ke tahap berikutnya. Setiap tahap yang menyentuh tampilan baru dianggap selesai setelah lolos verifikasi visual (§0).
+
+### Pertanyaan terbuka (menunggu desain atau keputusan pemilik proyek)
+- **Sebelum Tahap 5:** desain ikon cadangan bila ikon aplikasi dari sistem gagal dimuat.
+- **Sebelum Tahap 6:** desain UI izin 3–7 (§11).
+- **Statistik - Bulan Ini:** ikon di chip "32% turun" (node 520) kosong di FigCraft. Sedang dicek pemilik proyek, jangan diubah.
+- **Nav lama (gerigi terisi)** di Beranda - Terisi, Beranda - Kosong, Blokir - Kosong, dan tiga layar Statistik direplikasi apa adanya. Penyeragaman diputuskan nanti di FigCraft.

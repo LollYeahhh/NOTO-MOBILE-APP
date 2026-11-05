@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.notoapp"
+    namespace = "id.noto.app"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.notoapp"
+        applicationId = "id.noto.app"
         minSdk = 26
         targetSdk = 37
         versionCode = 1

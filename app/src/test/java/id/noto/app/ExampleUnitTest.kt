@@ -1,4 +1,4 @@
-package com.example.notoapp
+package id.noto.app
 
 import org.junit.Test
 
