@@ -1,0 +1,7 @@
+<resources>
+    <string name="kembali">Kembali</string>
+    <string name="nav_beranda">Beranda</string>
+    <string name="nav_blokir">Blokir</string>
+    <string name="nav_statistik">Statistik</string>
+    <string name="nav_setelan">Setelan</string>
+</resources>

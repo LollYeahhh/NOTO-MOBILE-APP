@@ -24,7 +24,6 @@ object NotoWarna {
 // Warna pola lama yang benar-benar dipakai di layar Beranda, Blokir - Kosong, dan Statistik.
 // Direplikasi apa adanya (aturan mutlak §0), jangan diganti dengan warna NOTO di atas.
 object NotoWarnaLama {
-    val LatarLayar = Color(0xFFF2F4F0)   // isi frame layar lama (sedikit beda dari Permukaan)
     val IkonNav = Color(0xFF212121)      // garis ikon setelan di nav lama
     val IkonNavGaris = Color(0xFF292929) // garis ikon statistik di nav lama
     val Hitam = Color(0xFF000000)        // ikon blokir & titik tiga di kartu Beranda - Terisi

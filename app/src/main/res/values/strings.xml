@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NOTOAPP</string>
+    <string name="logo_noto">NOTO</string>
+    <string name="kembali">Back</string>
+    <string name="nav_beranda">Home</string>
+    <string name="nav_blokir">Block</string>
+    <string name="nav_statistik">Stats</string>
+    <string name="nav_setelan">Settings</string>
 </resources>

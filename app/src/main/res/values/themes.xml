@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.NOTOAPP" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Latar jendela = Permukaan, sama dengan latar splash frame 1. Jendela ini tampil
+         sesaat sebelum Compose menggambar, jadi tidak ada kilatan warna lain (Android 8–11). -->
+    <style name="Base.Theme.NOTOAPP" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/noto_permukaan</item>
+    </style>
+
+    <style name="Theme.NOTOAPP" parent="Base.Theme.NOTOAPP" />
 </resources>

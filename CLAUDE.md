@@ -327,6 +327,12 @@ Izin yang direncanakan untuk versi 1:
 - Jangan memasukkan `.idea/`, `local.properties`, `build/`, `.gradle/`, dan `.omc/` ke repositori.
 - Jangan mengerjakan file yang sama bersamaan dengan agent lain. Kalau terlihat ada perubahan yang bukan buatanmu di `git status`, tanyakan dulu.
 
+### Commit dan push
+- Jangan menambahkan Co-Authored-By, tanda tangan, footer "Generated with Claude Code", Claude-Session, atau atribusi apa pun ke pesan commit dan deskripsi pull request.
+- Jangan pernah menjalankan `git push`. Pengguna yang push sendiri.
+- Jangan commit kecuali diminta. Jika diminta, pakai identitas Git yang sudah ada di komputer ini, dan jangan mengubah `git config`.
+- Sebelum menyatakan suatu tahap selesai, jalankan `git log --grep="Co-Authored-By" --oneline` dan laporkan hasilnya.
+
 ---
 
 ## 13. Urutan pengerjaan yang disepakati

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Android 12+ selalu menampilkan splash sistem (tidak bisa dimatikan). Dibuat polos:
+         latar Permukaan tanpa ikon, lalu splash animasi NOTO (Tahap 2B) langsung menyambung. -->
+    <style name="Theme.NOTOAPP" parent="Base.Theme.NOTOAPP">
+        <item name="android:windowSplashScreenBackground">@color/noto_permukaan</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+    </style>
+</resources>
