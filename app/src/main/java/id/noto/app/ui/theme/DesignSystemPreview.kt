@@ -46,7 +46,6 @@ private val daftarWarna = listOf(
 )
 
 private val daftarWarnaLama = listOf(
-    "Lama: latar layar" to NotoWarnaLama.LatarLayar,
     "Lama: ikon nav" to NotoWarnaLama.IkonNav,
     "Lama: garis nav" to NotoWarnaLama.IkonNavGaris,
     "Lama: hitam" to NotoWarnaLama.Hitam,
@@ -96,7 +95,6 @@ private val daftarIkon = listOf(
     "nav blokir" to R.drawable.ic_nav_blokir,
     "nav statistik" to R.drawable.ic_nav_statistik,
     "nav setelan" to R.drawable.ic_nav_setelan,
-    "nav setelan lama" to R.drawable.ic_nav_setelan_lama,
     "lama blokir kartu" to R.drawable.ic_lama_blokir_kartu,
     "lama kebab" to R.drawable.ic_lama_kebab,
     "lama blokir inline" to R.drawable.ic_lama_blokir_inline,
