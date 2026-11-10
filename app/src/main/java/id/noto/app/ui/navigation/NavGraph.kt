@@ -1,9 +1,11 @@
 package id.noto.app.ui.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -17,6 +19,8 @@ import androidx.navigation.compose.rememberNavController
 import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.home.BerandaScreen
 import id.noto.app.ui.settings.SetelanScreen
+import id.noto.app.ui.splash.DURASI_PUDAR_SPLASH_MS
+import id.noto.app.ui.splash.SplashScreen
 import id.noto.app.ui.stats.StatistikScreen
 
 /** Durasi animasi geser pill nav saat pindah tab (smart animate 400 ms di FigCraft). */
@@ -26,6 +30,11 @@ const val DURASI_GESER_MS = 400
 // pakai kurva ease-out standar (0, 0, 0.58, 1).
 val EaseOutFigCraft = CubicBezierEasing(0f, 0f, 0.58f, 1f)
 
+// "easeInOut" FigCraft (dissolve splash ke Beranda). Disepakati: kurva standar (0.42, 0, 0.58, 1).
+val EaseInOutFigCraft = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)
+
+private const val RUTE_SPLASH = "splash"
+
 @Composable
 fun NotoNavGraph() {
     val navController = rememberNavController()
@@ -33,7 +42,8 @@ fun NotoNavGraph() {
     // Tab aktif dibaca dari layar yang sedang tampil, jadi ketuk tab maupun tombol back
     // sama-sama membuat pill bergeser ke tab yang benar.
     val entri by navController.currentBackStackEntryAsState()
-    val tabAktif = Tab.dariRute(entri?.destination?.route) ?: Tab.Beranda
+    val rute = entri?.destination?.route
+    val tabAktif = Tab.dariRute(rute) ?: Tab.Beranda
 
     fun pilihTab(tujuan: Tab) {
         if (tujuan == tabAktif) return
@@ -47,27 +57,39 @@ fun NotoNavGraph() {
 
     // Isi layar memudar selama pill bergeser (layer yang tidak cocok di smart animate memudar).
     val pudar = tween<Float>(DURASI_GESER_MS, easing = EaseOutFigCraft)
+    // Dissolve splash → Beranda: Beranda (beserta nav) muncul memudar di atas splash.
+    val pudarSplash = tween<Float>(DURASI_PUDAR_SPLASH_MS, easing = EaseInOutFigCraft)
 
     Box(Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
-            startDestination = Tab.Beranda.rute,
+            startDestination = RUTE_SPLASH,
             modifier = Modifier.fillMaxSize(),
-            enterTransition = { fadeIn(pudar) },
+            enterTransition = { if (initialState.destination.route == RUTE_SPLASH) fadeIn(pudarSplash) else fadeIn(pudar) },
             exitTransition = { fadeOut(pudar) },
             popEnterTransition = { fadeIn(pudar) },
             popExitTransition = { fadeOut(pudar) },
         ) {
+            // Splash tetap terlihat penuh di bawah Beranda selama dissolve, lalu dibuang dari riwayat.
+            composable(RUTE_SPLASH, exitTransition = { fadeOut(pudarSplash, targetAlpha = 1f) }) {
+                SplashScreen(onSelesai = {
+                    navController.navigate(Tab.Beranda.rute) { popUpTo(RUTE_SPLASH) { inclusive = true } }
+                })
+            }
             composable(Tab.Beranda.rute) { BerandaScreen() }
             composable(Tab.Blokir.rute) { BlokirScreen() }
             composable(Tab.Statistik.rute) { StatistikScreen() }
             composable(Tab.Setelan.rute) { SetelanScreen() }
         }
 
-        NotoBottomBar(
-            aktif = tabAktif,
-            onPilih = ::pilihTab,
+        // Splash tidak punya nav. Nav muncul memudar bersama Beranda.
+        AnimatedVisibility(
+            visible = rute != null && rute != RUTE_SPLASH,
             modifier = Modifier.align(Alignment.BottomCenter),
-        )
+            enter = fadeIn(pudarSplash),
+            exit = ExitTransition.None,
+        ) {
+            NotoBottomBar(aktif = tabAktif, onPilih = ::pilihTab)
+        }
     }
 }

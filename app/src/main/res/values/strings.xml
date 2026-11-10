@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">NOTOAPP</string>
     <string name="logo_noto">NOTO</string>
+    <string name="tagline_noto">Notice your time</string>
     <string name="kembali">Back</string>
     <string name="nav_beranda">Home</string>
     <string name="nav_blokir">Block</string>
