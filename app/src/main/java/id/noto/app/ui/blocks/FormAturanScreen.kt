@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
 import id.noto.app.ui.components.NotoBarisForm
@@ -166,12 +168,12 @@ private fun Pratinjau(form: FormAturan, nama: String) {
 }
 
 /**
- * Bilah Aksi: Putih, garis atas 1 px (Garis), padding 16 di bawah garis, 16 kiri-kanan.
- * Di FigCraft tingginya 99 (padding bawah 34) mulai y754, jadi 1 dp terpotong tepi frame 852;
- * yang terlihat hanya 98, maka padding bawah di sini 33 supaya posisinya sama.
+ * Bilah Aksi: Putih, garis atas 1 px (Garis), 16 kiri-kanan, isi di tengah dengan jarak 8.
+ * Bawaan (Tambah/Edit): padding 16 di bawah garis. Di FigCraft tingginya 99 (padding bawah 34)
+ * mulai y754, jadi 1 dp terpotong tepi frame 852; yang terlihat hanya 98, maka bawah 33.
  */
 @Composable
-private fun BilahAksi(isi: @Composable () -> Unit) {
+internal fun BilahAksi(atas: Dp = 17.dp, bawah: Dp = 33.dp, isi: @Composable ColumnScope.() -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -179,8 +181,11 @@ private fun BilahAksi(isi: @Composable () -> Unit) {
             .drawBehind {
                 drawLine(NotoWarna.Garis, Offset(0f, 0.5.dp.toPx()), Offset(size.width, 0.5.dp.toPx()), 1.dp.toPx())
             }
-            .padding(start = 16.dp, end = 16.dp, top = 17.dp, bottom = 33.dp),
-    ) { isi() }
+            .padding(start = 16.dp, end = 16.dp, top = atas, bottom = bawah),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        content = isi,
+    )
 }
 
 @Preview(name = "Blokir - Tambah Aturan", widthDp = 393, heightDp = 852)

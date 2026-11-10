@@ -34,28 +34,32 @@ private val TINGGI_NAV = 114.dp
 
 /** Beranda: daftar aturan (Beranda - Terisi) atau Empty State (Beranda - Kosong) kalau belum ada aturan. */
 @Composable
-fun BerandaScreen(aturan: List<AturanBeranda> = contohAturanBeranda, onBukaBlokir: () -> Unit = {}) {
+fun BerandaScreen(
+    aturan: List<AturanBeranda> = contohAturanBeranda,
+    onBukaDetail: () -> Unit = {},
+    onTambah: () -> Unit = {},
+) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderLogo()
-        if (aturan.isEmpty()) BerandaKosong() else BerandaTerisi(aturan, onBukaBlokir)
+        if (aturan.isEmpty()) BerandaKosong() else BerandaTerisi(aturan, onBukaDetail, onTambah)
     }
 }
 
 /**
  * Header 114 → label y138 (jarak 24) → kartu y164 (jarak 10), antarbagian 24, tombol tambah di akhir.
- * Kartu membuka tab Blokir. shortcut: tombol + (ke Tambah Aturan) dipasang di Tahap 3C.
+ * Kartu membuka Detail Aturan (push), tombol + membuka Tambah Aturan (move in), seperti FigCraft.
  */
 @Composable
-private fun BerandaTerisi(aturan: List<AturanBeranda>, onBukaBlokir: () -> Unit) {
+private fun BerandaTerisi(aturan: List<AturanBeranda>, onBukaDetail: () -> Unit, onTambah: () -> Unit) {
     Column(
         Modifier
             .verticalScroll(rememberScrollState())
             .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = TINGGI_NAV + 24.dp),
     ) {
         val (aktif, nonaktif) = aturan.partition { it.aktif }
-        Bagian(R.string.blokir_aktif, aktif, onBukaBlokir)
-        Bagian(R.string.blokir_nonaktif, nonaktif, onBukaBlokir)
-        NotoTombolTambahBlokir(onKlik = {})
+        Bagian(R.string.blokir_aktif, aktif, onBukaDetail)
+        Bagian(R.string.blokir_nonaktif, nonaktif, onBukaDetail)
+        NotoTombolTambahBlokir(onKlik = onTambah)
     }
 }
 

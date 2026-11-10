@@ -1,5 +1,7 @@
 package id.noto.app.ui.blocks
 
+import id.noto.app.R
+
 // Isian form Tambah/Edit Aturan. Teks jadwal dan kuota masih teks jadi (data contoh);
 // di Tahap 4–5 dihitung dari hari, jam mulai-selesai, dan menit kuota.
 
@@ -48,4 +50,21 @@ val contohFormTerisi = FormAturan(
 val contohFormEdit = contohFormTerisi.copy(
     aplikasi = listOf("Instagram", "X", "TikTok", "WhatsApp", "Facebook"),
     senyap = true,
+)
+
+/** Satu aplikasi di layar Pilih Aplikasi; [rataRataMenit] = rata-rata pemakaian harian 7 hari. */
+data class AplikasiPilihan(val logo: Int, val nama: String, val rataRataMenit: Int)
+
+/** Kelompok di Pilih Aplikasi; [judul] = id string nama kategori. */
+data class KategoriAplikasi(val judul: Int, val aplikasi: List<AplikasiPilihan>)
+
+/** Sama dengan FigCraft "Blokir - Pilih Aplikasi". Di Tahap 5 diganti daftar aplikasi terpasang. */
+val contohKategoriAplikasi = listOf(
+    KategoriAplikasi(R.string.kategori_sosial_media, listOf(
+        AplikasiPilihan(R.drawable.logo_instagram, "Instagram", 70),
+        AplikasiPilihan(R.drawable.logo_twitter, "X", 25),
+        AplikasiPilihan(R.drawable.logo_facebook, "Facebook", 15),
+    )),
+    KategoriAplikasi(R.string.kategori_hiburan, listOf(AplikasiPilihan(R.drawable.logo_tiktok, "TikTok", 55))),
+    KategoriAplikasi(R.string.kategori_komunikasi, listOf(AplikasiPilihan(R.drawable.logo_whatsapp, "WhatsApp", 40))),
 )

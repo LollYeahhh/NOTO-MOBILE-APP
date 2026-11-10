@@ -70,4 +70,16 @@
     <string name="hapus_aturan_ini">Hapus aturan ini</string>
     <string name="nama_otomatis">Blokir</string>
     <string name="nama_otomatis_nomor">Blokir %1$d</string>
+    <string name="pilih_aplikasi_judul">Pilih Aplikasi</string>
+    <string name="cari_aplikasi">Cari aplikasi</string>
+    <string name="urut_paling_sering">Paling sering dipakai</string>
+    <string name="urut_a_z">A–Z</string>
+    <string name="catatan_rata_rata">Angka di bawah adalah rata-rata pemakaian harianmu selama 7 hari terakhir.</string>
+    <string name="kategori_sosial_media">Sosial Media</string>
+    <string name="kategori_hiburan">Hiburan</string>
+    <string name="kategori_komunikasi">Komunikasi</string>
+    <string name="pilih_semua">Pilih semua</string>
+    <string name="rata_rata_per_hari">Rata-rata %1$s per hari</string>
+    <string name="ringkasan_pilihan">%1$d aplikasi dipilih · rata-rata %2$s per hari</string>
+    <string name="pilih_n_aplikasi">Pilih %1$d Aplikasi</string>
 </resources>
