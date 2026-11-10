@@ -43,20 +43,20 @@ private val TINGGI_NAV = 114.dp
 fun BlokirScreen(
     aturan: List<AturanDaftar> = contohAturanDaftar,
     onBukaDetail: () -> Unit = {},
+    onTambah: () -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderLogo()
-        if (aturan.isEmpty()) BlokirKosong() else BlokirDaftar(aturan, onBukaDetail)
+        if (aturan.isEmpty()) BlokirKosong(onTambah) else BlokirDaftar(aturan, onBukaDetail, onTambah)
     }
 }
 
 /**
  * Konten (node 1757): padding 24/16, jarak antarbagian 24. Judul halaman, tiga seksi
  * (Sedang Berlaku, Di Luar Jadwal, Nonaktif), lalu tombol tambah.
- * shortcut: tombol + (ke Tambah Aturan) dipasang di Tahap 3C.
  */
 @Composable
-private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: () -> Unit) {
+private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: () -> Unit, onTambah: () -> Unit) {
     val berlaku = aturan.filter { it.status in setOf(StatusAturan.Berlaku, StatusAturan.HampirHabis, StatusAturan.TimeOut) }
     val luarJadwal = aturan.filter { it.status == StatusAturan.DiLuarJadwal }
     val nonaktif = aturan.filter { it.status == StatusAturan.Nonaktif }
@@ -78,7 +78,7 @@ private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: () -> Unit) {
         Seksi(R.string.seksi_sedang_berlaku, berlaku, onBukaDetail)
         Seksi(R.string.seksi_di_luar_jadwal, luarJadwal, onBukaDetail)
         Seksi(R.string.seksi_nonaktif, nonaktif, onBukaDetail)
-        NotoTombolTambahBlokir(onKlik = {})
+        NotoTombolTambahBlokir(onKlik = onTambah)
     }
 }
 
@@ -109,7 +109,7 @@ private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: () -> Un
 
 /** Empty State (node 1740) di x56 y330, lalu tombol tambah di y496 (jarak 26). */
 @Composable
-private fun BlokirKosong() {
+private fun BlokirKosong(onTambah: () -> Unit) {
     Column(
         Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 216.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,7 +137,7 @@ private fun BlokirKosong() {
                 textAlign = TextAlign.Center,
             )
         }
-        NotoTombolTambahBlokir(onKlik = {}, modifier = Modifier.padding(top = 26.dp))
+        NotoTombolTambahBlokir(onKlik = onTambah, modifier = Modifier.padding(top = 26.dp))
     }
 }
 

@@ -49,6 +49,9 @@ import id.noto.app.ui.components.NotoTombolTambahBlokir
 import id.noto.app.ui.components.TipeBadge
 import id.noto.app.ui.components.TipeTombol
 import id.noto.app.ui.blocks.BlokirScreen
+import id.noto.app.ui.blocks.FormAturanScreen
+import id.noto.app.ui.blocks.ModeForm
+import id.noto.app.ui.blocks.contohFormTerisi
 import id.noto.app.ui.home.BerandaScreen
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoWarna
@@ -66,7 +69,7 @@ class KatalogActivity : ComponentActivity() {
     }
 }
 
-private const val JUMLAH_HALAMAN = 7
+private const val JUMLAH_HALAMAN = 8
 
 @Composable
 private fun Katalog() {
@@ -75,8 +78,10 @@ private fun Katalog() {
     Box(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         // Halaman 6 dan 7: Beranda - Kosong dan Blokir - Kosong layar penuh
         // (di aplikasi, kedua tab memakai data contoh yang terisi).
+        // Halaman 8: Tambah Aturan Terisi (di aplikasi baru bisa tercapai setelah sheet Jadwal/Kuota, 3D).
         if (halaman == 5) BerandaScreen(aturan = emptyList())
         else if (halaman == 6) BlokirScreen(aturan = emptyList())
+        else if (halaman == 7) FormAturanScreen(ModeForm.Tambah, contohFormTerisi, {}, {}, {})
         else Column(
             Modifier
                 .padding(start = 16.dp, top = 80.dp)

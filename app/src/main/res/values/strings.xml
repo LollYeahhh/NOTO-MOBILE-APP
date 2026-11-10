@@ -51,4 +51,26 @@
     <string name="aturan_aktif_ket">Turn off for now without deleting the rule</string>
     <string name="senyapkan_notifikasi">Mute notifications</string>
     <string name="senyapkan_notifikasi_ket">This app\'s notifications stay silent during time out</string>
+    <string name="aturan_baru">New Rule</string>
+    <string name="edit_aturan_judul">Edit Rule</string>
+    <string name="nama_aturan">Rule name</string>
+    <string name="nama_aturan_contoh">Name your rule, e.g. Social</string>
+    <string name="apa_yang_diatur">What do you want to limit?</string>
+    <string name="aplikasi">Apps</string>
+    <string name="pilih_aplikasi_ket">Choose the apps to limit</string>
+    <string name="kapan_berapa_lama">When and for how long?</string>
+    <string name="jadwal_ket">Choose the days and hours the rule applies</string>
+    <string name="jadwal_ringkas">%1$s · %2$s</string>
+    <string name="kuota">Quota</string>
+    <string name="kuota_ket">How long the apps can be used while the schedule applies</string>
+    <string name="kuota_per_hari_aktif">%1$s per active day</string>
+    <string name="saat_time_out">During time out</string>
+    <string name="senyapkan_notifikasi_ket_form">App notifications stay silent during time out</string>
+    <string name="pratinjau_kosong">Fill in the apps, schedule, and quota. A summary of your rule will appear here.</string>
+    <string name="pratinjau_aturan">%1$s can be used for %2$s between %3$s, %4$s. Outside those hours, the apps are free to use.</string>
+    <string name="simpan_aturan">Save Rule</string>
+    <string name="simpan_perubahan">Save Changes</string>
+    <string name="hapus_aturan_ini">Delete this rule</string>
+    <string name="nama_otomatis">Block</string>
+    <string name="nama_otomatis_nomor">Block %1$d</string>
 </resources>

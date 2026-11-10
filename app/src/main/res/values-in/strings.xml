@@ -48,4 +48,26 @@
     <string name="aturan_aktif_ket">Matikan sementara tanpa menghapus aturan</string>
     <string name="senyapkan_notifikasi">Senyapkan notifikasi</string>
     <string name="senyapkan_notifikasi_ket">Notifikasi aplikasi ini diam selama time out</string>
+    <string name="aturan_baru">Aturan Baru</string>
+    <string name="edit_aturan_judul">Edit Aturan</string>
+    <string name="nama_aturan">Nama aturan</string>
+    <string name="nama_aturan_contoh">Beri nama aturan, misal Sosmed</string>
+    <string name="apa_yang_diatur">Apa yang ingin diatur?</string>
+    <string name="aplikasi">Aplikasi</string>
+    <string name="pilih_aplikasi_ket">Pilih aplikasi yang ingin diatur</string>
+    <string name="kapan_berapa_lama">Kapan dan berapa lama?</string>
+    <string name="jadwal_ket">Pilih hari dan jam saat aturan berlaku</string>
+    <string name="jadwal_ringkas">%1$s · %2$s</string>
+    <string name="kuota">Kuota</string>
+    <string name="kuota_ket">Berapa lama boleh dipakai saat jadwal berlaku</string>
+    <string name="kuota_per_hari_aktif">%1$s per hari aktif</string>
+    <string name="saat_time_out">Saat time out</string>
+    <string name="senyapkan_notifikasi_ket_form">Notifikasi aplikasi diam selama time out</string>
+    <string name="pratinjau_kosong">Lengkapi aplikasi, jadwal, dan kuota. Ringkasan aturanmu akan muncul di sini.</string>
+    <string name="pratinjau_aturan">%1$s boleh dipakai %2$s antara %3$s, %4$s. Di luar jam itu, bebas dipakai.</string>
+    <string name="simpan_aturan">Simpan Aturan</string>
+    <string name="simpan_perubahan">Simpan Perubahan</string>
+    <string name="hapus_aturan_ini">Hapus aturan ini</string>
+    <string name="nama_otomatis">Blokir</string>
+    <string name="nama_otomatis_nomor">Blokir %1$d</string>
 </resources>

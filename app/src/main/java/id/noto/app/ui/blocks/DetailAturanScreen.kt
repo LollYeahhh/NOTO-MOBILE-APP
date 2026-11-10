@@ -2,6 +2,7 @@ package id.noto.app.ui.blocks
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
@@ -57,17 +59,20 @@ private val namaHari = listOf(
 /**
  * Blokir - Detail Aturan (node 2030): Header Halaman + ikon pensil di kanan, lalu konten bergulir
  * (padding 24/16, jarak antarkartu 16).
- * shortcut: pensil, "Edit aturan" (ke Edit Aturan, 3C) dan "Hapus aturan" (Sheet Hapus, 3D) belum dipasang.
+ * shortcut: "Hapus aturan" (Sheet Hapus) dipasang di Tahap 3D.
  */
 @Composable
-fun DetailAturanScreen(onKembali: () -> Unit, detail: DetailAturan = contohDetailSosmed) {
+fun DetailAturanScreen(onKembali: () -> Unit, onEdit: () -> Unit = {}, detail: DetailAturan = contohDetailSosmed) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         Box {
             NotoHeaderHalaman(judul = detail.nama, onIkonKiri = onKembali)
             Image(
                 painterResource(R.drawable.ic_pensil),
                 contentDescription = stringResource(R.string.edit_aturan),
-                modifier = Modifier.offset(x = 353.dp, y = 72.dp).size(24.dp),
+                modifier = Modifier
+                    .offset(x = 353.dp, y = 72.dp)
+                    .size(24.dp)
+                    .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onEdit),
             )
         }
         Column(
@@ -81,7 +86,7 @@ fun DetailAturanScreen(onKembali: () -> Unit, detail: DetailAturan = contohDetai
             KartuPemakaian(detail)
             KartuPengaturan()
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                NotoTombol(stringResource(R.string.edit_aturan), onKlik = {}, modifier = Modifier.weight(1f), tipe = TipeTombol.Permukaan)
+                NotoTombol(stringResource(R.string.edit_aturan), onKlik = onEdit, modifier = Modifier.weight(1f), tipe = TipeTombol.Permukaan)
                 NotoTombol(stringResource(R.string.hapus_aturan), onKlik = {}, modifier = Modifier.weight(1f), tipe = TipeTombol.Teks)
             }
         }
