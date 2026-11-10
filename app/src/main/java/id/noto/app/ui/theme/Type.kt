@@ -1,6 +1,9 @@
 package id.noto.app.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -9,6 +12,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import id.noto.app.R
+import kotlin.math.roundToInt
 
 // Satu keluarga font: Poppins (file .ttf di res/font, lisensi OFL).
 val Poppins = FontFamily(
@@ -68,3 +72,14 @@ val Typography = Typography(
     bodyMedium = NotoTeks.Teks,
     labelLarge = NotoTeks.Label,
 )
+
+/**
+ * Glyph Poppins setinggi 1,4× ukuran font, jadi untuk Angka Hero (24/32) kotak teks Compose menjadi 33,6,
+ * lebih tinggi dari 32 di FigCraft. Modifier ini mengunci tinggi kotak = tinggi baris, teks tetap di tengah.
+ * Hanya untuk teks satu baris.
+ */
+fun Modifier.tinggiBarisFigCraft(gaya: TextStyle) = layout { ukur, batas ->
+    val teks = ukur.measure(batas.copy(minHeight = 0, maxHeight = Constraints.Infinity))
+    val tinggi = gaya.lineHeight.toPx().roundToInt()
+    layout(teks.width, tinggi) { teks.place(0, (tinggi - teks.height) / 2) }
+}

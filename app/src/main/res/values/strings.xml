@@ -7,4 +7,13 @@
     <string name="nav_blokir">Block</string>
     <string name="nav_statistik">Stats</string>
     <string name="nav_setelan">Settings</string>
+    <string name="tambah_aturan">Add rule</string>
+    <string name="kurangi">Decrease</string>
+    <string name="tambah">Increase</string>
+    <string name="tutup">Close</string>
+    <string name="tab_screen_time">Screen Time</string>
+    <string name="tab_minggu_ini">This Week</string>
+    <string name="tab_bulan_ini">This Month</string>
+    <string name="legenda_terbatas">Limited</string>
+    <string name="legenda_bebas">Free to use</string>
 </resources>

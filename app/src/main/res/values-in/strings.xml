@@ -4,4 +4,13 @@
     <string name="nav_blokir">Blokir</string>
     <string name="nav_statistik">Statistik</string>
     <string name="nav_setelan">Setelan</string>
+    <string name="tambah_aturan">Tambah aturan</string>
+    <string name="kurangi">Kurangi</string>
+    <string name="tambah">Tambah</string>
+    <string name="tutup">Tutup</string>
+    <string name="tab_screen_time">Screen Time</string>
+    <string name="tab_minggu_ini">Minggu Ini</string>
+    <string name="tab_bulan_ini">Bulan Ini</string>
+    <string name="legenda_terbatas">Terbatas</string>
+    <string name="legenda_bebas">Bebas dipakai</string>
 </resources>

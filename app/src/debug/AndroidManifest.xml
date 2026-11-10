@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hanya untuk build debug: layar katalog komponen untuk verifikasi visual dengan FigCraft.
+     exported=true agar bisa dibuka lewat "adb shell am start -n id.noto.app/.KatalogActivity". -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name=".KatalogActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NOTOAPP" />
+    </application>
+</manifest>

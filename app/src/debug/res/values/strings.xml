@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Teks contoh katalog (build debug saja), sama dengan nilai bawaan komponen di FigCraft. -->
+<resources>
+    <string name="katalog_badge_info" translatable="false">Bebas lagi 21.00</string>
+    <string name="katalog_badge_netral" translatable="false">Bebas sampai 07.00</string>
+    <string name="katalog_badge_aktif" translatable="false">Berlaku s.d. 21.00</string>
+    <string name="katalog_badge_peringatan" translatable="false">Sisa 5m</string>
+    <string name="katalog_chip" translatable="false">1j 30m</string>
+    <string name="katalog_hari_aktif" translatable="false">Sen</string>
+    <string name="katalog_hari_pasif" translatable="false">Min</string>
+    <string name="katalog_tombol_utama" translatable="false">Simpan Aturan</string>
+    <string name="katalog_tombol_teks" translatable="false">Lihat statistik</string>
+    <string name="katalog_tombol_permukaan" translatable="false">Batal</string>
+    <string name="katalog_input_placeholder" translatable="false">Beri nama aturan, misal Sosmed</string>
+    <string name="katalog_input_isi" translatable="false">Sosmed</string>
+    <string name="katalog_form_judul" translatable="false">Aplikasi</string>
+    <string name="katalog_form_nilai" translatable="false">Pilih aplikasi yang ingin diatur</string>
+    <string name="katalog_setelan_judul" translatable="false">Notifikasi &amp; Pengingat</string>
+    <string name="katalog_setelan_ket" translatable="false">Pengingat kuota dan ringkasan harian</string>
+    <string name="katalog_setelan_nilai" translatable="false">15m</string>
+    <string name="katalog_app_nama" translatable="false">Instagram</string>
+    <string name="katalog_app_ket" translatable="false">Rata-rata 1j 10m per hari</string>
+    <string name="katalog_app_durasi" translatable="false">25m</string>
+    <string name="katalog_stepper_angka" translatable="false">1j 30m</string>
+    <string name="katalog_stepper_satuan" translatable="false">per hari aktif</string>
+    <string name="katalog_waktu_label" translatable="false">Mulai</string>
+    <string name="katalog_waktu" translatable="false">07.00</string>
+    <string name="katalog_sheet_judul" translatable="false">Atur Jadwal</string>
+    <string name="katalog_sheet_sub" translatable="false">Kapan aturan ini berlaku?</string>
+    <string name="katalog_kartu_judul" translatable="false">Sosmed</string>
+    <string name="katalog_kartu_jadwal" translatable="false">07.00–21.00 · Sen–Jum</string>
+    <string name="katalog_berlaku_label" translatable="false">Berlaku s.d. 21.00</string>
+    <string name="katalog_berlaku_sisa" translatable="false">Sisa 45m</string>
+    <string name="katalog_berlaku_total" translatable="false">45m dari 1j 30m terpakai</string>
+    <string name="katalog_hampir_label" translatable="false">Hampir habis</string>
+    <string name="katalog_hampir_sisa" translatable="false">Sisa 5m</string>
+    <string name="katalog_hampir_total" translatable="false">1j 25m dari 1j 30m terpakai</string>
+    <string name="katalog_timeout_label" translatable="false">Bebas lagi 21.00</string>
+    <string name="katalog_timeout_sisa" translatable="false">Kuota habis, waktunya time out</string>
+    <string name="katalog_timeout_total" translatable="false">1j 30m terpakai</string>
+    <string name="katalog_luar_label" translatable="false">Bebas sampai 07.00</string>
+    <string name="katalog_luar_sisa" translatable="false">Kuota siap 1j 30m</string>
+    <string name="katalog_luar_total" translatable="false">Mulai lagi 07.00</string>
+    <string name="katalog_nonaktif_label" translatable="false">Nonaktif</string>
+</resources>
