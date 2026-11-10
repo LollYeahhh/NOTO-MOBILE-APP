@@ -74,7 +74,9 @@ enum class Tab(
 
     companion object {
         val LEBAR_KOLOM = 98.25.dp
-        fun dariRute(rute: String?): Tab? = entries.firstOrNull { it.rute == rute }
+        // Rute di dalam tab (misalnya "blokir/detail") tetap menyalakan tab induknya.
+        fun dariRute(rute: String?): Tab? =
+            entries.firstOrNull { rute == it.rute || rute?.startsWith(it.rute + "/") == true }
     }
 }
 

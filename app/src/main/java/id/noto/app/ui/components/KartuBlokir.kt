@@ -60,14 +60,15 @@ fun NotoKartuBlokir(
     total: String,
     progres: Float,
     logo: List<Painter>,
-    onKlik: () -> Unit,
+    onKlik: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier
             .fillMaxWidth()
             .background(NotoWarna.Permukaan, RoundedCornerShape(16.dp))
-            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
+            // onKlik null = kartu tidak bisa diketuk.
+            .then(if (onKlik != null) Modifier.clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik) else Modifier)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {

@@ -34,41 +34,41 @@ private val TINGGI_NAV = 114.dp
 
 /** Beranda: daftar aturan (Beranda - Terisi) atau Empty State (Beranda - Kosong) kalau belum ada aturan. */
 @Composable
-fun BerandaScreen(aturan: List<AturanBeranda> = contohAturanBeranda) {
+fun BerandaScreen(aturan: List<AturanBeranda> = contohAturanBeranda, onBukaBlokir: () -> Unit = {}) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderLogo()
-        if (aturan.isEmpty()) BerandaKosong() else BerandaTerisi(aturan)
+        if (aturan.isEmpty()) BerandaKosong() else BerandaTerisi(aturan, onBukaBlokir)
     }
 }
 
 /**
  * Header 114 → label y138 (jarak 24) → kartu y164 (jarak 10), antarbagian 24, tombol tambah di akhir.
- * shortcut: navigasi kartu (ke Blokir - Daftar) dan tombol + (ke Tambah Aturan) dipasang di Tahap 3B/3C.
+ * Kartu membuka tab Blokir. shortcut: tombol + (ke Tambah Aturan) dipasang di Tahap 3C.
  */
 @Composable
-private fun BerandaTerisi(aturan: List<AturanBeranda>) {
+private fun BerandaTerisi(aturan: List<AturanBeranda>, onBukaBlokir: () -> Unit) {
     Column(
         Modifier
             .verticalScroll(rememberScrollState())
             .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = TINGGI_NAV + 24.dp),
     ) {
         val (aktif, nonaktif) = aturan.partition { it.aktif }
-        Bagian(R.string.blokir_aktif, aktif)
-        Bagian(R.string.blokir_nonaktif, nonaktif)
+        Bagian(R.string.blokir_aktif, aktif, onBukaBlokir)
+        Bagian(R.string.blokir_nonaktif, nonaktif, onBukaBlokir)
         NotoTombolTambahBlokir(onKlik = {})
     }
 }
 
 /** Label bagian + kartu-kartunya (jarak 10), lalu jarak 24 ke bagian berikutnya. Bagian kosong tidak ditampilkan. */
 @Composable
-private fun Bagian(label: Int, aturan: List<AturanBeranda>) {
+private fun Bagian(label: Int, aturan: List<AturanBeranda>, onKlik: () -> Unit) {
     if (aturan.isEmpty()) return
     Text(stringResource(label), Modifier.tinggiBarisFigCraft(NotoTeks.Label), style = NotoTeks.Label, color = NotoWarna.TeksSekunder)
     Column(
         Modifier.padding(top = 10.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        aturan.forEach { KartuBlokirBeranda(it) }
+        aturan.forEach { KartuBlokirBeranda(it, onKlik) }
     }
 }
 

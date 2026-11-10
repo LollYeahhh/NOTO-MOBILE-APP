@@ -48,6 +48,7 @@ import id.noto.app.ui.components.NotoTombol
 import id.noto.app.ui.components.NotoTombolTambahBlokir
 import id.noto.app.ui.components.TipeBadge
 import id.noto.app.ui.components.TipeTombol
+import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.home.BerandaScreen
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoWarna
@@ -65,15 +66,18 @@ class KatalogActivity : ComponentActivity() {
     }
 }
 
-private const val JUMLAH_HALAMAN = 6
+private const val JUMLAH_HALAMAN = 7
 
 @Composable
 private fun Katalog() {
     var halaman by rememberSaveable { mutableIntStateOf(0) }
     // Kotak luar mengisi layar; kolom isi selebar 361 (lebar konten di desain) mulai di x16.
     Box(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
-        // Halaman 6: Beranda - Kosong layar penuh (di aplikasi, Beranda memakai data contoh Terisi).
-        if (halaman == 5) BerandaScreen(aturan = emptyList()) else Column(
+        // Halaman 6 dan 7: Beranda - Kosong dan Blokir - Kosong layar penuh
+        // (di aplikasi, kedua tab memakai data contoh yang terisi).
+        if (halaman == 5) BerandaScreen(aturan = emptyList())
+        else if (halaman == 6) BlokirScreen(aturan = emptyList())
+        else Column(
             Modifier
                 .padding(start = 16.dp, top = 80.dp)
                 .width(361.dp),

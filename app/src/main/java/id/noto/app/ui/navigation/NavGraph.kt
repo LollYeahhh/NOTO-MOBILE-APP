@@ -5,18 +5,23 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.noto.app.ui.blocks.BlokirScreen
+import id.noto.app.ui.blocks.DetailAturanScreen
 import id.noto.app.ui.home.BerandaScreen
 import id.noto.app.ui.settings.SetelanScreen
 import id.noto.app.ui.splash.DURASI_PUDAR_SPLASH_MS
@@ -34,6 +39,12 @@ val EaseOutFigCraft = CubicBezierEasing(0f, 0f, 0.58f, 1f)
 val EaseInOutFigCraft = CubicBezierEasing(0.42f, 0f, 0.58f, 1f)
 
 private const val RUTE_SPLASH = "splash"
+
+// Detail Aturan ada di dalam tab Blokir (nav tetap tampil dengan Blokir aktif).
+private const val RUTE_DETAIL = "blokir/detail"
+
+/** Durasi push Daftar → Detail (FigCraft: push dari kanan, 300 ms easeOut). */
+private const val DURASI_PUSH_MS = 300
 
 @Composable
 fun NotoNavGraph() {
@@ -59,6 +70,8 @@ fun NotoNavGraph() {
     val pudar = tween<Float>(DURASI_GESER_MS, easing = EaseOutFigCraft)
     // Dissolve splash → Beranda: Beranda (beserta nav) muncul memudar di atas splash.
     val pudarSplash = tween<Float>(DURASI_PUDAR_SPLASH_MS, easing = EaseInOutFigCraft)
+    // Push: layar baru masuk dari kanan, layar lama keluar ke kiri.
+    val push = tween<IntOffset>(DURASI_PUSH_MS, easing = EaseOutFigCraft)
 
     Box(Modifier.fillMaxSize()) {
         NavHost(
@@ -76,8 +89,23 @@ fun NotoNavGraph() {
                     navController.navigate(Tab.Beranda.rute) { popUpTo(RUTE_SPLASH) { inclusive = true } }
                 })
             }
-            composable(Tab.Beranda.rute) { BerandaScreen() }
-            composable(Tab.Blokir.rute) { BlokirScreen() }
+            // Kartu di Beranda membuka tab Blokir dengan animasi tab biasa (disepakati, beda dari push di FigCraft).
+            composable(Tab.Beranda.rute) { BerandaScreen(onBukaBlokir = { pilihTab(Tab.Blokir) }) }
+            composable(
+                Tab.Blokir.rute,
+                exitTransition = { if (targetState.destination.route == RUTE_DETAIL) slideOutHorizontally(push) { -it } else fadeOut(pudar) },
+                // Kembali dari Detail: instant, seperti aksi "back" di FigCraft.
+                popEnterTransition = { if (initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
+            ) {
+                BlokirScreen(onBukaDetail = { navController.navigate(RUTE_DETAIL) })
+            }
+            composable(
+                RUTE_DETAIL,
+                enterTransition = { if (initialState.destination.route == Tab.Blokir.rute) slideInHorizontally(push) { it } else fadeIn(pudar) },
+                popExitTransition = { if (targetState.destination.route == Tab.Blokir.rute) ExitTransition.None else fadeOut(pudar) },
+            ) {
+                DetailAturanScreen(onKembali = { navController.popBackStack() })
+            }
             composable(Tab.Statistik.rute) { StatistikScreen() }
             composable(Tab.Setelan.rute) { SetelanScreen() }
         }

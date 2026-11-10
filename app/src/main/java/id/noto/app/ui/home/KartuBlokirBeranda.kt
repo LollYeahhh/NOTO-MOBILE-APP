@@ -2,6 +2,7 @@ package id.noto.app.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
@@ -31,7 +33,7 @@ import id.noto.app.ui.theme.NotoWarna
  * Bawah: logo 27, jarak 5, padding atas-bawah 4. Kartu nonaktif tampil sama (tidak pudar) seperti desain.
  */
 @Composable
-fun KartuBlokirBeranda(aturan: AturanBeranda, modifier: Modifier = Modifier) {
+fun KartuBlokirBeranda(aturan: AturanBeranda, onKlik: () -> Unit, modifier: Modifier = Modifier) {
     val keterangan = if (aturan.jam != null && aturan.kuota != null) {
         stringResource(R.string.jadwal_kuota, aturan.jam, aturan.kuota)
     } else {
@@ -41,6 +43,7 @@ fun KartuBlokirBeranda(aturan: AturanBeranda, modifier: Modifier = Modifier) {
         modifier
             .fillMaxWidth()
             .background(NotoWarna.Permukaan, RoundedCornerShape(16.dp))
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -73,7 +76,7 @@ fun KartuBlokirBeranda(aturan: AturanBeranda, modifier: Modifier = Modifier) {
 private fun PreviewKartuBlokirBeranda() {
     NOTOAPPTheme {
         Column(Modifier.background(NotoWarna.Putih), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            contohAturanBeranda.forEach { KartuBlokirBeranda(it) }
+            contohAturanBeranda.forEach { KartuBlokirBeranda(it, onKlik = {}) }
         }
     }
 }
