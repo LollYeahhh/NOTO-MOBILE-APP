@@ -62,7 +62,6 @@ private val daftarTeks = listOf(
     "NOTO/Kecil Teks" to NotoTeks.KecilTeks,
     "NOTO/Kecil Tebal" to NotoTeks.KecilTebal,
     "NOTO/Eyebrow" to NotoTeks.Eyebrow,
-    "Lama: label nav 12" to NotoTeksLama.LabelNav,
     "Lama: Medium 12/14" to NotoTeksLama.Label12Rapat,
     "Lama: SemiBold 15/20" to NotoTeksLama.JudulBulanIni,
     "Lama: Regular 11/16" to NotoTeksLama.KeteranganBulanIni,

@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import id.noto.app.R
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
-import id.noto.app.ui.theme.NotoTeksLama
 import id.noto.app.ui.theme.NotoWarna
 
 // Bottom Nav dari FigCraft: kotak 393×114 berlatar Permukaan, baris "nav" 393×50 di y10,
@@ -69,7 +68,7 @@ enum class Tab(
     Statistik("statistik", R.string.nav_statistik, R.drawable.ic_nav_statistik,
         39.26.dp, 28.922.dp, 245.63.dp, 15.46.dp, 25.dp, 34.96.dp, 46.5.dp, 208.dp),
     Setelan("setelan", R.string.nav_setelan, R.drawable.ic_nav_setelan,
-        54.299.dp, 51.983.dp, 343.87.dp, 17.465.dp, 24.995.dp, 41.75.dp, 43.73.dp, 306.dp);
+        24.842.dp, 24.943.dp, 343.87.dp, 17.47.dp, 25.dp, 38.97.dp, 46.5.dp, 306.dp);
 
     val xKolom: Dp get() = LEBAR_KOLOM * ordinal
 
@@ -80,20 +79,12 @@ enum class Tab(
 }
 
 /**
- * Komponen = nav komponen FigCraft (label NOTO/Label 12/16).
- * Lama = nav lama yang direplikasi apa adanya (label tinggi baris 99,93%).
- * Ikon keduanya sama, termasuk gerigi terisi.
- */
-enum class VarianNav { Komponen, Lama }
-
-/**
  * Setiap pindah tab, pill bergeser ke tab tujuan, ikon naik/turun, dan label memudar
  * (atas permintaan pemilik proyek: semua perpindahan tab memakai animasi geser ini).
  */
 @Composable
 fun NotoBottomBar(
     aktif: Tab,
-    varian: VarianNav,
     onPilih: (Tab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -119,13 +110,13 @@ fun NotoBottomBar(
                     .size(75.dp, 50.dp)
                     .background(NotoWarna.PrimerMuda, RoundedCornerShape(12.dp)),
             )
-            Tab.entries.forEach { tab -> KolomTab(tab, tab == aktif, varian, onPilih) }
+            Tab.entries.forEach { tab -> KolomTab(tab, tab == aktif, onPilih) }
         }
     }
 }
 
 @Composable
-private fun KolomTab(tab: Tab, aktif: Boolean, varian: VarianNav, onPilih: (Tab) -> Unit) {
+private fun KolomTab(tab: Tab, aktif: Boolean, onPilih: (Tab) -> Unit) {
     val durasi = DURASI_GESER_MS
     val pusatY by animateDpAsState(
         if (aktif) tab.pusatYAktif else tab.pusatYPasif, tween(durasi, easing = EaseOutFigCraft), label = "ikonY",
@@ -149,13 +140,13 @@ private fun KolomTab(tab: Tab, aktif: Boolean, varian: VarianNav, onPilih: (Tab)
             .size(tab.lebarIkon, tab.tinggiIkon),
     )
 
-    // Label hanya terlihat di tab aktif. Komponen: NOTO/Label 12/16. Lama: Medium 12, tinggi baris 99,93%.
-    val gaya = if (varian == VarianNav.Lama) NotoTeksLama.LabelNav else NotoTeks.Label
-    val tinggiBaris = if (varian == VarianNav.Lama) 12.dp else 16.dp
+    // Label hanya terlihat di tab aktif: NOTO/Label 12/16, ditengahkan di kotaknya seperti di FigCraft.
+    // (Nav lama di FigCraft memakai tinggi baris 99,93%, tetapi posisi teksnya sama.)
+    val tinggiBaris = 16.dp
     val label = stringResource(tab.label)
     Text(
         text = label,
-        style = gaya,
+        style = NotoTeks.Label,
         color = NotoWarna.Putih,
         textAlign = TextAlign.Center,
         maxLines = 1,
@@ -179,10 +170,10 @@ private fun KolomTab(tab: Tab, aktif: Boolean, varian: VarianNav, onPilih: (Tab)
     )
 }
 
-// Preview: satu per tab, dengan varian awal 2A (Beranda & Statistik lama, Blokir & Setelan komponen).
+// Preview: satu per tab.
 @Composable
 private fun PreviewNav(tab: Tab) {
-    NOTOAPPTheme { NotoBottomBar(tab, varianNavAwal(tab), onPilih = {}) }
+    NOTOAPPTheme { NotoBottomBar(tab, onPilih = {}) }
 }
 
 @Preview(name = "Nav - Beranda (lama)", widthDp = 393)

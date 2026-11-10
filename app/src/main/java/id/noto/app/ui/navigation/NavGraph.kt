@@ -22,19 +22,9 @@ import id.noto.app.ui.stats.StatistikScreen
 /** Durasi animasi geser pill nav saat pindah tab (smart animate 400 ms di FigCraft). */
 const val DURASI_GESER_MS = 400
 
-// SEMENTARA: FigCraft hanya menyimpan nama "easeOut" tanpa angka kurva. Nilai ini kurva CSS
-// ease-out standar dan akan diganti dengan angka yang dicek pemilik proyek di FigCraft.
+// FigCraft hanya menyimpan nama "easeOut" tanpa angka kurva. Disepakati pemilik proyek:
+// pakai kurva ease-out standar (0, 0, 0.58, 1).
 val EaseOutFigCraft = CubicBezierEasing(0f, 0f, 0.58f, 1f)
-
-/**
- * Varian nav per LAYAR. Untuk 2A tiap tab baru punya satu layar kosong:
- * Beranda & Statistik memakai nav lama, Blokir & Setelan nav komponen.
- * Di Tahap 3 ini diganti per layar (mis. Blokir - Kosong memakai nav lama, Blokir - Daftar komponen).
- */
-fun varianNavAwal(tab: Tab): VarianNav = when (tab) {
-    Tab.Beranda, Tab.Statistik -> VarianNav.Lama
-    Tab.Blokir, Tab.Setelan -> VarianNav.Komponen
-}
 
 @Composable
 fun NotoNavGraph() {
@@ -76,7 +66,6 @@ fun NotoNavGraph() {
 
         NotoBottomBar(
             aktif = tabAktif,
-            varian = varianNavAwal(tabAktif),
             onPilih = ::pilihTab,
             modifier = Modifier.align(Alignment.BottomCenter),
         )

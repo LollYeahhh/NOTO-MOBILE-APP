@@ -7,7 +7,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import id.noto.app.R
 
@@ -58,7 +57,6 @@ object NotoTeks {
 
 // Teks pola lama yang tidak memakai style NOTO/* di FigCraft. Direplikasi apa adanya (§0).
 object NotoTeksLama {
-    val LabelNav = gaya(12, 0.9993.em, FontWeight.Medium) // label nav lama, tinggi baris 99,93%
     val Label12Rapat = gaya(12, 14.sp, FontWeight.Medium) // Statistik (tiga layar)
     val JudulBulanIni = gaya(15, 20.sp, FontWeight.SemiBold) // Top List di Statistik - Bulan Ini
     val KeteranganBulanIni = gaya(11, 16.sp, FontWeight.Normal) // "486 kali dibuka" dll.
