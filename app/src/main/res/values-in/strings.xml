@@ -13,4 +13,10 @@
     <string name="tab_bulan_ini">Bulan Ini</string>
     <string name="legenda_terbatas">Terbatas</string>
     <string name="legenda_bebas">Bebas dipakai</string>
+    <string name="blokir_aktif">Blokir Aktif</string>
+    <string name="blokir_nonaktif">Blokir Nonaktif</string>
+    <string name="blokir_manual">Blokir Manual</string>
+    <string name="jadwal_kuota">%1$s · Kuota %2$s</string>
+    <string name="kosong_judul">Yahh Kosong</string>
+    <string name="kosong_ajakan">Ayo mulailah blok sesuatu dengan mengeklik tombol</string>
 </resources>

@@ -16,4 +16,10 @@
     <string name="tab_bulan_ini">This Month</string>
     <string name="legenda_terbatas">Limited</string>
     <string name="legenda_bebas">Free to use</string>
+    <string name="blokir_aktif">Active blocks</string>
+    <string name="blokir_nonaktif">Inactive blocks</string>
+    <string name="blokir_manual">Manual block</string>
+    <string name="jadwal_kuota">%1$s · Quota %2$s</string>
+    <string name="kosong_judul">Oops, it\'s empty</string>
+    <string name="kosong_ajakan">Start blocking something by tapping the button</string>
 </resources>
