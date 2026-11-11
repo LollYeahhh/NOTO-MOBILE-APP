@@ -19,7 +19,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import id.noto.app.MainActivity
 import id.noto.app.R
+import id.noto.app.data.AturanLengkap
+import id.noto.app.data.KuotaDao
 import id.noto.app.data.NotoDatabase
+import id.noto.app.data.jendelaSekarang
 import id.noto.app.ui.permission.Izin
 import id.noto.app.ui.permission.izinDiberikan
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +52,9 @@ class PemantauService : Service() {
     private val cakupan = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var putaran: Job? = null
     private val pelacak = PelacakLatar()
+    // Aturan dari database (selalu terbaru), untuk menghitung kuota aplikasi yang sedang di layar.
+    private var aturan: List<AturanLengkap> = emptyList()
+
     // Waktu layar terakhir mati; null = pemantau baru menyala.
     private var layarMatiPada: Long? = null
 
@@ -79,6 +85,7 @@ class PemantauService : Service() {
             },
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
+        cakupan.launch { NotoDatabase.ambil(this@PemantauService).aturanDao().semua().collect { aturan = it } }
         if (getSystemService(PowerManager::class.java).isInteractive) mulaiPutaran()
     }
 
@@ -99,7 +106,9 @@ class PemantauService : Service() {
         if (putaran?.isActive == true) return
         putaran = cakupan.launch {
             val usm = getSystemService(UsageStatsManager::class.java)
-            val dao = NotoDatabase.ambil(this@PemantauService).pemakaianDao()
+            val db = NotoDatabase.ambil(this@PemantauService)
+            val dao = db.pemakaianDao()
+            val kuotaDao = db.kuotaDao()
             // Noto sendiri dan launcher tidak dicatat (pilihan pemilik proyek 3b).
             val abaikan = setOfNotNull(packageName, paketLauncher())
             var sebelumnya = System.currentTimeMillis()
@@ -110,8 +119,9 @@ class PemantauService : Service() {
             pelacak.proses(bacaPeristiwa(usm, matiPada ?: (sebelumnya - 60 * 60 * 1000L), sebelumnya), hitungBuka = matiPada != null)
                 .filterNot { it in abaikan }
                 .forEach { paket ->
-                    val waktu = LocalDateTime.now(ZoneId.systemDefault())
+                    val waktu = LocalDateTime.now()
                     dao.tambah(waktu.toLocalDate().toEpochDay(), waktu.hour, paket, 0, 1)
+                    catatKuota(kuotaDao, waktu, paket, 0, 1)
                 }
             while (isActive) {
                 delay(JEDA_MS)
@@ -121,13 +131,32 @@ class PemantauService : Service() {
                 }
                 val sekarang = System.currentTimeMillis()
                 val dibuka = pelacak.proses(bacaPeristiwa(usm, sebelumnya, sekarang))
-                val waktu = LocalDateTime.now(ZoneId.systemDefault())
+                val waktu = LocalDateTime.now()
                 val tanggal = waktu.toLocalDate().toEpochDay()
-                dibuka.filterNot { it in abaikan }.forEach { dao.tambah(tanggal, waktu.hour, it, 0, 1) }
-                pelacak.diLayar?.takeIf { it !in abaikan }?.let { dao.tambah(tanggal, waktu.hour, it, (sekarang - sebelumnya) / 1000, 0) }
+                dibuka.filterNot { it in abaikan }.forEach {
+                    dao.tambah(tanggal, waktu.hour, it, 0, 1)
+                    catatKuota(kuotaDao, waktu, it, 0, 1)
+                }
+                pelacak.diLayar?.takeIf { it !in abaikan }?.let {
+                    val detik = (sekarang - sebelumnya) / 1000
+                    dao.tambah(tanggal, waktu.hour, it, detik, 0)
+                    catatKuota(kuotaDao, waktu, it, detik, 0)
+                }
                 // Sisa milidetik tidak dibuang: dibawa ke putaran berikutnya.
                 sebelumnya = sekarang - (sekarang - sebelumnya) % 1000
             }
+        }
+    }
+
+    /**
+     * Tambahkan pemakaian [paket] ke kuota setiap aturan aktif yang memuatnya dan sedang dalam jadwal.
+     * Di luar jadwal tidak ada yang dicatat (aplikasi bebas dipakai).
+     */
+    private suspend fun catatKuota(kuotaDao: KuotaDao, waktu: LocalDateTime, paket: String, detik: Long, dibuka: Int) {
+        for (a in aturan) {
+            if (!a.aturan.aktif || paket !in a.paket) continue
+            val mulai = jendelaSekarang(a.aturan, waktu) ?: continue
+            kuotaDao.tambah(a.aturan.id, mulai.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), paket, detik, dibuka)
         }
     }
 
