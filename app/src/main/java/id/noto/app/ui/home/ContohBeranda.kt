@@ -12,6 +12,7 @@ data class AturanBeranda(
     val jam: String?,
     val kuota: String?,
     val logo: List<Int>, // id drawable logo aplikasi
+    val id: Long = 0, // id aturan di Room; 0 = data contoh
 )
 
 // Data contoh sama dengan FigCraft "Beranda - Terisi". Diganti data dari Room di Tahap 4,

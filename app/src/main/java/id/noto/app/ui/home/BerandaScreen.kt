@@ -36,7 +36,7 @@ private val TINGGI_NAV = 114.dp
 @Composable
 fun BerandaScreen(
     aturan: List<AturanBeranda> = contohAturanBeranda,
-    onBukaDetail: (() -> Unit)? = {}, // null = kartu tidak bisa diketuk
+    onBukaDetail: ((Long) -> Unit)? = {}, // null = kartu tidak bisa diketuk
     onTambah: () -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
@@ -50,7 +50,7 @@ fun BerandaScreen(
  * Kartu membuka Detail Aturan (push), tombol + membuka Tambah Aturan (move in), seperti FigCraft.
  */
 @Composable
-private fun BerandaTerisi(aturan: List<AturanBeranda>, onBukaDetail: (() -> Unit)?, onTambah: () -> Unit) {
+private fun BerandaTerisi(aturan: List<AturanBeranda>, onBukaDetail: ((Long) -> Unit)?, onTambah: () -> Unit) {
     Column(
         Modifier
             .verticalScroll(rememberScrollState())
@@ -65,14 +65,14 @@ private fun BerandaTerisi(aturan: List<AturanBeranda>, onBukaDetail: (() -> Unit
 
 /** Label bagian + kartu-kartunya (jarak 10), lalu jarak 24 ke bagian berikutnya. Bagian kosong tidak ditampilkan. */
 @Composable
-private fun Bagian(label: Int, aturan: List<AturanBeranda>, onKlik: (() -> Unit)?) {
+private fun Bagian(label: Int, aturan: List<AturanBeranda>, onKlik: ((Long) -> Unit)?) {
     if (aturan.isEmpty()) return
     Text(stringResource(label), Modifier.tinggiBarisFigCraft(NotoTeks.Label), style = NotoTeks.Label, color = NotoWarna.TeksSekunder)
     Column(
         Modifier.padding(top = 10.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        aturan.forEach { KartuBlokirBeranda(it, onKlik) }
+        aturan.forEach { a -> KartuBlokirBeranda(a, onKlik?.let { buka -> { buka(a.id) } }) }
     }
 }
 

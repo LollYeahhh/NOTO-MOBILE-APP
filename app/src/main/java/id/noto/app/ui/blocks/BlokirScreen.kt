@@ -42,7 +42,7 @@ private val TINGGI_NAV = 114.dp
 @Composable
 fun BlokirScreen(
     aturan: List<AturanDaftar> = contohAturanDaftar,
-    onBukaDetail: (() -> Unit)? = {},
+    onBukaDetail: ((Long) -> Unit)? = {},
     onTambah: () -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
@@ -56,7 +56,7 @@ fun BlokirScreen(
  * (Sedang Berlaku, Di Luar Jadwal, Nonaktif), lalu tombol tambah.
  */
 @Composable
-private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: (() -> Unit)?, onTambah: () -> Unit) {
+private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: ((Long) -> Unit)?, onTambah: () -> Unit) {
     val berlaku = aturan.filter { it.status in setOf(StatusAturan.Berlaku, StatusAturan.HampirHabis, StatusAturan.TimeOut) }
     val luarJadwal = aturan.filter { it.status == StatusAturan.DiLuarJadwal }
     val nonaktif = aturan.filter { it.status == StatusAturan.Nonaktif }
@@ -84,7 +84,7 @@ private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: (() -> Unit)?
 
 /** Label seksi + kartu (jarak 8, antarkartu 16). Seksi tanpa kartu tidak ditampilkan. */
 @Composable
-private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: (() -> Unit)?) {
+private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: ((Long) -> Unit)?) {
     if (aturan.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(stringResource(label), Modifier.tinggiBarisFigCraft(NotoTeks.Label), style = NotoTeks.Label, color = NotoWarna.TeksSekunder)
@@ -99,8 +99,8 @@ private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: (() -> U
                     total = a.total,
                     progres = a.progres,
                     logo = a.logo.map { painterResource(it) },
-                    // Di FigCraft hanya kartu Sosmed yang membuka Detail (disepakati: ikuti desain).
-                    onKlik = if (onBukaDetail != null && a.judul == contohDetailSosmed.nama) onBukaDetail else null,
+                    // Setiap kartu membuka Detail aturannya sendiri.
+                    onKlik = onBukaDetail?.let { buka -> { buka(a.id) } },
                 )
             }
         }

@@ -10,6 +10,7 @@ import id.noto.app.data.AturanLengkap
 import id.noto.app.data.bitmaskKeHari
 import id.noto.app.data.hariKeBitmask
 import id.noto.app.ui.components.StatusAturan
+import id.noto.app.ui.components.TipeBadge
 import id.noto.app.ui.home.AturanBeranda
 import id.noto.app.util.formatDurasi
 import id.noto.app.util.formatJam
@@ -82,33 +83,39 @@ private fun logoAplikasi(paket: List<String>): List<Int> {
     return paket.mapNotNull { nama -> semua.firstOrNull { it.nama == nama }?.logo }
 }
 
+/** "07.00–21.00 · Sen–Jum". */
+@Composable
+fun Aturan.jadwalRingkas(): String {
+    val jam = stringResource(R.string.rentang_singkat, formatJam(mulaiMenit), formatJam(selesaiMenit))
+    val hari = ringkasHari(bitmaskKeHari(hariAktif), namaHariSingkat(), stringResource(R.string.setiap_hari), stringResource(R.string.rentang_singkat))
+    return stringResource(R.string.jadwal_ringkas, jam, hari)
+}
+
 /** Kartu Blokir - Daftar. */
 @Composable
 fun AturanLengkap.keDaftar(w: Waktu): AturanDaftar {
     val a = aturan
     val status = statusAturan(a, w)
-    val jam = stringResource(R.string.rentang_singkat, formatJam(a.mulaiMenit), formatJam(a.selesaiMenit))
-    val hari = ringkasHari(bitmaskKeHari(a.hariAktif), namaHariSingkat(), stringResource(R.string.setiap_hari), stringResource(R.string.rentang_singkat))
-    val jadwal = stringResource(R.string.jadwal_ringkas, jam, hari)
+    val jadwal = a.jadwalRingkas()
     val kuota = formatDurasi(a.kuotaMenit)
     return when (status) {
         StatusAturan.Nonaktif -> AturanDaftar(
             a.nama, stringResource(R.string.jadwal_kuota, jadwal, kuota), status,
-            stringResource(R.string.seksi_nonaktif), "", "", 0f, logoAplikasi(paket),
+            stringResource(R.string.seksi_nonaktif), "", "", 0f, logoAplikasi(paket), a.id,
         )
         StatusAturan.DiLuarJadwal -> AturanDaftar(
             a.nama, jadwal, status,
             stringResource(R.string.status_bebas_sampai, formatJam(a.mulaiMenit)),
             stringResource(R.string.kuota_siap, kuota),
             stringResource(R.string.mulai_lagi, formatJam(a.mulaiMenit)),
-            0f, logoAplikasi(paket),
+            0f, logoAplikasi(paket), a.id,
         )
         else -> AturanDaftar(
             a.nama, jadwal, status,
             stringResource(R.string.status_berlaku_sd, formatJam(a.selesaiMenit)),
             stringResource(R.string.sisa_menit, kuota),
             stringResource(R.string.terpakai_dari, formatDurasi(0), kuota),
-            0f, logoAplikasi(paket),
+            0f, logoAplikasi(paket), a.id,
         )
     }
 }
@@ -120,4 +127,60 @@ fun AturanLengkap.keBeranda() = AturanBeranda(
     jam = "${formatJam(aturan.mulaiMenit)}-${formatJam(aturan.selesaiMenit)}",
     kuota = formatDurasi(aturan.kuotaMenit),
     logo = logoAplikasi(paket),
+    id = aturan.id,
+)
+
+/** Menit dari [w] sampai jam selesai jadwal (jadwal yang melewati tengah malam ikut dihitung). */
+fun menitSampaiSelesai(a: Aturan, w: Waktu): Int = (a.selesaiMenit - w.menit + 24 * 60) % (24 * 60)
+
+/**
+ * Isi layar Detail Aturan.
+ * shortcut: pemakaian dianggap 0 sampai Tahap 6 (sisa = kuota penuh, dibuka 0 kali).
+ * Di Luar Jadwal dan Nonaktif mengikuti frame "Blokir - Detail Aturan (Di Luar Jadwal)" dan "(Nonaktif)".
+ */
+@Composable
+fun AturanLengkap.keDetail(w: Waktu): DetailAturan {
+    val a = aturan
+    val daftar = keDaftar(w)
+    val status = statusAturan(a, w)
+    val logo = contohKategoriAplikasi.flatMap { it.aplikasi }
+    return DetailAturan(
+        nama = a.nama,
+        labelStatus = daftar.labelStatus,
+        sisa = formatDurasi(a.kuotaMenit),
+        kuota = formatDurasi(a.kuotaMenit),
+        progres = 0f,
+        terpakai = formatDurasi(0),
+        dibuka = 0,
+        bebasLagi = formatDurasi(menitSampaiSelesai(a, w)),
+        jamReset = formatJam(a.mulaiMenit),
+        jam = stringResource(R.string.rentang_singkat, formatJam(a.mulaiMenit), formatJam(a.selesaiMenit)),
+        hariAktif = bitmaskKeHari(a.hariAktif),
+        mulaiMenit = a.mulaiMenit,
+        selesaiMenit = a.selesaiMenit,
+        sekarangMenit = w.menit,
+        aplikasi = paket.mapNotNull { nama ->
+            logo.firstOrNull { it.nama == nama }?.let { PemakaianAplikasi(it.logo, nama, 0, formatDurasi(0)) }
+        },
+        badge = status.badge,
+        keteranganKanan = when (status) {
+            StatusAturan.Berlaku -> null
+            StatusAturan.Nonaktif -> ""
+            else -> stringResource(R.string.mulai_lagi, formatJam(a.mulaiMenit))
+        },
+        teksInfo = when (status) {
+            StatusAturan.Nonaktif -> stringResource(R.string.info_nonaktif)
+            StatusAturan.DiLuarJadwal -> stringResource(R.string.info_di_luar_jadwal, formatJam(a.mulaiMenit))
+            else -> null
+        },
+    )
+}
+
+/** Aturan yang sudah ada → isian form Edit. */
+fun AturanLengkap.keForm() = FormAturan(
+    nama = aturan.nama,
+    aplikasi = paket,
+    jadwal = JadwalForm(bitmaskKeHari(aturan.hariAktif), aturan.mulaiMenit, aturan.selesaiMenit),
+    kuotaMenit = aturan.kuotaMenit,
+    senyap = aturan.senyap,
 )

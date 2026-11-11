@@ -18,6 +18,8 @@ import androidx.lifecycle.withResumed
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +35,8 @@ import id.noto.app.ui.blocks.AturanViewModel
 import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.blocks.keBeranda
 import id.noto.app.ui.blocks.keDaftar
+import id.noto.app.ui.blocks.keDetail
+import id.noto.app.ui.blocks.keForm
 import id.noto.app.ui.blocks.rememberWaktu
 import id.noto.app.ui.blocks.DetailAturanScreen
 import id.noto.app.ui.blocks.FormAturan
@@ -42,8 +46,6 @@ import id.noto.app.ui.blocks.PilihAplikasiScreen
 import id.noto.app.ui.blocks.SheetForm
 import id.noto.app.ui.blocks.SheetHapus
 import id.noto.app.ui.components.NotoSheet
-import id.noto.app.ui.blocks.contohDetailSosmed
-import id.noto.app.ui.blocks.contohFormEdit
 import id.noto.app.ui.blocks.namaOtomatis
 import id.noto.app.ui.home.BerandaScreen
 import id.noto.app.ui.settings.AturanPembatasanScreen
@@ -122,14 +124,11 @@ fun NotoNavGraph() {
     val setelan by setelanVm.setelan.collectAsState()
     // Isian form Tambah/Edit yang sedang dikerjakan (belum disimpan).
     var form by remember { mutableStateOf(FormAturan()) }
-    // shortcut: nama aturan Sosmed (satu-satunya yang bisa diedit) disimpan di memori saja, hilang saat
-    // aplikasi ditutup; diganti Room di Tahap 4.
-    var namaSosmed by remember { mutableStateOf(contohFormEdit.nama) }
-    // shortcut: aturan Sosmed yang dihapus hanya disembunyikan di memori; diganti Room di Tahap 4.
-    var sosmedDihapus by remember { mutableStateOf(false) }
-    // shortcut: toggle "Aturan aktif" dan "Senyapkan notifikasi" Sosmed di memori saja; diganti Room di Tahap 4.
-    var sosmedAktif by remember { mutableStateOf(true) }
-    var sosmedSenyap by remember { mutableStateOf(true) }
+    // Aturan yang dibuka di Detail dan Edit (id Room); disimpan supaya tetap ada setelah aplikasi dipulihkan.
+    var idDetail by rememberSaveable { mutableLongStateOf(0L) }
+    val aturanDetail = daftarAturan.firstOrNull { it.aturan.id == idDetail }
+    // true sejak "Ya, hapus aturan" sampai Detail aturan lain dibuka: Detail diganti Blokir - Daftar.
+    var dihapus by remember { mutableStateOf(false) }
     // Nama aturan yang sudah ada, supaya nama otomatis tidak kembar.
     val namaAturan = daftarAturan.map { it.aturan.nama }
     val namaDasar = stringResource(R.string.nama_otomatis)
@@ -171,14 +170,13 @@ fun NotoNavGraph() {
                 aturan = daftarAturan,
                 setelanVm = setelanVm,
                 onTambah = { form = FormAturan(); navController.navigate(RUTE_TAMBAH) },
-                onEdit = { form = contohFormEdit.copy(nama = namaSosmed); navController.navigate(RUTE_EDIT) },
-                namaSosmed = namaSosmed,
-                sosmedDihapus = sosmedDihapus,
-                onHapusSosmed = { sosmedDihapus = true },
-                sosmedAktif = sosmedAktif,
-                onSosmedAktif = { sosmedAktif = it },
-                sosmedSenyap = sosmedSenyap,
-                onSosmedSenyap = { sosmedSenyap = it },
+                onEdit = { aturanDetail?.let { form = it.keForm(); navController.navigate(RUTE_EDIT) } },
+                aturanDetail = aturanDetail,
+                onBukaDetail = { idDetail = it; dihapus = false },
+                dihapus = dihapus,
+                onHapus = { aturanVm.hapus(idDetail); dihapus = true },
+                onAktif = { aturanVm.ubahAktif(idDetail, it) },
+                onSenyap = { aturanVm.ubahSenyap(idDetail, it) },
             )
         }
         composable(
@@ -236,7 +234,7 @@ fun NotoNavGraph() {
             exitTransition = { if (targetState.destination.route == RUTE_PILIH) slideOutHorizontally(gerak) { -it } else ExitTransition.None },
             // "Ya, hapus aturan": dissolve 250 ms ke Blokir - Daftar; kembali dan simpan: instant.
             popExitTransition = {
-                if (sosmedDihapus) fadeOut(tween(DURASI_DISSOLVE_MS, easing = EaseOutFigCraft)) else ExitTransition.None
+                if (dihapus) fadeOut(tween(DURASI_DISSOLVE_MS, easing = EaseOutFigCraft)) else ExitTransition.None
             },
         ) {
             // Kembali dan "Simpan Perubahan": back instant.
@@ -246,14 +244,17 @@ fun NotoNavGraph() {
                 onUbah = { form = it },
                 onTutup = { navController.popBackStack() },
                 onSimpan = {
-                    // Nama kosong → nama otomatis (Blokir, Blokir 1, …).
-                    namaSosmed = form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan - namaSosmed) }
+                    aturanDetail?.let { lama ->
+                        // Nama kosong → nama otomatis (Blokir, Blokir 1, …).
+                        val nama = form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan - lama.aturan.nama) }
+                        aturanVm.ubah(lama.aturan, form, nama)
+                    }
                     navController.popBackStack()
                 },
-                onHapus = { sosmedDihapus = true; navController.popBackStack() },
+                onHapus = { aturanVm.hapus(idDetail); dihapus = true; navController.popBackStack() },
                 onPilihAplikasi = { pilihLewatTombol = false; bukaJadwal = false; navController.navigate(RUTE_PILIH) },
                 // Nama aturan yang sedang diedit tidak dihitung terpakai.
-                namaTerpakai = namaAturan - namaSosmed,
+                namaTerpakai = namaAturan - aturanDetail?.aturan?.nama.orEmpty(),
             )
         }
     }
@@ -266,13 +267,12 @@ private fun CangkangTab(
     setelanVm: SetelanViewModel,
     onTambah: () -> Unit,
     onEdit: () -> Unit,
-    namaSosmed: String,
-    sosmedDihapus: Boolean,
-    onHapusSosmed: () -> Unit,
-    sosmedAktif: Boolean,
-    onSosmedAktif: (Boolean) -> Unit,
-    sosmedSenyap: Boolean,
-    onSosmedSenyap: (Boolean) -> Unit,
+    aturanDetail: AturanLengkap?,
+    onBukaDetail: (Long) -> Unit,
+    dihapus: Boolean,
+    onHapus: () -> Unit,
+    onAktif: (Boolean) -> Unit,
+    onSenyap: (Boolean) -> Unit,
 ) {
     val navController = rememberNavController()
     // Sheet Hapus Aturan dari tombol "Hapus aturan" di Detail.
@@ -286,8 +286,8 @@ private fun CangkangTab(
     // membuat NavHost di dalamnya mengabaikan navigasi berikutnya sampai tombol back ditekan.
     // Selama menunggu, rute Detail sudah menampilkan isi Daftar, jadi tidak terlihat lompatan.
     val siklus = LocalLifecycleOwner.current.lifecycle
-    LaunchedEffect(sosmedDihapus) {
-        if (!sosmedDihapus) return@LaunchedEffect
+    LaunchedEffect(dihapus) {
+        if (!dihapus) return@LaunchedEffect
         siklus.withResumed {
             if (navController.currentDestination?.route != RUTE_DETAIL) return@withResumed
             if (navController.previousBackStackEntry?.destination?.route == Tab.Blokir.rute) {
@@ -338,11 +338,15 @@ private fun CangkangTab(
     // Status aturan (Berlaku / Di Luar Jadwal) dihitung dari jam sekarang, diperbarui tiap menit.
     val waktu = rememberWaktu()
 
-    // shortcut: kartu belum membuka Detail Aturan; Detail, Edit, dan Hapus dari Room menyusul di Tahap 4C-2.
+    val bukaDetail: (Long) -> Unit = { onBukaDetail(it); navController.navigate(RUTE_DETAIL) }
+    // Aturan terakhir di Detail, supaya Sheet Hapus tetap berisi selama memudar setelah aturannya terhapus.
+    var detailTerakhir by remember { mutableStateOf(aturanDetail) }
+    LaunchedEffect(aturanDetail) { if (aturanDetail != null) detailTerakhir = aturanDetail }
+
     @Composable
     fun DaftarBlokir() = BlokirScreen(
         aturan = aturan.map { it.keDaftar(waktu) },
-        onBukaDetail = null,
+        onBukaDetail = bukaDetail,
         onTambah = onTambah,
     )
 
@@ -364,14 +368,14 @@ private fun CangkangTab(
             ) {
                 BerandaScreen(
                     aturan = aturan.map { it.keBeranda() },
-                    onBukaDetail = null, // shortcut: sama dengan Daftar, menyusul di Tahap 4C-2
+                    onBukaDetail = bukaDetail,
                     onTambah = onTambah,
                 )
             }
             composable(
                 Tab.Blokir.rute,
                 // Dari Detail aturan yang baru dihapus: isinya sudah sama, jadi tanpa animasi.
-                enterTransition = { if (sosmedDihapus && initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
+                enterTransition = { if (dihapus && initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
                 exitTransition = { if (targetState.destination.route == RUTE_DETAIL) slideOutHorizontally(push) { -it } else fadeOut(pudar) },
                 // Kembali dari Detail: instant, seperti aksi "back" di FigCraft.
                 popEnterTransition = { if (initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
@@ -382,21 +386,22 @@ private fun CangkangTab(
                 RUTE_DETAIL,
                 // Dari Daftar atau Beranda: push. Kembali: instant, seperti aksi "back" di FigCraft.
                 enterTransition = { if (initialState.destination.route in ruteAsalDetail) slideInHorizontally(push) { it } else fadeIn(pudar) },
-                exitTransition = { if (sosmedDihapus) ExitTransition.None else fadeOut(pudar) },
+                exitTransition = { if (dihapus) ExitTransition.None else fadeOut(pudar) },
                 popExitTransition = { if (targetState.destination.route in ruteAsalDetail) ExitTransition.None else fadeOut(pudar) },
             ) {
-                if (sosmedDihapus) {
+                val d = aturanDetail
+                if (dihapus || d == null) {
                     DaftarBlokir()
                 } else {
                     DetailAturanScreen(
                         onKembali = { navController.popBackStack() },
                         onEdit = onEdit,
                         onHapus = { hapusDariDetail = true },
-                        detail = contohDetailSosmed.copy(nama = namaSosmed),
-                        aktif = sosmedAktif,
-                        onAktif = onSosmedAktif,
-                        senyap = sosmedSenyap,
-                        onSenyap = onSosmedSenyap,
+                        detail = d.keDetail(waktu),
+                        aktif = d.aturan.aktif,
+                        onAktif = onAktif,
+                        senyap = d.aturan.senyap,
+                        onSenyap = onSenyap,
                     )
                 }
             }
@@ -431,13 +436,13 @@ private fun CangkangTab(
                             navController.navigate(RUTE_STAT_APLIKASI)
                         }
                     } else {
-                        // Aturan contoh yang memuat aplikasi ini: hanya Sosmed (selama belum dihapus).
-                        val dalamSosmed = !sosmedDihapus && contohDetailSosmed.aplikasi.any { it.nama == aplikasiStat.nama }
+                        // Aturan pertama yang memuat aplikasi ini (dicocokkan dengan nama sampai Tahap 5).
+                        val aturanApp = aturan.firstOrNull { aplikasiStat.nama in it.paket }
                         DetailAplikasiScreen(
                             aplikasiStat,
-                            namaAturan = if (dalamSosmed) namaSosmed else null,
+                            aturan = aturanApp?.aturan,
                             onKembali = kembali,
-                            onAturan = { navController.navigate(RUTE_DETAIL) },
+                            onAturan = { aturanApp?.let { bukaDetail(it.aturan.id) } },
                         )
                     }
                 }
@@ -499,11 +504,12 @@ private fun CangkangTab(
         NotoBottomBar(aktif = tabAktif, onPilih = ::pilihTab, modifier = Modifier.align(Alignment.BottomCenter))
         // Sheet Setelan menutupi seluruh layar termasuk nav, seperti overlay FigCraft.
         LapisanSheetSetelan(sheetSetelan, { sheetSetelan = it }, setelan, setelanVm::ubah)
-        // "Ya, hapus aturan" dari Detail: aturan disembunyikan, lalu Detail diganti Blokir - Daftar (LaunchedEffect di atas).
+        // "Ya, hapus aturan" dari Detail: aturan dihapus, lalu Detail diganti Blokir - Daftar (LaunchedEffect di atas).
         NotoSheet(tampil = hapusDariDetail, onTutup = { hapusDariDetail = false }) {
-            SheetHapus(namaSosmed, contohDetailSosmed.aplikasi.size, onTutup = { hapusDariDetail = false }) {
+            val d = aturanDetail ?: detailTerakhir
+            SheetHapus(d?.aturan?.nama.orEmpty(), d?.paket?.size ?: 0, onTutup = { hapusDariDetail = false }) {
                 hapusDariDetail = false
-                onHapusSosmed()
+                onHapus()
             }
         }
     }

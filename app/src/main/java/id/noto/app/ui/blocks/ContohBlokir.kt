@@ -2,6 +2,7 @@ package id.noto.app.ui.blocks
 
 import id.noto.app.R
 import id.noto.app.ui.components.StatusAturan
+import id.noto.app.ui.components.TipeBadge
 
 // Data contoh sama dengan FigCraft "Blokir - Daftar" dan "Blokir - Detail Aturan".
 // Diganti data dari Room di Tahap 4, dihapus sebelum rilis bersama logo pihak ketiga.
@@ -16,6 +17,7 @@ data class AturanDaftar(
     val total: String,
     val progres: Float,
     val logo: List<Int>, // id drawable logo aplikasi
+    val id: Long = 0, // id aturan di Room; 0 = data contoh
 )
 
 private val fb = R.drawable.logo_facebook
@@ -54,6 +56,11 @@ data class DetailAturan(
     val selesaiMenit: Int,
     val sekarangMenit: Int,
     val aplikasi: List<PemakaianAplikasi>,
+    val badge: TipeBadge = TipeBadge.Aktif,
+    /** Teks kanan bawah kartu Sisa Kuota; null = "Bebas lagi dalam [bebasLagi]". */
+    val keteranganKanan: String? = null,
+    /** Teks panel info; null = "Waktu hanya dihitung … [jamReset] …". */
+    val teksInfo: String? = null,
 )
 
 data class PemakaianAplikasi(val logo: Int, val nama: String, val dibuka: Int, val durasi: String)

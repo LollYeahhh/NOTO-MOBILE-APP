@@ -38,6 +38,8 @@
     <string name="dari_kuota">dari %1$s</string>
     <string name="terpakai_dibuka">Terpakai %1$s · dibuka %2$d kali</string>
     <string name="bebas_lagi_dalam">Bebas lagi dalam %1$s</string>
+    <string name="info_di_luar_jadwal">Di luar jadwal, aplikasi bebas dipakai. Kuota mulai dihitung pukul\u00A0%1$s.</string>
+    <string name="info_nonaktif">Aturan sedang dijeda. Nyalakan Aturan aktif di bawah untuk membatasi lagi.</string>
     <string name="info_waktu_dihitung">Waktu hanya dihitung saat aplikasi dibuka. Besok pukul\u00A0%1$s kuota kembali penuh.</string>
     <string name="jadwal">Jadwal</string>
     <string name="dibatasi_jam">Dibatasi %1$s, di luar jam itu bebas dipakai</string>

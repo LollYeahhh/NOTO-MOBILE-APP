@@ -31,9 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
-import id.noto.app.ui.blocks.contohAturanDaftar
-import id.noto.app.ui.blocks.contohDetailSosmed
+import id.noto.app.data.Aturan
+import id.noto.app.data.hariKeBitmask
 import id.noto.app.ui.blocks.contohKategoriAplikasi
+import id.noto.app.ui.blocks.jadwalRingkas
 import id.noto.app.ui.components.NotoBarisSetelan
 import id.noto.app.ui.components.NotoHeaderHalaman
 import id.noto.app.ui.settings.IsiSetelan
@@ -44,23 +45,24 @@ import id.noto.app.ui.theme.NotoWarna
 import id.noto.app.ui.theme.tinggiBarisFigCraft
 import id.noto.app.util.formatDurasi
 import id.noto.app.util.formatDurasiRinci
+import id.noto.app.util.formatJam
 import kotlin.math.ceil
 
 /**
  * "Statistik - Detail Aplikasi" (node 5725): kartu pemakaian hari ini dengan grafik per jam,
  * seksi "Hari ini", lalu aturan yang memuat aplikasi ini.
- * [namaAturan] null = aplikasi tidak ada di aturan mana pun: seksi aturan disembunyikan (disepakati b.1),
+ * [aturan] null = aplikasi tidak ada di aturan mana pun: seksi aturan disembunyikan (disepakati b.1),
  * batang grafik tidak dibedakan dalam/luar jadwal, dan baris yang menyangkut aturan tidak ditampilkan.
  */
 @Composable
-fun DetailAplikasiScreen(app: AplikasiStatistik, namaAturan: String?, onKembali: () -> Unit, onAturan: () -> Unit) {
+fun DetailAplikasiScreen(app: AplikasiStatistik, aturan: Aturan?, onKembali: () -> Unit, onAturan: () -> Unit) {
     val hariIni = contohHariIniAplikasi
     // Kategori dari daftar Pilih Aplikasi; aplikasi di luar daftar itu hanya bertuliskan "Hari ini".
     val kategori = contohKategoriAplikasi.firstOrNull { k -> k.aplikasi.any { it.nama == app.nama } }?.judul
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderHalaman(app.nama, onIkonKiri = onKembali)
         IsiSetelan {
-            KartuPemakaian(app, kategori, adaAturan = namaAturan != null)
+            KartuPemakaian(app, kategori, aturan)
             SeksiSetelan(R.string.hari_ini) {
                 NotoBarisSetelan(
                     painterResource(R.drawable.ic_aplikasi),
@@ -69,7 +71,7 @@ fun DetailAplikasiScreen(app: AplikasiStatistik, namaAturan: String?, onKembali:
                     nilai = stringResource(R.string.jumlah_kali, hariIni.dibuka),
                     onKlik = null,
                 )
-                if (namaAturan != null) {
+                if (aturan != null) {
                     NotoBarisSetelan(
                         painterResource(R.drawable.ic_jeda),
                         stringResource(R.string.latihan_napas_judul),
@@ -80,19 +82,19 @@ fun DetailAplikasiScreen(app: AplikasiStatistik, namaAturan: String?, onKembali:
                     NotoBarisSetelan(
                         painterResource(R.drawable.ic_jam_pasir),
                         stringResource(R.string.kena_time_out),
-                        keterangan = stringResource(R.string.kuota_habis_pukul, namaAturan, hariIni.jamTimeOut),
+                        keterangan = stringResource(R.string.kuota_habis_pukul, aturan.nama, hariIni.jamTimeOut),
                         nilai = stringResource(R.string.jumlah_kali, hariIni.timeOut),
                         onKlik = null,
                     )
                 }
             }
-            if (namaAturan != null) {
+            if (aturan != null) {
                 SeksiSetelan(R.string.aturan_memuat_aplikasi) {
                     NotoBarisSetelan(
                         painterResource(R.drawable.ic_blokir),
-                        namaAturan,
-                        keterangan = contohAturanDaftar.first { it.judul == contohDetailSosmed.nama }.jadwal,
-                        nilai = contohDetailSosmed.kuota,
+                        aturan.nama,
+                        keterangan = aturan.jadwalRingkas(),
+                        nilai = formatDurasi(aturan.kuotaMenit),
                         onKlik = onAturan,
                     )
                 }
@@ -106,8 +108,7 @@ private fun String.hurufKalimat(): String = lowercase().replaceFirstChar { it.up
 
 /** Kartu (node 5728): Permukaan sudut 16, padding 16, jarak 12. */
 @Composable
-private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, adaAturan: Boolean) {
-    val jadwal = contohDetailSosmed
+private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, jadwal: Aturan?) {
     Column(
         Modifier.fillMaxWidth().background(NotoWarna.Permukaan, RoundedCornerShape(16.dp)).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -137,8 +138,8 @@ private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, adaAturan: Bo
             Text(formatDurasiRinci(app.menit), style = NotoTeks.AngkaHero, color = NotoWarna.TeksUtama, maxLines = 1)
         }
         Text(stringResource(R.string.pemakaian_per_jam), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
-        GrafikJam(contohMenitPerJam(app.menit), if (adaAturan) jadwal.mulaiMenit to jadwal.selesaiMenit else null)
-        if (adaAturan) {
+        GrafikJam(contohMenitPerJam(app.menit), jadwal?.let { it.mulaiMenit to it.selesaiMenit })
+        if (jadwal != null) {
             // Legenda (node 5918): garis atas 1, padding 8 atas-bawah, dua item rata kiri-kanan.
             Row(
                 Modifier
@@ -149,7 +150,7 @@ private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, adaAturan: Bo
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                LegendaJam(NotoWarna.Primer, stringResource(R.string.dalam_jadwal, jadwal.jam))
+                LegendaJam(NotoWarna.Primer, stringResource(R.string.dalam_jadwal, stringResource(R.string.rentang_singkat, formatJam(jadwal.mulaiMenit), formatJam(jadwal.selesaiMenit))))
                 LegendaJam(NotoWarna.Pasif, stringResource(R.string.di_luar_jadwal))
             }
         }
@@ -245,5 +246,9 @@ private fun LegendaJam(warna: Color, label: String) {
 @Preview(name = "Statistik - Detail Aplikasi", widthDp = 393, heightDp = 1000)
 @Composable
 private fun PreviewDetailAplikasi() {
-    NOTOAPPTheme { DetailAplikasiScreen(AplikasiStatistik(R.drawable.logo_instagram, "Instagram", 70), "Sosmed", {}, {}) }
+    NOTOAPPTheme { DetailAplikasiScreen(
+            AplikasiStatistik(R.drawable.logo_instagram, "Instagram", 70),
+            Aturan(nama = "Sosmed", hariAktif = hariKeBitmask(setOf(0, 1, 2, 3, 4)), mulaiMenit = 7 * 60, selesaiMenit = 21 * 60, kuotaMenit = 90),
+            {}, {},
+        ) }
 }

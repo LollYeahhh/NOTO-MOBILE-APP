@@ -131,7 +131,7 @@ private fun KartuSisaKuota(d: DetailAturan) {
     Kartu {
         Row(Modifier.fillMaxWidth().height(18.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.sisa_kuota_hari_ini).uppercase(), style = NotoTeks.Eyebrow, color = NotoWarna.TeksSekunder)
-            NotoBadge(d.labelStatus, TipeBadge.Aktif)
+            NotoBadge(d.labelStatus, d.badge)
         }
         // Angka besar dan "dari …" sejajar garis dasar, jarak 6.
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -143,7 +143,7 @@ private fun KartuSisaKuota(d: DetailAturan) {
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(stringResource(R.string.terpakai_dibuka, d.terpakai, d.dibuka), style = NotoTeks.KecilTeks, color = NotoWarna.TeksSekunder)
-            Text(stringResource(R.string.bebas_lagi_dalam, d.bebasLagi), style = NotoTeks.KecilTeks, color = NotoWarna.TeksSekunder)
+            Text(d.keteranganKanan ?: stringResource(R.string.bebas_lagi_dalam, d.bebasLagi), style = NotoTeks.KecilTeks, color = NotoWarna.TeksSekunder)
         }
         // Panel Info: putih sudut 12, padding 12, ikon info 24 + teks, jarak 8.
         Row(
@@ -152,7 +152,7 @@ private fun KartuSisaKuota(d: DetailAturan) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(painterResource(R.drawable.ic_info), null, Modifier.size(24.dp))
-            Text(stringResource(R.string.info_waktu_dihitung, d.jamReset), Modifier.weight(1f), style = NotoTeks.KecilTeks, color = NotoWarna.TeksSekunder)
+            Text(d.teksInfo ?: stringResource(R.string.info_waktu_dihitung, d.jamReset), Modifier.weight(1f), style = NotoTeks.KecilTeks, color = NotoWarna.TeksSekunder)
         }
     }
 }
