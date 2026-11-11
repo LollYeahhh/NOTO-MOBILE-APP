@@ -1,5 +1,7 @@
 package id.noto.app.ui.stats
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.clickable
 import android.os.Build
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -56,13 +58,13 @@ import id.noto.app.util.formatDurasiRinci
  * dan Distribusi Penggunaan (y643). Semua kartu Permukaan, sudut 16, padding 16.
  */
 @Composable
-fun MingguIniIsi(data: StatistikMingguan) {
+fun MingguIniIsi(data: StatistikMingguan, onDetail: () -> Unit = {}, onAplikasi: (AplikasiMingguan) -> Unit = {}) {
     Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
         KartuHero(data)
         Spacer(Modifier.height(16.5.dp))
         KartuRitme(data)
         Spacer(Modifier.height(16.dp))
-        KartuDistribusi(data)
+        KartuDistribusi(data, R.string.distribusi_penggunaan, onDetail, onAplikasi)
     }
 }
 
@@ -260,15 +262,27 @@ private val LEBAR_SEGMEN_PENUH = 326.dp
 
 private val warnaKategori = listOf(NotoWarna.Primer, NotoWarna.PrimerMuda, NotoWarna.Pasif)
 
+/**
+ * Kartu Distribusi. Di Minggu Ini berjudul "Distribusi Penggunaan" dengan "Detail" ([onDetail]);
+ * di Detail Distribusi berjudul "Rata-rata per hari" tanpa "Detail" ([onDetail] null).
+ * Baris aplikasi membuka Detail Aplikasi.
+ */
 @Composable
-private fun KartuDistribusi(data: StatistikMingguan) {
+internal fun KartuDistribusi(data: StatistikMingguan, judul: Int, onDetail: (() -> Unit)?, onAplikasi: (AplikasiMingguan) -> Unit) {
     Column(
         Modifier.fillMaxWidth().background(NotoWarna.Permukaan, RoundedCornerShape(16.dp)).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.distribusi_penggunaan), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
-            Text(stringResource(R.string.detail), style = NotoTeks.KecilLabel, color = NotoWarna.TeksSekunder)
+            Text(stringResource(judul), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
+            if (onDetail != null) {
+                Text(
+                    stringResource(R.string.detail),
+                    Modifier.clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onDetail),
+                    style = NotoTeks.KecilLabel,
+                    color = NotoWarna.TeksSekunder,
+                )
+            }
         }
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             BarProporsi(data.kategori)
@@ -290,7 +304,7 @@ private fun KartuDistribusi(data: StatistikMingguan) {
             }
         }
         Column(Modifier.padding(vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            data.aplikasi.forEachIndexed { i, app -> BarisAplikasiMingguan(app, pertama = i == 0) }
+            data.aplikasi.forEachIndexed { i, app -> BarisAplikasiMingguan(app, pertama = i == 0) { onAplikasi(app) } }
         }
     }
 }
@@ -326,9 +340,12 @@ private fun BarProporsi(kategori: List<KategoriPersen>) {
  * berwarna teks sekunder; item lain jarak 0 dan teks utama. Ditiru apa adanya.
  */
 @Composable
-private fun BarisAplikasiMingguan(app: AplikasiMingguan, pertama: Boolean) {
+private fun BarisAplikasiMingguan(app: AplikasiMingguan, pertama: Boolean, onKlik: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().padding(4.dp),
+        Modifier
+            .fillMaxWidth()
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
+            .padding(4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {

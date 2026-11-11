@@ -1,5 +1,7 @@
 package id.noto.app.ui.stats
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,7 +45,7 @@ import kotlin.math.roundToInt
  * dari frame (total di x143 y202, grafik di y264, Daftar Aplikasi di x18 y378).
  */
 @Composable
-fun ScreenTimeIsi(data: StatistikHariIni) {
+fun ScreenTimeIsi(data: StatistikHariIni, onAplikasi: (PemakaianHariIni) -> Unit = {}) {
     Column {
         Spacer(Modifier.height(23.dp))
         // Teks total: kotak 78 rata tengah di x143 (tidak persis di tengah layar, seperti desain).
@@ -61,7 +63,7 @@ fun ScreenTimeIsi(data: StatistikHariIni) {
         Spacer(Modifier.height(29.dp))
         Column(Modifier.padding(start = 18.dp).width(357.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
             val maks = data.aplikasi.maxOf { it.menit }.coerceAtLeast(1)
-            data.aplikasi.forEach { BarisAplikasi(it, it.menit.toFloat() / maks) }
+            data.aplikasi.forEach { BarisAplikasi(it, it.menit.toFloat() / maks) { onAplikasi(it) } }
         }
     }
 }
@@ -114,9 +116,12 @@ private fun GrafikPerJam(menitPerJam: List<Float>) {
 
 /** Satu baris (tinggi 30): logo 30, nama + bar progres (lebar 271, jarak 5), durasi; diratakan spaceBetween. */
 @Composable
-private fun BarisAplikasi(app: PemakaianHariIni, porsi: Float) {
+private fun BarisAplikasi(app: PemakaianHariIni, porsi: Float, onKlik: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().height(30.dp),
+        Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {

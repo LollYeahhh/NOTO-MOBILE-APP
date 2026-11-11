@@ -274,4 +274,20 @@
     <string name="lisensi_kotlin_ket">Bahasa pemrograman Noto</string>
     <plurals name="jumlah_detik"><item quantity="other">%d detik</item></plurals>
     <plurals name="jumlah_menit"><item quantity="other">%d menit</item></plurals>
+    <!-- Statistik: Detail Distribusi dan Detail Aplikasi -->
+    <string name="rata_rata_per_hari_judul">Rata-rata per hari</string>
+    <string name="dibuka_per_hari">Dibuka %1$dx per hari</string>
+    <string name="aplikasi_hari_ini">%1$s · hari ini</string>
+    <string name="hari_ini">Hari ini</string>
+    <string name="pemakaian_per_jam">Pemakaian per jam</string>
+    <string name="dalam_jadwal">Dalam jadwal %1$s</string>
+    <string name="di_luar_jadwal">Di luar jadwal</string>
+    <string name="aturan_memuat_aplikasi">Aturan yang memuat aplikasi ini</string>
+    <string name="dibuka">Dibuka</string>
+    <string name="kemarin_kali">Kemarin %1$dx</string>
+    <string name="jumlah_kali">%1$dx</string>
+    <string name="latihan_napas_judul">Latihan napas</string>
+    <string name="batal_membuka">Batal membuka %1$d kali</string>
+    <string name="kena_time_out">Kena time out</string>
+    <string name="kuota_habis_pukul">Kuota %1$s habis pukul %2$s</string>
 </resources>

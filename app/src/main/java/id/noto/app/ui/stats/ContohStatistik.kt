@@ -109,3 +109,38 @@ val contohBulanan = StatistikBulanan(
         AplikasiBulanan(R.drawable.logo_tiktok, "TikTok", 294, 12 * 60 + 10),
     ),
 )
+
+/** Daftar lengkap "Statistik - Detail Distribusi" (node 5558): aplikasi Minggu Ini, ditambah X dan Facebook. */
+val contohDistribusiLengkap = contohMingguan.aplikasi + listOf(
+    AplikasiMingguan(R.drawable.logo_twitter, "X", R.string.dibuka_per_hari, listOf(9), 25, null),
+    AplikasiMingguan(R.drawable.logo_facebook, "Facebook", R.string.dibuka_per_hari, listOf(4), 15, null),
+)
+
+/** Aplikasi yang dibuka di Detail Aplikasi: logo, nama, dan total menit dari baris yang diketuk. */
+data class AplikasiStatistik(val logo: Int, val nama: String, val menit: Int)
+
+/** Angka seksi "Hari ini" di Detail Aplikasi. */
+data class HariIniAplikasi(
+    val dibuka: Int,
+    val dibukaKemarin: Int,
+    val latihanNapas: Int,
+    val batalMembuka: Int,
+    val timeOut: Int,
+    val jamTimeOut: String,
+)
+
+/** Pemakaian per jam Instagram di FigCraft (node 5883), jumlahnya 70 menit. */
+private val POLA_PER_JAM = listOf(0, 0, 0, 0, 0, 0, 0, 5, 8, 2, 0, 3, 10, 6, 0, 0, 4, 2, 0, 7, 12, 8, 3, 0)
+
+// shortcut: semua aplikasi memakai pola Instagram yang disesuaikan dengan totalnya, dan angka "Hari ini" yang sama
+// (disepakati a.1). Diganti data asli dari UsageStatsManager di Tahap 8.
+fun contohMenitPerJam(totalMenit: Int): List<Float> = POLA_PER_JAM.map { it * totalMenit / 70f }
+
+val contohHariIniAplikasi = HariIniAplikasi(
+    dibuka = 23,
+    dibukaKemarin = 27,
+    latihanNapas = 3,
+    batalMembuka = 2,
+    timeOut = 1,
+    jamTimeOut = "20.40",
+)

@@ -57,6 +57,9 @@ import id.noto.app.ui.settings.daftarLisensi
 import id.noto.app.ui.settings.contohSetelan
 import id.noto.app.ui.splash.DURASI_PUDAR_SPLASH_MS
 import id.noto.app.ui.splash.SplashScreen
+import id.noto.app.ui.stats.AplikasiStatistik
+import id.noto.app.ui.stats.DetailAplikasiScreen
+import id.noto.app.ui.stats.DetailDistribusiScreen
 import id.noto.app.ui.stats.StatistikScreen
 
 /** Durasi animasi geser pill nav saat pindah tab (smart animate 400 ms di FigCraft). */
@@ -87,6 +90,9 @@ private const val RUTE_SETELAN_LISENSI = "setelan/lisensi"
 private const val RUTE_SETELAN_FAQ = "setelan/faq"
 /** Teks lisensi ke-i dari [daftarLisensi]. */
 private fun ruteTeksLisensi(i: Int) = "$RUTE_SETELAN_LISENSI/$i"
+private const val RUTE_STAT_DISTRIBUSI = "statistik/distribusi"
+private const val RUTE_STAT_APLIKASI = "statistik/aplikasi"
+private val RUTE_STAT_DALAM = setOf(RUTE_STAT_DISTRIBUSI, RUTE_STAT_APLIKASI)
 private val RUTE_SETELAN_DALAM = setOf(
     RUTE_SETELAN_NOTIF, RUTE_SETELAN_ATURAN, RUTE_SETELAN_TENTANG,
     RUTE_SETELAN_CATATAN, RUTE_SETELAN_LISENSI, RUTE_SETELAN_FAQ,
@@ -252,6 +258,9 @@ private fun CangkangTab(
     val navController = rememberNavController()
     // Sheet Hapus Aturan dari tombol "Hapus aturan" di Detail.
     var hapusDariDetail by remember { mutableStateOf(false) }
+    // shortcut: aplikasi yang dibuka di Detail Aplikasi disimpan di memori, bukan argumen rute; cukup untuk data contoh,
+    // diganti nama paket aplikasi sebagai argumen rute di Tahap 8.
+    var aplikasiStat by remember { mutableStateOf(AplikasiStatistik(R.drawable.logo_instagram, "Instagram", 70)) }
 
     // Setelah aturan dihapus dari Edit, Detail-nya tidak ada lagi: pindah ke Blokir - Daftar tanpa animasi.
     // Navigasi ditunda sampai cangkang aktif lagi (Edit selesai memudar): navigate() saat cangkang belum aktif
@@ -288,6 +297,10 @@ private fun CangkangTab(
                 keSetelanLewatNav = true
                 navController.popBackStack(Tab.Setelan.rute, inclusive = false)
             }
+            // Di Detail Distribusi atau Detail Aplikasi, nav Statistik kembali ke Statistik.
+            if (tujuan == Tab.Statistik && entri?.destination?.route in RUTE_STAT_DALAM) {
+                navController.popBackStack(Tab.Statistik.rute, inclusive = false)
+            }
             return
         }
         navController.navigate(tujuan.rute) {
@@ -302,7 +315,7 @@ private fun CangkangTab(
     val pudar = tween<Float>(DURASI_GESER_MS, easing = EaseOutFigCraft)
     // Push: layar baru masuk dari kanan, layar lama keluar ke kiri.
     val push = tween<IntOffset>(DURASI_PUSH_MS, easing = EaseOutFigCraft)
-    val ruteAsalDetail = setOf(Tab.Blokir.rute, Tab.Beranda.rute)
+    val ruteAsalDetail = setOf(Tab.Blokir.rute, Tab.Beranda.rute, RUTE_STAT_APLIKASI)
 
     @Composable
     fun DaftarBlokir() = BlokirScreen(
@@ -366,7 +379,48 @@ private fun CangkangTab(
                     )
                 }
             }
-            composable(Tab.Statistik.rute) { StatistikScreen() }
+            composable(
+                Tab.Statistik.rute,
+                exitTransition = { if (targetState.destination.route in RUTE_STAT_DALAM) slideOutHorizontally(push) { -it } else fadeOut(pudar) },
+                popEnterTransition = { if (initialState.destination.route in RUTE_STAT_DALAM) EnterTransition.None else fadeIn(pudar) },
+            ) {
+                StatistikScreen(
+                    onDistribusi = { navController.navigate(RUTE_STAT_DISTRIBUSI) },
+                    onAplikasi = { aplikasiStat = it; navController.navigate(RUTE_STAT_APLIKASI) },
+                )
+            }
+            // Detail Distribusi dan Detail Aplikasi: masuk dengan push, kembali instant (aksi "back" FigCraft).
+            val diStatistik = RUTE_STAT_DALAM + Tab.Statistik.rute
+            RUTE_STAT_DALAM.forEach { rute ->
+                composable(
+                    rute,
+                    enterTransition = { if (initialState.destination.route in diStatistik) slideInHorizontally(push) { it } else fadeIn(pudar) },
+                    exitTransition = {
+                        if (targetState.destination.route in RUTE_STAT_DALAM + RUTE_DETAIL) slideOutHorizontally(push) { -it } else fadeOut(pudar)
+                    },
+                    popEnterTransition = {
+                        if (initialState.destination.route in RUTE_STAT_DALAM + RUTE_DETAIL) EnterTransition.None else fadeIn(pudar)
+                    },
+                    popExitTransition = { if (targetState.destination.route in diStatistik) ExitTransition.None else fadeOut(pudar) },
+                ) {
+                    val kembali: () -> Unit = { navController.popBackStack() }
+                    if (rute == RUTE_STAT_DISTRIBUSI) {
+                        DetailDistribusiScreen(kembali) { a ->
+                            aplikasiStat = AplikasiStatistik(a.logo, a.nama, a.menit)
+                            navController.navigate(RUTE_STAT_APLIKASI)
+                        }
+                    } else {
+                        // Aturan contoh yang memuat aplikasi ini: hanya Sosmed (selama belum dihapus).
+                        val dalamSosmed = !sosmedDihapus && contohDetailSosmed.aplikasi.any { it.nama == aplikasiStat.nama }
+                        DetailAplikasiScreen(
+                            aplikasiStat,
+                            namaAturan = if (dalamSosmed) namaSosmed else null,
+                            onKembali = kembali,
+                            onAturan = { navController.navigate(RUTE_DETAIL) },
+                        )
+                    }
+                }
+            }
             composable(
                 Tab.Setelan.rute,
                 enterTransition = { keSetelanLewatNav = false; fadeIn(pudar) },

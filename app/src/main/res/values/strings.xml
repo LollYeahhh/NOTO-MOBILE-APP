@@ -285,4 +285,20 @@
     <string name="lisensi_apache" translatable="false">Apache License 2.0</string>
     <plurals name="jumlah_detik"><item quantity="one">%d second</item><item quantity="other">%d seconds</item></plurals>
     <plurals name="jumlah_menit"><item quantity="one">%d minute</item><item quantity="other">%d minutes</item></plurals>
+    <!-- Statistik: Detail Distribusi dan Detail Aplikasi -->
+    <string name="rata_rata_per_hari_judul">Daily average</string>
+    <string name="dibuka_per_hari">Opened %1$dx a day</string>
+    <string name="aplikasi_hari_ini">%1$s · today</string>
+    <string name="hari_ini">Today</string>
+    <string name="pemakaian_per_jam">Usage per hour</string>
+    <string name="dalam_jadwal">Within schedule %1$s</string>
+    <string name="di_luar_jadwal">Outside schedule</string>
+    <string name="aturan_memuat_aplikasi">Rules with this app</string>
+    <string name="dibuka">Opened</string>
+    <string name="kemarin_kali">Yesterday %1$dx</string>
+    <string name="jumlah_kali">%1$dx</string>
+    <string name="latihan_napas_judul">Breathing exercise</string>
+    <string name="batal_membuka">Didn\'t open %1$d times</string>
+    <string name="kena_time_out">Timed out</string>
+    <string name="kuota_habis_pukul">%1$s quota ran out at %2$s</string>
 </resources>

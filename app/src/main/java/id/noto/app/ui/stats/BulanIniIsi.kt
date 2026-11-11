@@ -1,5 +1,7 @@
 package id.noto.app.ui.stats
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,13 +48,13 @@ import java.time.format.TextStyle
  * dan Top List Aplikasi Bulanan (y698). Semua kartu Permukaan, sudut 16, padding 16, jarak isi 12.
  */
 @Composable
-fun BulanIniIsi(data: StatistikBulanan) {
+fun BulanIniIsi(data: StatistikBulanan, onAplikasi: (AplikasiBulanan) -> Unit = {}) {
     Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
         KartuRingkasan(data)
         Spacer(Modifier.height(16.5.dp))
         KartuEmpatMinggu(data)
         Spacer(Modifier.height(16.dp))
-        KartuTopList(data)
+        KartuTopList(data, onAplikasi)
     }
 }
 
@@ -220,22 +222,26 @@ private fun LegendaPekan(warna: Color, label: String) {
 // ---------- Top List Aplikasi Bulanan (node 557) ----------
 
 @Composable
-private fun KartuTopList(data: StatistikBulanan) = Kartu {
+private fun KartuTopList(data: StatistikBulanan, onAplikasi: (AplikasiBulanan) -> Unit) = Kartu {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(stringResource(R.string.top_list_bulanan), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
         Text(stringResource(R.string.top_list_ket), Modifier.tinggiBarisFigCraft(NotoTeks.Teks), style = NotoTeks.Teks, color = NotoWarna.TeksSekunder)
     }
     // Margin 12 atas-bawah, lalu daftar dengan padding 4 dan jarak 8.
     Column(Modifier.padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        data.aplikasi.forEach { BarisAplikasiBulanan(it) }
+        data.aplikasi.forEach { BarisAplikasiBulanan(it) { onAplikasi(it) } }
     }
 }
 
 /** Baris (Permukaan sudut 12, padding 8, tinggi 52): kotak logo Garis 36 berisi logo 27, nama + jumlah buka, durasi. */
 @Composable
-private fun BarisAplikasiBulanan(app: AplikasiBulanan) {
+private fun BarisAplikasiBulanan(app: AplikasiBulanan, onKlik: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().background(NotoWarna.Permukaan, RoundedCornerShape(12.dp)).padding(8.dp),
+        Modifier
+            .fillMaxWidth()
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
+            .background(NotoWarna.Permukaan, RoundedCornerShape(12.dp))
+            .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {

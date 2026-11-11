@@ -33,7 +33,7 @@ private const val DURASI_GANTI_PERIODE_MS = 150
  * Header, Tab Periode dan Nav sama di ketiga frame, jadi hanya isinya yang memudar saat periode diganti.
  */
 @Composable
-fun StatistikScreen(periodeAwal: Int = 0) {
+fun StatistikScreen(periodeAwal: Int = 0, onDistribusi: () -> Unit = {}, onAplikasi: (AplikasiStatistik) -> Unit = {}) {
     var periode by rememberSaveable { mutableIntStateOf(periodeAwal) }
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderLogo()
@@ -41,9 +41,10 @@ fun StatistikScreen(periodeAwal: Int = 0) {
             NotoTabPeriode(periode, { periode = it }, Modifier.padding(horizontal = 16.dp))
             Crossfade(periode, animationSpec = tween(DURASI_GANTI_PERIODE_MS, easing = EaseOut), label = "periode") {
                 when (it) {
-                    0 -> ScreenTimeIsi(contohHariIni)
-                    1 -> MingguIniIsi(contohMingguan)
-                    else -> BulanIniIsi(contohBulanan)
+                    0 -> ScreenTimeIsi(contohHariIni) { a -> onAplikasi(AplikasiStatistik(a.logo, a.nama, a.menit)) }
+                    1 -> MingguIniIsi(contohMingguan, onDistribusi) { a -> onAplikasi(AplikasiStatistik(a.logo, a.nama, a.menit)) }
+                    // shortcut: total sebulan dibagi 31 hari sebagai angka "hari ini" contoh; data asli di Tahap 8.
+                    else -> BulanIniIsi(contohBulanan) { a -> onAplikasi(AplikasiStatistik(a.logo, a.nama, a.menit / 31)) }
                 }
             }
         }

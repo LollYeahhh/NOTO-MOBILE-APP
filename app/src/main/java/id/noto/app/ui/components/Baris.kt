@@ -71,6 +71,7 @@ fun NotoBarisForm(ikon: Painter, judul: String, nilai: String, onKlik: () -> Uni
  * Baris Setelan: tanpa latar, padding atas-bawah 12. Ikon 24, judul, keterangan dan nilai (Primer) opsional.
  * [toggle] = null → Aksi=Chevron (seluruh baris bisa diketuk, [onKlik]);
  * selain itu → Aksi=Toggle (seluruh baris mengubah toggle, [onUbah]).
+ * [onKlik] null (tanpa toggle) = hanya tampilan: tanpa chevron dan tidak bisa diketuk (Detail Aplikasi).
  */
 @Composable
 fun NotoBarisSetelan(
@@ -80,11 +81,11 @@ fun NotoBarisSetelan(
     keterangan: String? = null,
     nilai: String? = null,
     toggle: Boolean? = null,
-    onKlik: () -> Unit = {},
+    onKlik: (() -> Unit)? = {},
     onUbah: (Boolean) -> Unit = {},
 ) {
     val aksi = if (toggle == null) {
-        Modifier.clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
+        if (onKlik == null) Modifier else Modifier.clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
     } else {
         Modifier.toggleable(toggle, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onUbah)
     }
@@ -97,7 +98,7 @@ fun NotoBarisSetelan(
         TeksBaris(judul, keterangan)
         if (nilai != null) Text(nilai, style = NotoTeks.Label, color = NotoWarna.Primer)
         if (toggle == null) {
-            Image(painterResource(R.drawable.ic_chevron_kanan), contentDescription = null, modifier = Modifier.size(24.dp))
+            if (onKlik != null) Image(painterResource(R.drawable.ic_chevron_kanan), contentDescription = null, modifier = Modifier.size(24.dp))
         } else {
             NotoToggle(toggle, onUbah)
         }
