@@ -184,4 +184,103 @@
     <string name="top_list_bulanan">Monthly Top Apps</string>
     <string name="top_list_ket">Screen time &amp; opens this month</string>
     <string name="kali_dibuka">Opened %1$d times</string>
+    <!-- Setelan (Tahap 3F) -->
+    <string name="setelan_sub">Set how Noto keeps you company every day.</string>
+    <string name="seksi_pengingat_aturan">Reminders and rules</string>
+    <string name="notifikasi_pengingat">Notifications &amp; Reminders</string>
+    <string name="notifikasi_pengingat_ket">Remaining quota reminders and daily summary</string>
+    <string name="aturan_pembatasan">Restriction Rules</string>
+    <string name="aturan_pembatasan_ket">New rule defaults and a pause before turning off</string>
+    <string name="seksi_izin">App permissions</string>
+    <string name="akses_penggunaan">Usage access</string>
+    <string name="akses_penggunaan_ket">To count screen time automatically</string>
+    <string name="aksesibilitas">Accessibility</string>
+    <string name="aksesibilitas_ket">To pause apps during time out</string>
+    <string name="status_aktif">On</string>
+    <string name="seksi_tentang">About</string>
+    <string name="tentang_noto">About Noto</string>
+    <string name="tentang_noto_ket">Notice Your Time Out</string>
+    <string name="versi_aplikasi">v0.1</string>
+    <string name="seksi_selama_jadwal">While a schedule is active</string>
+    <string name="pengingat_sisa_kuota">Remaining quota reminder</string>
+    <string name="pengingat_sisa_kuota_ket">Let me know when my quota is running low</string>
+    <string name="sisa_menit">%1$s left</string>
+    <string name="saat_kuota_habis">When quota runs out</string>
+    <string name="saat_kuota_habis_ket">Notify me when apps start time out</string>
+    <string name="saat_jadwal">When a schedule starts and ends</string>
+    <string name="saat_jadwal_ket">A short note when limited hours start and end</string>
+    <string name="contoh_pengingat">Example: %1$s left for %2$s</string>
+    <string name="contoh_nama_aturan">Social</string>
+    <string name="contoh_pengingat_isi">There\'s still time. Use it mindfully.</string>
+    <string name="seksi_ringkasan">Summary</string>
+    <string name="ringkasan_harian">Daily summary</string>
+    <string name="ringkasan_harian_ket">A look back at today\'s usage</string>
+    <string name="ringkasan_mingguan">Weekly summary</string>
+    <string name="ringkasan_mingguan_ket">Sent every Sunday night</string>
+    <string name="seksi_waktu_tenang">Quiet time</string>
+    <string name="jam_tenang">Quiet hours</string>
+    <string name="jam_tenang_ket">No Noto notifications from %1$s</string>
+    <string name="seksi_bawaan">Defaults for new rules</string>
+    <string name="jadwal_bawaan">Default schedule</string>
+    <string name="kuota_bawaan">Default quota</string>
+    <string name="kuota_bawaan_ket">Filled in when you create a rule</string>
+    <string name="info_reset_kuota">Your quota refills every time a schedule starts. Outside the schedule, usage isn\'t counted.</string>
+    <string name="seksi_mematikan">When turning off a rule</string>
+    <string name="jeda_mematikan">Pause before turning off</string>
+    <string name="jeda_mematikan_ket">A moment to think before a rule is turned off</string>
+    <string name="kunci_edit">Lock editing during time out</string>
+    <string name="kunci_edit_ket">Rules can\'t be changed until time out ends</string>
+    <string name="seksi_layar_timeout">Time out screen</string>
+    <string name="latihan_napas">Show breathing exercise</string>
+    <string name="latihan_napas_ket">A breathing prompt on the time out screen</string>
+    <string name="tampilkan_sisa_waktu">Show remaining time</string>
+    <string name="tampilkan_sisa_waktu_ket">Countdown until apps are free again</string>
+    <string name="jeda_sheet_ket">Give yourself time to think before turning off an active rule.</string>
+    <string name="jeda_maksimal">up to 10 minutes</string>
+    <string name="tanpa_jeda">No pause</string>
+    <string name="catatan_jeda">While the pause runs, you can still cancel if you change your mind.</string>
+    <string name="simpan">Save</string>
+    <string name="versi_teks">Version 0.1</string>
+    <string name="hak_cipta">© 2026 HKL</string>
+    <string name="catatan_rilis">Release notes</string>
+    <string name="catatan_rilis_judul">Release Notes</string>
+    <string name="catatan_rilis_ket">What changed in each Noto version</string>
+    <string name="lisensi_open_source">Open source licenses</string>
+    <string name="lisensi_open_source_judul">Open Source Licenses</string>
+    <string name="lisensi_open_source_ket">Fonts and libraries Noto uses</string>
+    <string name="kirim_masukan">Send feedback</string>
+    <string name="kirim_masukan_ket">Email the developer</string>
+    <string name="kode_sumber">Source code</string>
+    <string name="kode_sumber_ket">See the Noto project on GitHub</string>
+    <string name="faq_ket">Answers to common questions</string>
+    <string name="subjek_masukan">Noto feedback</string>
+    <string name="subjek_pertanyaan">Question about Noto</string>
+    <string name="rilis_label">Version 0.1 · November 2026</string>
+    <string name="rilis_judul">First release</string>
+    <string name="rilis_isi">• Limit apps with schedules and screen time quotas\n• Apps lock when the quota runs out, free outside the schedule\n• The quota refills every time the schedule starts\n• Daily, weekly, and monthly statistics\n• Remaining quota reminders and usage summaries</string>
+    <string name="faq_label">Common questions</string>
+    <string name="faq_tanya_1">Does Noto send my data to the internet?</string>
+    <string name="faq_jawab_1">No. Rules, settings, and app usage records are only stored on this phone. Noto has no accounts, ads, or trackers.</string>
+    <string name="faq_tanya_2">Why does Noto need special permissions?</string>
+    <string name="faq_jawab_2">Usage access to count how long apps are used, Accessibility to recognize the app being opened, and Notifications for reminders.</string>
+    <string name="faq_tanya_3">Why can apps be opened outside the schedule?</string>
+    <string name="faq_jawab_3">Limits only apply during a rule\'s limited hours. Outside those hours apps are free to use, and the quota refills when the schedule starts again.</string>
+    <string name="faq_tanya_4">How do I delete all data?</string>
+    <string name="faq_jawab_4">Uninstall Noto, or clear its data in Android Settings &gt; Apps &gt; Noto. All rules and usage records are deleted too.</string>
+    <string name="faq_masih_tanya">Still have questions?</string>
+    <string name="kirim_email">Send an email</string>
+    <string name="kirim_email_ket">Ask the developer directly</string>
+    <string name="lisensi_poppins_ket">App font</string>
+    <string name="lisensi_compose_ket">And AndroidX libraries</string>
+    <string name="lisensi_kotlin_ket">Noto\'s programming language</string>
+    <string name="faq" translatable="false">FAQ</string>
+    <string name="lisensi_poppins" translatable="false">Poppins</string>
+    <string name="lisensi_compose" translatable="false">Jetpack Compose</string>
+    <string name="lisensi_kotlin" translatable="false">Kotlin</string>
+    <string name="lisensi_ofl_pendek" translatable="false">OFL 1.1</string>
+    <string name="lisensi_apache_pendek" translatable="false">Apache 2.0</string>
+    <string name="lisensi_ofl" translatable="false">SIL Open Font License 1.1</string>
+    <string name="lisensi_apache" translatable="false">Apache License 2.0</string>
+    <plurals name="jumlah_detik"><item quantity="one">%d second</item><item quantity="other">%d seconds</item></plurals>
+    <plurals name="jumlah_menit"><item quantity="one">%d minute</item><item quantity="other">%d minutes</item></plurals>
 </resources>

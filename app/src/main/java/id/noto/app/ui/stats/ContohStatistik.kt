@@ -64,7 +64,8 @@ val contohMingguan = StatistikMingguan(
     skor = 88,
     labelSkor = R.string.skor_tenang,
     batasMenit = 3 * 60,
-    // shortcut: tinggi batang dan jenisnya disalin dari FigCraft (tidak sebanding menit); rumusnya diputuskan di Tahap 8.
+    // shortcut: tinggi batang dan jenisnya disalin dari FigCraft (tidak sebanding menit). Disepakati untuk Tahap 8:
+    // tinggi = menit / batasMenit × jarak garis Batas Harian; warna hanya Sesuai (< 90% batas) dan Mendekati (≥ 90%).
     ritme = listOf(
         HariRitme(R.string.hari_sen, 130, 61.59f, JenisBatang.Sesuai),
         HariRitme(R.string.hari_sel, 105, 49.27f, JenisBatang.Pasif),

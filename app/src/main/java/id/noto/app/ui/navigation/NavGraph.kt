@@ -41,7 +41,18 @@ import id.noto.app.ui.blocks.contohFormEdit
 import id.noto.app.ui.blocks.namaOtomatis
 import id.noto.app.ui.home.contohAturanBeranda
 import id.noto.app.ui.home.BerandaScreen
+import id.noto.app.ui.settings.AturanPembatasanScreen
+import id.noto.app.ui.settings.LapisanSheetSetelan
+import id.noto.app.ui.settings.NotifikasiScreen
 import id.noto.app.ui.settings.SetelanScreen
+import id.noto.app.ui.settings.SheetSetelan
+import id.noto.app.ui.settings.CatatanRilisScreen
+import id.noto.app.ui.settings.FaqScreen
+import id.noto.app.ui.settings.LisensiScreen
+import id.noto.app.ui.settings.TeksLisensiScreen
+import id.noto.app.ui.settings.TentangScreen
+import id.noto.app.ui.settings.daftarLisensi
+import id.noto.app.ui.settings.contohSetelan
 import id.noto.app.ui.splash.DURASI_PUDAR_SPLASH_MS
 import id.noto.app.ui.splash.SplashScreen
 import id.noto.app.ui.stats.StatistikScreen
@@ -66,6 +77,21 @@ private const val RUTE_TAMBAH = "tambah"
 private const val RUTE_EDIT = "edit"
 private const val RUTE_PILIH = "pilih"
 private const val RUTE_DETAIL = "blokir/detail"
+private const val RUTE_SETELAN_NOTIF = "setelan/notifikasi"
+private const val RUTE_SETELAN_ATURAN = "setelan/aturan"
+private const val RUTE_SETELAN_TENTANG = "setelan/tentang"
+private const val RUTE_SETELAN_CATATAN = "setelan/catatan-rilis"
+private const val RUTE_SETELAN_LISENSI = "setelan/lisensi"
+private const val RUTE_SETELAN_FAQ = "setelan/faq"
+/** Teks lisensi ke-i dari [daftarLisensi]. */
+private fun ruteTeksLisensi(i: Int) = "$RUTE_SETELAN_LISENSI/$i"
+private val RUTE_SETELAN_DALAM = setOf(
+    RUTE_SETELAN_NOTIF, RUTE_SETELAN_ATURAN, RUTE_SETELAN_TENTANG,
+    RUTE_SETELAN_CATATAN, RUTE_SETELAN_LISENSI, RUTE_SETELAN_FAQ,
+) + daftarLisensi.indices.map(::ruteTeksLisensi)
+
+/** Ketuk nav Setelan dari halaman dalam Setelan: dissolve 150 ms ke Setelan - Utama (FigCraft). */
+private const val DURASI_KE_SETELAN_MS = 150
 
 /** Push (Daftar → Detail, Detail → Edit) dan move in (+ → Tambah Aturan): 300 ms easeOut. */
 private const val DURASI_PUSH_MS = 300
@@ -223,8 +249,21 @@ private fun CangkangTab(onTambah: () -> Unit, onEdit: () -> Unit, namaSosmed: St
     val entri by navController.currentBackStackEntryAsState()
     val tabAktif = Tab.dariRute(entri?.destination?.route) ?: Tab.Beranda
 
+    // shortcut: setelan disimpan di memori selama Tahap 3; dipindah ke DataStore di Tahap 4.
+    var setelan by remember { mutableStateOf(contohSetelan) }
+    var sheetSetelan by remember { mutableStateOf<SheetSetelan?>(null) }
+    // true saat halaman dalam Setelan ditutup lewat nav Setelan (dissolve), bukan tombol kembali (instant).
+    var keSetelanLewatNav by remember { mutableStateOf(false) }
+
     fun pilihTab(tujuan: Tab) {
-        if (tujuan == tabAktif) return
+        if (tujuan == tabAktif) {
+            // Di halaman dalam Setelan, nav Setelan kembali ke Setelan - Utama (FigCraft "navigate" ke node 3031).
+            if (tujuan == Tab.Setelan && entri?.destination?.route in RUTE_SETELAN_DALAM) {
+                keSetelanLewatNav = true
+                navController.popBackStack(Tab.Setelan.rute, inclusive = false)
+            }
+            return
+        }
         navController.navigate(tujuan.rute) {
             // Tab selalu satu tingkat di atas Beranda, jadi back dari tab lain kembali ke Beranda.
             popUpTo(Tab.Beranda.rute) { saveState = true }
@@ -289,8 +328,62 @@ private fun CangkangTab(onTambah: () -> Unit, onEdit: () -> Unit, namaSosmed: St
                 if (sosmedDihapus) DaftarBlokir() else DetailAturanScreen(onKembali = { navController.popBackStack() }, onEdit = onEdit, detail = contohDetailSosmed.copy(nama = namaSosmed))
             }
             composable(Tab.Statistik.rute) { StatistikScreen() }
-            composable(Tab.Setelan.rute) { SetelanScreen() }
+            composable(
+                Tab.Setelan.rute,
+                enterTransition = { keSetelanLewatNav = false; fadeIn(pudar) },
+                exitTransition = { if (targetState.destination.route in RUTE_SETELAN_DALAM) slideOutHorizontally(push) { -it } else fadeOut(pudar) },
+                popEnterTransition = {
+                    when {
+                        initialState.destination.route !in RUTE_SETELAN_DALAM -> fadeIn(pudar)
+                        keSetelanLewatNav -> fadeIn(tween(DURASI_KE_SETELAN_MS, easing = EaseOutFigCraft))
+                        else -> EnterTransition.None
+                    }
+                },
+            ) {
+                SetelanScreen(
+                    onNotifikasi = { navController.navigate(RUTE_SETELAN_NOTIF) },
+                    onAturan = { navController.navigate(RUTE_SETELAN_ATURAN) },
+                    onTentang = { navController.navigate(RUTE_SETELAN_TENTANG) },
+                )
+            }
+            // Halaman dalam Setelan (termasuk halaman di bawah Tentang Noto): masuk dengan push dari halaman
+            // yang lebih dangkal; kembali instant (aksi "back" FigCraft).
+            val diSetelan = RUTE_SETELAN_DALAM + Tab.Setelan.rute
+            RUTE_SETELAN_DALAM.forEach { rute ->
+                composable(
+                    rute,
+                    enterTransition = { if (initialState.destination.route in diSetelan) slideInHorizontally(push) { it } else fadeIn(pudar) },
+                    exitTransition = { if (targetState.destination.route in RUTE_SETELAN_DALAM) slideOutHorizontally(push) { -it } else fadeOut(pudar) },
+                    popEnterTransition = { if (initialState.destination.route in RUTE_SETELAN_DALAM) EnterTransition.None else fadeIn(pudar) },
+                    popExitTransition = {
+                        when {
+                            targetState.destination.route !in diSetelan -> fadeOut(pudar)
+                            keSetelanLewatNav -> fadeOut(tween(DURASI_KE_SETELAN_MS, easing = EaseOutFigCraft))
+                            else -> ExitTransition.None
+                        }
+                    },
+                ) {
+                    val kembali: () -> Unit = { navController.popBackStack() }
+                    val bukaSheet: (SheetSetelan) -> Unit = { sheetSetelan = it }
+                    when (rute) {
+                        RUTE_SETELAN_NOTIF -> NotifikasiScreen(setelan, { setelan = it }, kembali, bukaSheet)
+                        RUTE_SETELAN_ATURAN -> AturanPembatasanScreen(setelan, { setelan = it }, kembali, bukaSheet)
+                        RUTE_SETELAN_TENTANG -> TentangScreen(
+                            onKembali = kembali,
+                            onCatatanRilis = { navController.navigate(RUTE_SETELAN_CATATAN) },
+                            onLisensi = { navController.navigate(RUTE_SETELAN_LISENSI) },
+                            onFaq = { navController.navigate(RUTE_SETELAN_FAQ) },
+                        )
+                        RUTE_SETELAN_CATATAN -> CatatanRilisScreen(kembali)
+                        RUTE_SETELAN_LISENSI -> LisensiScreen(kembali, onPilih = { navController.navigate(ruteTeksLisensi(it)) })
+                        RUTE_SETELAN_FAQ -> FaqScreen(kembali)
+                        else -> TeksLisensiScreen(daftarLisensi[rute.substringAfterLast('/').toInt()], kembali)
+                    }
+                }
+            }
         }
         NotoBottomBar(aktif = tabAktif, onPilih = ::pilihTab, modifier = Modifier.align(Alignment.BottomCenter))
+        // Sheet Setelan menutupi seluruh layar termasuk nav, seperti overlay FigCraft.
+        LapisanSheetSetelan(sheetSetelan, { sheetSetelan = it }, setelan, { setelan = it })
     }
 }

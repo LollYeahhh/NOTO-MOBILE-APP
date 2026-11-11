@@ -184,7 +184,6 @@ private fun KartuEmpatMinggu(data: StatistikBulanan) = Kartu {
 /** Nilai, batang lebar 26 sudut atas 8, nama pekan; jarak 6. Pekan terakhir: Primer dan SemiBold. */
 @Composable
 private fun RowScope.KolomPekan(pekan: Int, menit: Int, tinggi: Float, sorot: Boolean) {
-    // shortcut: bayangan tipis batang pekan 4 (hitam 5%, blur 2, turun 1) belum digambar; hampir tak terlihat.
     val (gaya, warnaTeks) = if (sorot) NotoTeks.KecilTebal to NotoWarna.Primer else NotoTeks.KecilLabel to NotoWarna.TeksSekunder
     Box(Modifier.weight(1f).fillMaxHeight()) {
         Column(
