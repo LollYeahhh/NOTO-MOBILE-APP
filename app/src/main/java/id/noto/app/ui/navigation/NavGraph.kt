@@ -33,6 +33,7 @@ import id.noto.app.R
 import id.noto.app.data.AturanLengkap
 import id.noto.app.ui.blocks.AturanViewModel
 import id.noto.app.ui.blocks.BlokirScreen
+import id.noto.app.ui.blocks.AplikasiPilihan
 import id.noto.app.ui.blocks.keBeranda
 import id.noto.app.ui.blocks.keDaftar
 import id.noto.app.ui.blocks.keDetail
@@ -169,6 +170,7 @@ fun NotoNavGraph() {
         ) {
             CangkangTab(
                 aturan = daftarAturan,
+                terpasang = aplikasiTerpasang,
                 setelanVm = setelanVm,
                 onTambah = { form = FormAturan(); navController.navigate(RUTE_TAMBAH) },
                 onEdit = { aturanDetail?.let { form = it.keForm(); navController.navigate(RUTE_EDIT) } },
@@ -270,6 +272,7 @@ fun NotoNavGraph() {
 @Composable
 private fun CangkangTab(
     aturan: List<AturanLengkap>,
+    terpasang: List<AplikasiPilihan>,
     setelanVm: SetelanViewModel,
     onTambah: () -> Unit,
     onEdit: () -> Unit,
@@ -351,7 +354,7 @@ private fun CangkangTab(
 
     @Composable
     fun DaftarBlokir() = BlokirScreen(
-        aturan = aturan.map { it.keDaftar(waktu) },
+        aturan = aturan.map { it.keDaftar(waktu, terpasang) },
         onBukaDetail = bukaDetail,
         onTambah = onTambah,
     )
@@ -373,7 +376,7 @@ private fun CangkangTab(
                 popEnterTransition = { if (initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
             ) {
                 BerandaScreen(
-                    aturan = aturan.map { it.keBeranda() },
+                    aturan = aturan.map { it.keBeranda(terpasang) },
                     onBukaDetail = bukaDetail,
                     onTambah = onTambah,
                 )
@@ -403,7 +406,7 @@ private fun CangkangTab(
                         onKembali = { navController.popBackStack() },
                         onEdit = onEdit,
                         onHapus = { hapusDariDetail = true },
-                        detail = d.keDetail(waktu),
+                        detail = d.keDetail(waktu, terpasang),
                         aktif = d.aturan.aktif,
                         onAktif = onAktif,
                         senyap = d.aturan.senyap,

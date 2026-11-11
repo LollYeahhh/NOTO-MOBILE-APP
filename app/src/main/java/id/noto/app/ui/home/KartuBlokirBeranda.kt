@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import id.noto.app.ui.components.painterAplikasi
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,7 +68,7 @@ fun KartuBlokirBeranda(aturan: AturanBeranda, onKlik: (() -> Unit)?, modifier: M
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            aturan.logo.forEach { Image(painterResource(it), null, Modifier.size(27.dp)) }
+            aturan.logo.forEach { Image(painterAplikasi(it.ikon, it.logoContoh), null, Modifier.size(27.dp)) }
         }
     }
 }

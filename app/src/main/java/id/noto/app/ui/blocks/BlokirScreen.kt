@@ -27,6 +27,7 @@ import id.noto.app.ui.components.NotoHeaderLogo
 import id.noto.app.ui.components.NotoKartuBlokir
 import id.noto.app.ui.components.NotoTombolTambahBlokir
 import id.noto.app.ui.components.StatusAturan
+import id.noto.app.ui.components.painterAplikasi
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
@@ -98,7 +99,7 @@ private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: ((Long) 
                     sisa = a.sisa,
                     total = a.total,
                     progres = a.progres,
-                    logo = a.logo.map { painterResource(it) },
+                    logo = a.logo.map { painterAplikasi(it.ikon, it.logoContoh) },
                     // Setiap kartu membuka Detail aturannya sendiri.
                     onKlik = onBukaDetail?.let { buka -> { buka(a.id) } },
                 )

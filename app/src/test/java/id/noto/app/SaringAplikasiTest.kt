@@ -3,6 +3,7 @@ package id.noto.app
 import android.content.pm.ApplicationInfo
 import id.noto.app.data.kategoriDari
 import id.noto.app.ui.blocks.AplikasiPilihan
+import id.noto.app.ui.blocks.aplikasiDariPaket
 import id.noto.app.ui.blocks.saringAplikasi
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -46,5 +47,12 @@ class SaringAplikasiTest {
         assertEquals(R.string.kategori_hiburan, kategoriDari(ApplicationInfo.CATEGORY_VIDEO))
         assertEquals(lainnya, kategoriDari(ApplicationInfo.CATEGORY_UNDEFINED))
         assertEquals(lainnya, kategoriDari(ApplicationInfo.CATEGORY_PRODUCTIVITY))
+    }
+
+    @Test
+    fun aplikasiDicopotTetapTampil() {
+        val hasil = aplikasiDariPaket(listOf("b", "com.dicopot"), data)
+        assertEquals(listOf("WhatsApp", "com.dicopot"), hasil.map { it.nama })
+        assertEquals(null, hasil[1].ikon)
     }
 }

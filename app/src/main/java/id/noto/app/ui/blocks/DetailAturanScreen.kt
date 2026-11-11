@@ -39,6 +39,7 @@ import id.noto.app.ui.components.NotoItemAplikasi
 import id.noto.app.ui.components.NotoTombol
 import id.noto.app.ui.components.TipeBadge
 import id.noto.app.ui.components.TipeTombol
+import id.noto.app.ui.components.painterAplikasi
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
@@ -179,8 +180,8 @@ private fun KartuPemakaian(d: DetailAturan) {
         Column {
             d.aplikasi.forEach { app ->
                 NotoItemAplikasi(
-                    logo = painterResource(app.logo),
-                    nama = app.nama,
+                    logo = painterAplikasi(app.aplikasi.ikon, app.aplikasi.logoContoh),
+                    nama = app.aplikasi.nama,
                     keterangan = stringResource(R.string.dibuka_kali, app.dibuka),
                     durasi = app.durasi,
                 )

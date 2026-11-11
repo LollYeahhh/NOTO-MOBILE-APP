@@ -1,6 +1,5 @@
 package id.noto.app.ui.blocks
 
-import id.noto.app.R
 import id.noto.app.ui.components.StatusAturan
 import id.noto.app.ui.components.TipeBadge
 
@@ -16,15 +15,16 @@ data class AturanDaftar(
     val sisa: String,
     val total: String,
     val progres: Float,
-    val logo: List<Int>, // id drawable logo aplikasi
+    val logo: List<AplikasiPilihan>, // aplikasi di aturan (untuk logonya)
     val id: Long = 0, // id aturan di Room; 0 = data contoh
 )
 
-private val fb = R.drawable.logo_facebook
-private val ig = R.drawable.logo_instagram
-private val tw = R.drawable.logo_twitter
-private val tt = R.drawable.logo_tiktok
-private val wa = R.drawable.logo_whatsapp
+private fun contoh(nama: String) = contohAplikasi.first { it.nama == nama }
+private val fb = contoh("Facebook")
+private val ig = contoh("Instagram")
+private val tw = contoh("X")
+private val tt = contoh("TikTok")
+private val wa = contoh("WhatsApp")
 
 val contohAturanDaftar = listOf(
     AturanDaftar("Sosmed", "07.00–21.00 · Sen–Jum", StatusAturan.Berlaku, "Berlaku s.d. 21.00",
@@ -63,7 +63,7 @@ data class DetailAturan(
     val teksInfo: String? = null,
 )
 
-data class PemakaianAplikasi(val logo: Int, val nama: String, val dibuka: Int, val durasi: String)
+data class PemakaianAplikasi(val aplikasi: AplikasiPilihan, val dibuka: Int, val durasi: String)
 
 val contohDetailSosmed = DetailAturan(
     nama = "Sosmed",
@@ -81,10 +81,10 @@ val contohDetailSosmed = DetailAturan(
     selesaiMenit = 21 * 60,
     sekarangMenit = 14 * 60,
     aplikasi = listOf(
-        PemakaianAplikasi(ig, "Instagram", 5, "20m"),
-        PemakaianAplikasi(tt, "TikTok", 3, "12m"),
-        PemakaianAplikasi(tw, "X", 2, "8m"),
-        PemakaianAplikasi(wa, "WhatsApp", 1, "3m"),
-        PemakaianAplikasi(fb, "Facebook", 1, "2m"),
+        PemakaianAplikasi(ig, 5, "20m"),
+        PemakaianAplikasi(tt, 3, "12m"),
+        PemakaianAplikasi(tw, 2, "8m"),
+        PemakaianAplikasi(wa, 1, "3m"),
+        PemakaianAplikasi(fb, 1, "2m"),
     ),
 )

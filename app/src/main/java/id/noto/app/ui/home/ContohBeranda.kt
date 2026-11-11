@@ -1,6 +1,7 @@
 package id.noto.app.ui.home
 
-import id.noto.app.R
+import id.noto.app.ui.blocks.AplikasiPilihan
+import id.noto.app.ui.blocks.contohAplikasi
 
 /**
  * Satu aturan seperti yang tampil di kartu Beranda.
@@ -11,19 +12,14 @@ data class AturanBeranda(
     val aktif: Boolean,
     val jam: String?,
     val kuota: String?,
-    val logo: List<Int>, // id drawable logo aplikasi
+    val logo: List<AplikasiPilihan>, // aplikasi di aturan (untuk logonya)
     val id: Long = 0, // id aturan di Room; 0 = data contoh
 )
 
 // Data contoh sama dengan FigCraft "Beranda - Terisi". Diganti data dari Room di Tahap 4,
 // dihapus sebelum rilis bersama logo pihak ketiga.
-private val logoContoh = listOf(
-    R.drawable.logo_facebook,
-    R.drawable.logo_instagram,
-    R.drawable.logo_twitter,
-    R.drawable.logo_tiktok,
-    R.drawable.logo_whatsapp,
-)
+private val logoContoh = listOf("Facebook", "Instagram", "X", "TikTok", "WhatsApp")
+    .map { nama -> contohAplikasi.first { it.nama == nama } }
 
 val contohAturanBeranda = listOf(
     AturanBeranda("Sosmed", aktif = true, jam = "07.00-21.00", kuota = "1j 30m", logo = logoContoh),

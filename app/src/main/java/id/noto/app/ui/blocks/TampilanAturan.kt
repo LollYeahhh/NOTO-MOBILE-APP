@@ -75,12 +75,11 @@ fun FormAturan.keAturan(nama: String): Aturan {
 }
 
 /**
- * Logo aplikasi dari namanya.
- * shortcut: dicari di data contoh Pilih Aplikasi; diganti ikon dari PackageManager di Tahap 5.
+ * Aplikasi di aturan dari nama paketnya. Aplikasi yang sudah dicopot tetap tampil:
+ * namanya nama paket dan logonya ikon cadangan (ikon = null).
  */
-private fun logoAplikasi(paket: List<String>): List<Int> {
-    return paket.mapNotNull { nama -> contohAplikasi.firstOrNull { it.nama == nama }?.logoContoh }
-}
+fun aplikasiDariPaket(paket: List<String>, terpasang: List<AplikasiPilihan>): List<AplikasiPilihan> =
+    paket.map { p -> terpasang.firstOrNull { it.paket == p } ?: AplikasiPilihan(p, p, R.string.kategori_lainnya) }
 
 /** "07.00–21.00 · Sen–Jum". */
 @Composable
@@ -92,40 +91,41 @@ fun Aturan.jadwalRingkas(): String {
 
 /** Kartu Blokir - Daftar. */
 @Composable
-fun AturanLengkap.keDaftar(w: Waktu): AturanDaftar {
+fun AturanLengkap.keDaftar(w: Waktu, terpasang: List<AplikasiPilihan>): AturanDaftar {
     val a = aturan
+    val logo = aplikasiDariPaket(paket, terpasang)
     val status = statusAturan(a, w)
     val jadwal = a.jadwalRingkas()
     val kuota = formatDurasi(a.kuotaMenit)
     return when (status) {
         StatusAturan.Nonaktif -> AturanDaftar(
             a.nama, stringResource(R.string.jadwal_kuota, jadwal, kuota), status,
-            stringResource(R.string.seksi_nonaktif), "", "", 0f, logoAplikasi(paket), a.id,
+            stringResource(R.string.seksi_nonaktif), "", "", 0f, logo, a.id,
         )
         StatusAturan.DiLuarJadwal -> AturanDaftar(
             a.nama, jadwal, status,
             stringResource(R.string.status_bebas_sampai, formatJam(a.mulaiMenit)),
             stringResource(R.string.kuota_siap, kuota),
             stringResource(R.string.mulai_lagi, formatJam(a.mulaiMenit)),
-            0f, logoAplikasi(paket), a.id,
+            0f, logo, a.id,
         )
         else -> AturanDaftar(
             a.nama, jadwal, status,
             stringResource(R.string.status_berlaku_sd, formatJam(a.selesaiMenit)),
             stringResource(R.string.sisa_menit, kuota),
             stringResource(R.string.terpakai_dari, formatDurasi(0), kuota),
-            0f, logoAplikasi(paket), a.id,
+            0f, logo, a.id,
         )
     }
 }
 
 /** Kartu Beranda. Tanda hubung biasa di jam, sama dengan FigCraft "Beranda - Terisi". */
-fun AturanLengkap.keBeranda() = AturanBeranda(
+fun AturanLengkap.keBeranda(terpasang: List<AplikasiPilihan>) = AturanBeranda(
     nama = aturan.nama,
     aktif = aturan.aktif,
     jam = "${formatJam(aturan.mulaiMenit)}-${formatJam(aturan.selesaiMenit)}",
     kuota = formatDurasi(aturan.kuotaMenit),
-    logo = logoAplikasi(paket),
+    logo = aplikasiDariPaket(paket, terpasang),
     id = aturan.id,
 )
 
@@ -138,9 +138,9 @@ fun menitSampaiSelesai(a: Aturan, w: Waktu): Int = (a.selesaiMenit - w.menit + 2
  * Di Luar Jadwal dan Nonaktif mengikuti frame "Blokir - Detail Aturan (Di Luar Jadwal)" dan "(Nonaktif)".
  */
 @Composable
-fun AturanLengkap.keDetail(w: Waktu): DetailAturan {
+fun AturanLengkap.keDetail(w: Waktu, terpasang: List<AplikasiPilihan>): DetailAturan {
     val a = aturan
-    val daftar = keDaftar(w)
+    val daftar = keDaftar(w, terpasang)
     val status = statusAturan(a, w)
     return DetailAturan(
         nama = a.nama,
@@ -157,9 +157,7 @@ fun AturanLengkap.keDetail(w: Waktu): DetailAturan {
         mulaiMenit = a.mulaiMenit,
         selesaiMenit = a.selesaiMenit,
         sekarangMenit = w.menit,
-        aplikasi = paket.mapNotNull { nama ->
-            contohAplikasi.firstOrNull { it.nama == nama }?.logoContoh?.let { PemakaianAplikasi(it, nama, 0, formatDurasi(0)) }
-        },
+        aplikasi = daftar.logo.map { PemakaianAplikasi(it, 0, formatDurasi(0)) },
         badge = status.badge,
         keteranganKanan = when (status) {
             StatusAturan.Berlaku -> null
