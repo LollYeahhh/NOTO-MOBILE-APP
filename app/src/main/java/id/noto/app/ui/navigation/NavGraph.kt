@@ -54,7 +54,9 @@ import id.noto.app.ui.settings.LisensiScreen
 import id.noto.app.ui.settings.TeksLisensiScreen
 import id.noto.app.ui.settings.TentangScreen
 import id.noto.app.ui.settings.daftarLisensi
-import id.noto.app.ui.settings.contohSetelan
+import id.noto.app.ui.settings.SetelanViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
 import id.noto.app.ui.splash.DURASI_PUDAR_SPLASH_MS
 import id.noto.app.ui.splash.SplashScreen
 import id.noto.app.ui.stats.AplikasiStatistik
@@ -284,8 +286,9 @@ private fun CangkangTab(
     val entri by navController.currentBackStackEntryAsState()
     val tabAktif = Tab.dariRute(entri?.destination?.route) ?: Tab.Beranda
 
-    // shortcut: setelan disimpan di memori selama Tahap 3; dipindah ke DataStore di Tahap 4.
-    var setelan by remember { mutableStateOf(contohSetelan) }
+    // Setelan dibaca dari dan disimpan ke DataStore lewat ViewModel.
+    val setelanVm: SetelanViewModel = viewModel()
+    val setelan by setelanVm.setelan.collectAsState()
     var sheetSetelan by remember { mutableStateOf<SheetSetelan?>(null) }
     // true saat halaman dalam Setelan ditutup lewat nav Setelan (dissolve), bukan tombol kembali (instant).
     var keSetelanLewatNav by remember { mutableStateOf(false) }
@@ -459,8 +462,8 @@ private fun CangkangTab(
                     val kembali: () -> Unit = { navController.popBackStack() }
                     val bukaSheet: (SheetSetelan) -> Unit = { sheetSetelan = it }
                     when (rute) {
-                        RUTE_SETELAN_NOTIF -> NotifikasiScreen(setelan, { setelan = it }, kembali, bukaSheet)
-                        RUTE_SETELAN_ATURAN -> AturanPembatasanScreen(setelan, { setelan = it }, kembali, bukaSheet)
+                        RUTE_SETELAN_NOTIF -> NotifikasiScreen(setelan, setelanVm::ubah, kembali, bukaSheet)
+                        RUTE_SETELAN_ATURAN -> AturanPembatasanScreen(setelan, setelanVm::ubah, kembali, bukaSheet)
                         RUTE_SETELAN_TENTANG -> TentangScreen(
                             onKembali = kembali,
                             onCatatanRilis = { navController.navigate(RUTE_SETELAN_CATATAN) },
@@ -477,7 +480,7 @@ private fun CangkangTab(
         }
         NotoBottomBar(aktif = tabAktif, onPilih = ::pilihTab, modifier = Modifier.align(Alignment.BottomCenter))
         // Sheet Setelan menutupi seluruh layar termasuk nav, seperti overlay FigCraft.
-        LapisanSheetSetelan(sheetSetelan, { sheetSetelan = it }, setelan, { setelan = it })
+        LapisanSheetSetelan(sheetSetelan, { sheetSetelan = it }, setelan, setelanVm::ubah)
         // "Ya, hapus aturan" dari Detail: aturan disembunyikan, lalu Detail diganti Blokir - Daftar (LaunchedEffect di atas).
         NotoSheet(tampil = hapusDariDetail, onTutup = { hapusDariDetail = false }) {
             SheetHapus(namaSosmed, contohDetailSosmed.aplikasi.size, onTutup = { hapusDariDetail = false }) {

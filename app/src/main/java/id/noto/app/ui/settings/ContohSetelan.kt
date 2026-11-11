@@ -4,8 +4,8 @@ import id.noto.app.ui.blocks.JadwalForm
 
 /**
  * Semua nilai di tab Setelan. Nilai contoh di bawah sama dengan FigCraft.
- * shortcut: disimpan di memori saja (hilang saat aplikasi ditutup) dan belum memengaruhi aturan;
- * dipindah ke DataStore di Tahap 4 dan disambungkan ke perilaku aplikasi di Tahap 8.
+ * Disimpan di DataStore (data/SetelanRepository.kt); nilai di sini dipakai sebelum pengguna mengubahnya.
+ * shortcut: belum memengaruhi perilaku aplikasi; disambungkan di Tahap 8 (bawaan aturan baru di Tahap 4C).
  */
 data class SetelanNoto(
     val pengingatSisa: Boolean = true,
