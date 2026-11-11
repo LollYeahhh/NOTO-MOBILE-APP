@@ -1,13 +1,17 @@
 package id.noto.app.ui.blocks
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -18,10 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
@@ -77,7 +83,9 @@ fun PilihAplikasiScreen(
                     color = NotoWarna.TeksSekunder,
                 )
             }
-            saringAplikasi(kategori, cari, urutAZ).forEach { k ->
+            val hasil = saringAplikasi(kategori, cari, urutAZ)
+            if (hasil.isEmpty()) TidakDitemukan()
+            hasil.forEach { k ->
                 Kategori(
                     k,
                     dipilih = dipilih,
@@ -100,6 +108,31 @@ fun PilihAplikasiScreen(
                 aktif = terpilih.isNotEmpty(),
             )
         }
+    }
+}
+
+/** "Blokir - Pilih Aplikasi Tidak Ditemukan" (node 5550): padding atas 56, kiri-kanan 40, jarak 6. */
+@Composable
+private fun TidakDitemukan() {
+    Column(
+        Modifier.fillMaxWidth().padding(start = 40.dp, end = 40.dp, top = 56.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        // Ikon 64 dari vector 76 yang punya ruang tepi untuk tebal garis.
+        Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+            Image(painterResource(R.drawable.ic_cari_kosong), null, Modifier.requiredSize(76.dp))
+        }
+        Text(stringResource(R.string.cari_kosong_judul), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama, textAlign = TextAlign.Center)
+        Text(
+            stringResource(R.string.cari_kosong_ket),
+            // Poppins di Android sedikit lebih rapat dari FigCraft; dikurangi 1 dp tiap sisi agar baris terpotong
+            // di tempat yang sama ("… kata lain / atau periksa …").
+            Modifier.fillMaxWidth().padding(horizontal = 1.dp),
+            style = NotoTeks.KecilTeks,
+            color = NotoWarna.TeksSekunder,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
