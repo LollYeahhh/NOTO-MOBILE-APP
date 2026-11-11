@@ -146,4 +146,25 @@
         <item>delapan</item>
         <item>sembilan</item>
     </string-array>
+    <string name="rata_rata_waktu_layar">Rata-rata waktu layar</string>
+    <string name="per_hari">/ hari</string>
+    <string name="lebih_sadar">%1$d%% Lebih Sadar</string>
+    <string name="skor_keseimbangan">Skor Keseimbangan Batin</string>
+    <string name="skor_nilai">%1$d / 100 • %2$s</string>
+    <string name="skor_tenang">Tenang</string>
+    <string name="ritme_7_hari">Ritme 7 Hari Terakhir</string>
+    <string name="batas_nilai">Batas: %1$s</string>
+    <string name="batas_harian">Batas Harian</string>
+    <string name="sesuai_niat_sadar">Sesuai Niat Sadar</string>
+    <string name="mendekati_batas">Mendekati Batas</string>
+    <string name="distribusi_penggunaan">Distribusi Penggunaan</string>
+    <string name="detail">Detail</string>
+    <string name="kategori_persen">%1$s %2$d%%</string>
+    <string name="kategori_sosmed">Sosmed</string>
+    <string name="kategori_video">Video</string>
+    <string name="kategori_karya">Karya</string>
+    <string name="jeda_napas_sadar">%1$dx jeda napas sadar</string>
+    <string name="jeda_tertahan">%1$dx jeda • %2$d tertahan</string>
+    <string name="terkendali_terjadwal">Terkendali &amp; terjadwal</string>
+    <string name="stabil">Stabil</string>
 </resources>

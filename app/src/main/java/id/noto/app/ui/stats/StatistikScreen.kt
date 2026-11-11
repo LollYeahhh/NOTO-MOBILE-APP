@@ -44,7 +44,8 @@ fun StatistikScreen(periodeAwal: Int = 0) {
             Crossfade(periode, animationSpec = tween(DURASI_GANTI_PERIODE_MS, easing = EaseOut), label = "periode") {
                 when (it) {
                     0 -> ScreenTimeIsi(contohHariIni)
-                    // shortcut: Minggu Ini dan Bulan Ini masih kosong, dibuat di Tahap 3E-2 dan 3E-3.
+                    1 -> MingguIniIsi(contohMingguan)
+                    // shortcut: Bulan Ini masih kosong, dibuat di Tahap 3E-3.
                     else -> Box(Modifier.fillMaxWidth())
                 }
             }

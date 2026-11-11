@@ -149,4 +149,25 @@
         <item>8</item>
         <item>9</item>
     </string-array>
+    <string name="rata_rata_waktu_layar">Average screen time</string>
+    <string name="per_hari">/ day</string>
+    <string name="lebih_sadar">%1$d%% More Mindful</string>
+    <string name="skor_keseimbangan">Inner Balance Score</string>
+    <string name="skor_nilai">%1$d / 100 • %2$s</string>
+    <string name="skor_tenang">Calm</string>
+    <string name="ritme_7_hari">Last 7 Days Rhythm</string>
+    <string name="batas_nilai">Limit: %1$s</string>
+    <string name="batas_harian">Daily Limit</string>
+    <string name="sesuai_niat_sadar">Within Mindful Intent</string>
+    <string name="mendekati_batas">Near Limit</string>
+    <string name="distribusi_penggunaan">Usage Distribution</string>
+    <string name="detail">Details</string>
+    <string name="kategori_persen">%1$s %2$d%%</string>
+    <string name="kategori_sosmed">Social</string>
+    <string name="kategori_video">Video</string>
+    <string name="kategori_karya">Creative</string>
+    <string name="jeda_napas_sadar">%1$dx mindful breathing breaks</string>
+    <string name="jeda_tertahan">%1$dx breaks • %2$d held back</string>
+    <string name="terkendali_terjadwal">Under control &amp; scheduled</string>
+    <string name="stabil">Stable</string>
 </resources>
