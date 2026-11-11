@@ -85,3 +85,31 @@ val contohMingguan = StatistikMingguan(
         AplikasiMingguan(R.drawable.logo_youtube_kecil, "YouTube", R.string.terkendali_terjadwal, emptyList(), 40, null),
     ),
 )
+
+/** Satu aplikasi di Top List Aplikasi Bulanan. */
+data class AplikasiBulanan(val logo: Int, val nama: String, val dibuka: Int, val menit: Int)
+
+/** Isi "Statistik - Bulan Ini". [bulan] 1–12; [menitPerPekan] berisi 4 pekan, pekan terakhir disorot. */
+data class StatistikBulanan(
+    val bulan: Int,
+    val totalMenit: Int,
+    val rataRataMenit: Int,
+    val bulanLaluMenit: Int,
+    val turunPersen: Int,
+    val menitPerPekan: List<Int>,
+    val aplikasi: List<AplikasiBulanan>,
+)
+
+val contohBulanan = StatistikBulanan(
+    bulan = 10,
+    totalMenit = 62 * 60,
+    rataRataMenit = 2 * 60 + 15,
+    bulanLaluMenit = 3 * 60 + 20,
+    turunPersen = 32,
+    menitPerPekan = listOf(170, 150, 130, 115),
+    aplikasi = listOf(
+        AplikasiBulanan(R.drawable.logo_instagram, "Instagram", 486, 18 * 60 + 20),
+        AplikasiBulanan(R.drawable.logo_whatsapp, "WhatsApp", 372, 14 * 60),
+        AplikasiBulanan(R.drawable.logo_tiktok, "TikTok", 294, 12 * 60 + 10),
+    ),
+)

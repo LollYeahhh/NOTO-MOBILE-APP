@@ -4,10 +4,8 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -45,8 +43,7 @@ fun StatistikScreen(periodeAwal: Int = 0) {
                 when (it) {
                     0 -> ScreenTimeIsi(contohHariIni)
                     1 -> MingguIniIsi(contohMingguan)
-                    // shortcut: Bulan Ini masih kosong, dibuat di Tahap 3E-3.
-                    else -> Box(Modifier.fillMaxWidth())
+                    else -> BulanIniIsi(contohBulanan)
                 }
             }
         }
