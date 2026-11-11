@@ -32,10 +32,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -153,13 +155,14 @@ private fun BoxScope.BlurHero() {
 
 // ---------- Ritme 7 Hari (node 700) ----------
 
-@Composable
-private fun warnaBatang(jenis: JenisBatang) = when (jenis) {
-    JenisBatang.Sesuai -> NotoWarna.Primer
-    JenisBatang.Mendekati -> NotoWarna.TeksSekunder
-    JenisBatang.Pasif -> NotoWarna.Pasif
-    JenisBatang.Redup -> NotoWarna.Garis
-}
+/** Jarak dasar batang (y116) ke garis Batas Harian (y48): batang setinggi ini = tepat di batas. */
+private const val TINGGI_BATAS_DP = 68f
+
+/** Tinggi batang (dp) sebanding menit: menit = batas → setinggi garis Batas Harian. Lewat batas → di atas garis. */
+internal fun tinggiBatang(menit: Int, batasMenit: Int): Float = menit * TINGGI_BATAS_DP / batasMenit
+
+/** "Mendekati batas" mulai 90% batas harian; di bawahnya "Sesuai niat sadar". */
+internal fun mendekatiBatas(menit: Int, batasMenit: Int): Boolean = menit * 10 >= batasMenit * 9
 
 /** Judul + batas, kanvas grafik setinggi 160 (padding 24/8), lalu legenda dengan garis atas. */
 @Composable
@@ -175,10 +178,16 @@ private fun KartuRitme(data: StatistikMingguan) {
         Box(Modifier.fillMaxWidth().height(160.dp)) {
             // Kolom hari: tinggi 96 mulai y40 (padding 24 + 16), jarak 8, isi rata bawah.
             Row(Modifier.padding(top = 40.dp).fillMaxWidth().height(96.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                data.ritme.forEach { KolomHari(it) }
+                data.ritme.forEach { KolomHari(it, data.batasMenit) }
             }
-            // shortcut: garis batas diletakkan di y48 seperti desain, belum dihitung dari batasMenit (Tahap 8).
-            Box(Modifier.offset(y = 48.dp).fillMaxWidth().height(1.dp).background(NotoWarna.Garis))
+            // Garis Batas Harian: putus-putus 3/2 seperti FigCraft.
+            Box(
+                Modifier.offset(y = 48.dp).fillMaxWidth().height(1.dp).drawBehind {
+                    val putus = PathEffect.dashPathEffect(floatArrayOf(3.dp.toPx(), 2.dp.toPx()))
+                    val y = size.height / 2
+                    drawLine(NotoWarna.Garis, Offset(0f, y), Offset(size.width, y), strokeWidth = size.height, pathEffect = putus)
+                },
+            )
             Text(
                 stringResource(R.string.batas_harian),
                 Modifier.offset(x = 263.dp, y = 36.dp).background(NotoWarna.Garis).padding(horizontal = 4.dp),
@@ -207,7 +216,7 @@ private fun KartuRitme(data: StatistikMingguan) {
  * Isinya bisa lebih tinggi dari kolom 96 (Senin), jadi kelebihannya menjulur ke atas seperti di FigCraft.
  */
 @Composable
-private fun androidx.compose.foundation.layout.RowScope.KolomHari(hari: HariRitme) {
+private fun androidx.compose.foundation.layout.RowScope.KolomHari(hari: HariRitme, batasMenit: Int) {
     Box(Modifier.weight(1f).fillMaxHeight()) {
         Column(
             Modifier.align(Alignment.BottomCenter).wrapContentHeight(Alignment.Bottom, unbounded = true),
@@ -219,8 +228,11 @@ private fun androidx.compose.foundation.layout.RowScope.KolomHari(hari: HariRitm
             Box(
                 Modifier
                     .width(26.dp)
-                    .height(hari.tinggi.dp)
-                    .background(warnaBatang(hari.jenis), RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                    .height(tinggiBatang(hari.menit, batasMenit).dp)
+                    .background(
+                        if (mendekatiBatas(hari.menit, batasMenit)) NotoWarna.TeksSekunder else NotoWarna.Primer,
+                        RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                    ),
             )
             Text(
                 stringResource(hari.hari),

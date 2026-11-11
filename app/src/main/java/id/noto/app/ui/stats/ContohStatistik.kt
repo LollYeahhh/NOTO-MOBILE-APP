@@ -27,11 +27,8 @@ val contohHariIni = StatistikHariIni(
     ),
 )
 
-/** Warna batang Ritme 7 Hari. Aturan pemilihannya belum ada di desain, jadi data contoh menyebutnya langsung. */
-enum class JenisBatang { Sesuai, Mendekati, Pasif, Redup }
-
-/** Satu hari di Ritme 7 Hari. [tinggi] = tinggi batang (dp) apa adanya dari FigCraft. */
-data class HariRitme(val hari: Int, val menit: Int, val tinggi: Float, val jenis: JenisBatang, val hariIni: Boolean = false)
+/** Satu hari di Ritme 7 Hari. Tinggi dan warna batang dihitung dari [menit] dan batas harian (MingguIniIsi). */
+data class HariRitme(val hari: Int, val menit: Int, val hariIni: Boolean = false)
 
 /** Satu kategori di bar proporsi Distribusi Penggunaan. */
 data class KategoriPersen(val nama: Int, val persen: Int)
@@ -64,16 +61,14 @@ val contohMingguan = StatistikMingguan(
     skor = 88,
     labelSkor = R.string.skor_tenang,
     batasMenit = 3 * 60,
-    // shortcut: tinggi batang dan jenisnya disalin dari FigCraft (tidak sebanding menit). Disepakati untuk Tahap 8:
-    // tinggi = menit / batasMenit × jarak garis Batas Harian; warna hanya Sesuai (< 90% batas) dan Mendekati (≥ 90%).
     ritme = listOf(
-        HariRitme(R.string.hari_sen, 130, 61.59f, JenisBatang.Sesuai),
-        HariRitme(R.string.hari_sel, 105, 49.27f, JenisBatang.Pasif),
-        HariRitme(R.string.hari_rab, 175, 56f, JenisBatang.Mendekati),
-        HariRitme(R.string.hari_kam, 135, 64.95f, JenisBatang.Sesuai, hariIni = true),
-        HariRitme(R.string.hari_jum, 90, 42.55f, JenisBatang.Redup),
-        HariRitme(R.string.hari_sab, 190, 56f, JenisBatang.Mendekati),
-        HariRitme(R.string.hari_min, 125, 58.23f, JenisBatang.Pasif),
+        HariRitme(R.string.hari_sen, 130),
+        HariRitme(R.string.hari_sel, 105),
+        HariRitme(R.string.hari_rab, 175),
+        HariRitme(R.string.hari_kam, 135, hariIni = true),
+        HariRitme(R.string.hari_jum, 90),
+        HariRitme(R.string.hari_sab, 190),
+        HariRitme(R.string.hari_min, 125),
     ),
     kategori = listOf(
         KategoriPersen(R.string.kategori_sosmed, 42),
