@@ -33,7 +33,7 @@ import id.noto.app.ui.theme.NotoWarna
  * Bawah: logo 27, jarak 5, padding atas-bawah 4. Kartu nonaktif tampil sama (tidak pudar) seperti desain.
  */
 @Composable
-fun KartuBlokirBeranda(aturan: AturanBeranda, onKlik: () -> Unit, modifier: Modifier = Modifier) {
+fun KartuBlokirBeranda(aturan: AturanBeranda, onKlik: (() -> Unit)?, modifier: Modifier = Modifier) {
     val keterangan = if (aturan.jam != null && aturan.kuota != null) {
         stringResource(R.string.jadwal_kuota, aturan.jam, aturan.kuota)
     } else {
@@ -43,7 +43,8 @@ fun KartuBlokirBeranda(aturan: AturanBeranda, onKlik: () -> Unit, modifier: Modi
         modifier
             .fillMaxWidth()
             .background(NotoWarna.Permukaan, RoundedCornerShape(16.dp))
-            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
+            // onKlik null = kartu tidak bisa diketuk.
+            .then(if (onKlik != null) Modifier.clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik) else Modifier)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {

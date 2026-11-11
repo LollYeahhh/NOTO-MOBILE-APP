@@ -28,7 +28,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.noto.app.R
+import id.noto.app.data.AturanLengkap
+import id.noto.app.ui.blocks.AturanViewModel
 import id.noto.app.ui.blocks.BlokirScreen
+import id.noto.app.ui.blocks.keBeranda
+import id.noto.app.ui.blocks.keDaftar
+import id.noto.app.ui.blocks.rememberWaktu
 import id.noto.app.ui.blocks.DetailAturanScreen
 import id.noto.app.ui.blocks.FormAturan
 import id.noto.app.ui.blocks.FormAturanScreen
@@ -37,11 +42,9 @@ import id.noto.app.ui.blocks.PilihAplikasiScreen
 import id.noto.app.ui.blocks.SheetForm
 import id.noto.app.ui.blocks.SheetHapus
 import id.noto.app.ui.components.NotoSheet
-import id.noto.app.ui.blocks.contohAturanDaftar
 import id.noto.app.ui.blocks.contohDetailSosmed
 import id.noto.app.ui.blocks.contohFormEdit
 import id.noto.app.ui.blocks.namaOtomatis
-import id.noto.app.ui.home.contohAturanBeranda
 import id.noto.app.ui.home.BerandaScreen
 import id.noto.app.ui.settings.AturanPembatasanScreen
 import id.noto.app.ui.settings.LapisanSheetSetelan
@@ -112,7 +115,12 @@ private const val DURASI_DISSOLVE_MS = 250
 @Composable
 fun NotoNavGraph() {
     val navController = rememberNavController()
-    // shortcut: isian form disimpan di sini selama Tahap 3; diganti ViewModel + Room di Tahap 4.
+    // Aturan dibaca dari dan disimpan ke Room; Setelan dari DataStore. Keduanya satu untuk seluruh layar.
+    val aturanVm: AturanViewModel = viewModel()
+    val daftarAturan by aturanVm.semua.collectAsState()
+    val setelanVm: SetelanViewModel = viewModel()
+    val setelan by setelanVm.setelan.collectAsState()
+    // Isian form Tambah/Edit yang sedang dikerjakan (belum disimpan).
     var form by remember { mutableStateOf(FormAturan()) }
     // shortcut: nama aturan Sosmed (satu-satunya yang bisa diedit) disimpan di memori saja, hilang saat
     // aplikasi ditutup; diganti Room di Tahap 4.
@@ -122,8 +130,8 @@ fun NotoNavGraph() {
     // shortcut: toggle "Aturan aktif" dan "Senyapkan notifikasi" Sosmed di memori saja; diganti Room di Tahap 4.
     var sosmedAktif by remember { mutableStateOf(true) }
     var sosmedSenyap by remember { mutableStateOf(true) }
-    // Nama aturan yang sudah ada, supaya nama otomatis tidak kembar (sementara dari data contoh).
-    val namaAturan = contohAturanDaftar.map { if (it.judul == contohFormEdit.nama) namaSosmed else it.judul }
+    // Nama aturan yang sudah ada, supaya nama otomatis tidak kembar.
+    val namaAturan = daftarAturan.map { it.aturan.nama }
     val namaDasar = stringResource(R.string.nama_otomatis)
     val polaNomor = stringResource(R.string.nama_otomatis_nomor)
     // Pilih Aplikasi ditutup lewat tombol "Pilih N Aplikasi" (dissolve) atau kembali (instant).
@@ -160,6 +168,8 @@ fun NotoNavGraph() {
             exitTransition = { if (targetState.destination.route == RUTE_EDIT) slideOutHorizontally(gerak) { -it } else diamDiBawah },
         ) {
             CangkangTab(
+                aturan = daftarAturan,
+                setelanVm = setelanVm,
                 onTambah = { form = FormAturan(); navController.navigate(RUTE_TAMBAH) },
                 onEdit = { form = contohFormEdit.copy(nama = namaSosmed); navController.navigate(RUTE_EDIT) },
                 namaSosmed = namaSosmed,
@@ -187,11 +197,16 @@ fun NotoNavGraph() {
                 form = form,
                 onUbah = { form = it },
                 onTutup = { navController.popBackStack() },
-                // Belum disimpan ke mana pun sampai Tahap 4.
-                onSimpan = { navController.popBackStack() },
+                onSimpan = {
+                    // Nama kosong → nama otomatis (Blokir, Blokir 1, …).
+                    aturanVm.tambah(form, form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan) })
+                    navController.popBackStack()
+                },
                 onPilihAplikasi = { pilihLewatTombol = false; bukaJadwal = false; navController.navigate(RUTE_PILIH) },
                 namaTerpakai = namaAturan,
                 sheetAwal = if (bukaJadwal) SheetForm.Jadwal else null,
+                jadwalAwal = setelan.jadwalBawaan,
+                kuotaAwal = setelan.kuotaBawaanMenit,
             )
         }
         composable(
@@ -247,6 +262,8 @@ fun NotoNavGraph() {
 /** Cangkang: empat tab dan Detail Aturan dengan Bottom Nav di bawahnya. */
 @Composable
 private fun CangkangTab(
+    aturan: List<AturanLengkap>,
+    setelanVm: SetelanViewModel,
     onTambah: () -> Unit,
     onEdit: () -> Unit,
     namaSosmed: String,
@@ -286,8 +303,6 @@ private fun CangkangTab(
     val entri by navController.currentBackStackEntryAsState()
     val tabAktif = Tab.dariRute(entri?.destination?.route) ?: Tab.Beranda
 
-    // Setelan dibaca dari dan disimpan ke DataStore lewat ViewModel.
-    val setelanVm: SetelanViewModel = viewModel()
     val setelan by setelanVm.setelan.collectAsState()
     var sheetSetelan by remember { mutableStateOf<SheetSetelan?>(null) }
     // true saat halaman dalam Setelan ditutup lewat nav Setelan (dissolve), bukan tombol kembali (instant).
@@ -320,11 +335,14 @@ private fun CangkangTab(
     val push = tween<IntOffset>(DURASI_PUSH_MS, easing = EaseOutFigCraft)
     val ruteAsalDetail = setOf(Tab.Blokir.rute, Tab.Beranda.rute, RUTE_STAT_APLIKASI)
 
+    // Status aturan (Berlaku / Di Luar Jadwal) dihitung dari jam sekarang, diperbarui tiap menit.
+    val waktu = rememberWaktu()
+
+    // shortcut: kartu belum membuka Detail Aturan; Detail, Edit, dan Hapus dari Room menyusul di Tahap 4C-2.
     @Composable
     fun DaftarBlokir() = BlokirScreen(
-        aturan = contohAturanDaftar.filterNot { sosmedDihapus && it.judul == contohDetailSosmed.nama }
-            .map { if (it.judul == contohDetailSosmed.nama) it.copy(judul = namaSosmed) else it },
-        onBukaDetail = { navController.navigate(RUTE_DETAIL) },
+        aturan = aturan.map { it.keDaftar(waktu) },
+        onBukaDetail = null,
         onTambah = onTambah,
     )
 
@@ -345,8 +363,8 @@ private fun CangkangTab(
                 popEnterTransition = { if (initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
             ) {
                 BerandaScreen(
-                    aturan = contohAturanBeranda.filterNot { sosmedDihapus && it.aktif }.map { if (it.aktif) it.copy(nama = namaSosmed) else it },
-                    onBukaDetail = { navController.navigate(RUTE_DETAIL) },
+                    aturan = aturan.map { it.keBeranda() },
+                    onBukaDetail = null, // shortcut: sama dengan Daftar, menyusul di Tahap 4C-2
                     onTambah = onTambah,
                 )
             }

@@ -290,4 +290,10 @@
     <string name="batal_membuka">Batal membuka %1$d kali</string>
     <string name="kena_time_out">Kena time out</string>
     <string name="kuota_habis_pukul">Kuota %1$s habis pukul %2$s</string>
+    <!-- Status kartu Blokir - Daftar (aturan dari Room) -->
+    <string name="status_berlaku_sd">Berlaku s.d. %1$s</string>
+    <string name="status_bebas_sampai">Bebas sampai %1$s</string>
+    <string name="kuota_siap">Kuota siap %1$s</string>
+    <string name="mulai_lagi">Mulai lagi %1$s</string>
+    <string name="terpakai_dari">%1$s dari %2$s terpakai</string>
 </resources>

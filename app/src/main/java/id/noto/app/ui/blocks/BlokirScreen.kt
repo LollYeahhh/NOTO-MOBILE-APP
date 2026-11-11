@@ -37,12 +37,12 @@ private val TINGGI_NAV = 114.dp
 
 /**
  * Tab Blokir: Daftar aturan (Blokir - Daftar) atau Empty State (Blokir - Kosong).
- * [onBukaDetail] dipanggil saat kartu yang punya halaman detail diketuk.
+ * [onBukaDetail] dipanggil saat kartu yang punya halaman detail diketuk; null = kartu tidak bisa diketuk.
  */
 @Composable
 fun BlokirScreen(
     aturan: List<AturanDaftar> = contohAturanDaftar,
-    onBukaDetail: () -> Unit = {},
+    onBukaDetail: (() -> Unit)? = {},
     onTambah: () -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
@@ -56,7 +56,7 @@ fun BlokirScreen(
  * (Sedang Berlaku, Di Luar Jadwal, Nonaktif), lalu tombol tambah.
  */
 @Composable
-private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: () -> Unit, onTambah: () -> Unit) {
+private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: (() -> Unit)?, onTambah: () -> Unit) {
     val berlaku = aturan.filter { it.status in setOf(StatusAturan.Berlaku, StatusAturan.HampirHabis, StatusAturan.TimeOut) }
     val luarJadwal = aturan.filter { it.status == StatusAturan.DiLuarJadwal }
     val nonaktif = aturan.filter { it.status == StatusAturan.Nonaktif }
@@ -84,7 +84,7 @@ private fun BlokirDaftar(aturan: List<AturanDaftar>, onBukaDetail: () -> Unit, o
 
 /** Label seksi + kartu (jarak 8, antarkartu 16). Seksi tanpa kartu tidak ditampilkan. */
 @Composable
-private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: () -> Unit) {
+private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: (() -> Unit)?) {
     if (aturan.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(stringResource(label), Modifier.tinggiBarisFigCraft(NotoTeks.Label), style = NotoTeks.Label, color = NotoWarna.TeksSekunder)
@@ -100,7 +100,7 @@ private fun Seksi(label: Int, aturan: List<AturanDaftar>, onBukaDetail: () -> Un
                     progres = a.progres,
                     logo = a.logo.map { painterResource(it) },
                     // Di FigCraft hanya kartu Sosmed yang membuka Detail (disepakati: ikuti desain).
-                    onKlik = if (a.judul == contohDetailSosmed.nama) onBukaDetail else null,
+                    onKlik = if (onBukaDetail != null && a.judul == contohDetailSosmed.nama) onBukaDetail else null,
                 )
             }
         }

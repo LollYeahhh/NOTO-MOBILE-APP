@@ -60,6 +60,7 @@ enum class SheetForm { Jadwal, Kuota, JamMulai, JamSelesai, Hapus }
  * Tidak ada Bottom Nav di layar ini. Baris Jadwal dan Kuota membuka sheet; [sheetAwal] = sheet yang
  * sudah terbuka saat layar tampil (setelah Pilih Aplikasi, seperti FigCraft).
  * "Hapus aturan ini" (Edit) membuka Sheet Hapus Aturan; [onHapus] dipanggil setelah "Ya, hapus aturan".
+ * [jadwalAwal] dan [kuotaAwal] = isi awal sheet selama form belum punya jadwal/kuota (bawaan dari Setelan).
  */
 @Composable
 fun FormAturanScreen(
@@ -72,10 +73,12 @@ fun FormAturanScreen(
     onHapus: () -> Unit = {},
     namaTerpakai: List<String> = emptyList(),
     sheetAwal: SheetForm? = null,
+    jadwalAwal: JadwalForm = jadwalBawaan,
+    kuotaAwal: Int = KUOTA_BAWAAN_MENIT,
 ) {
     var sheet by remember { mutableStateOf(sheetAwal) }
     // Draf Sheet Atur Jadwal; tetap ada selama sheet ditukar dengan Sheet Jam.
-    var drafJadwal by remember { mutableStateOf(form.jadwal ?: jadwalBawaan) }
+    var drafJadwal by remember { mutableStateOf(form.jadwal ?: jadwalAwal) }
     // Sheet Jadwal yang kembali dari Sheet Jam tampil tanpa animasi (FigCraft: swap overlay instant).
     var dariJam by remember { mutableStateOf(false) }
     val tambah = mode == ModeForm.Tambah
@@ -126,7 +129,7 @@ fun FormAturanScreen(
                                 teksRentangJam(jadwal),
                             )
                         },
-                        onKlik = { drafJadwal = form.jadwal ?: jadwalBawaan; dariJam = false; sheet = SheetForm.Jadwal },
+                        onKlik = { drafJadwal = form.jadwal ?: jadwalAwal; dariJam = false; sheet = SheetForm.Jadwal },
                     )
                     NotoBarisForm(
                         painterResource(R.drawable.ic_jam_pasir),
@@ -190,7 +193,7 @@ fun FormAturanScreen(
             }
         }
         NotoSheet(tampil = sheet == SheetForm.Kuota, onTutup = { sheet = null }) {
-            SheetKuota(form.kuotaMenit ?: KUOTA_BAWAAN_MENIT, onTutup = { sheet = null }, onSimpan = { onUbah(form.copy(kuotaMenit = it)); sheet = null })
+            SheetKuota(form.kuotaMenit ?: kuotaAwal, onTutup = { sheet = null }, onSimpan = { onUbah(form.copy(kuotaMenit = it)); sheet = null })
         }
     }
 }

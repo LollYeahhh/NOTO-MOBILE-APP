@@ -301,4 +301,10 @@
     <string name="batal_membuka">Didn\'t open %1$d times</string>
     <string name="kena_time_out">Timed out</string>
     <string name="kuota_habis_pukul">%1$s quota ran out at %2$s</string>
+    <!-- Rule card status in Blocks - List (rules from Room) -->
+    <string name="status_berlaku_sd">Active until %1$s</string>
+    <string name="status_bebas_sampai">Free until %1$s</string>
+    <string name="kuota_siap">Quota ready %1$s</string>
+    <string name="mulai_lagi">Starts again %1$s</string>
+    <string name="terpakai_dari">%1$s of %2$s used</string>
 </resources>
