@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import id.noto.app.service.PemantauService
 import id.noto.app.ui.navigation.NotoNavGraph
 import id.noto.app.ui.theme.NOTOAPPTheme
 
@@ -24,5 +25,11 @@ class MainActivity : ComponentActivity() {
                 NotoNavGraph()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Setiap aplikasi dibuka (termasuk kembali dari halaman izin): nyalakan pemantau kalau Akses penggunaan sudah diizinkan.
+        PemantauService.mulai(this)
     }
 }

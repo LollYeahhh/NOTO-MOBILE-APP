@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NOTOAPP</string>
+    <string name="app_name">Noto</string>
     <string name="logo_noto">NOTO</string>
     <string name="tagline_noto">Notice your time</string>
     <string name="kembali">Back</string>
@@ -225,6 +225,9 @@
     <string name="izinkan_notifikasi">Allow notifications</string>
     <string name="buka_setelan_baterai">Open Battery Settings</string>
     <string name="nanti_saja">Not now</string>
+    <string name="saluran_pemantau">Usage tracking</string>
+    <string name="pemantau_judul">Noto is running</string>
+    <string name="pemantau_isi">App usage is counted according to your rules’ schedules.</string>
     <string name="seksi_tentang">About</string>
     <string name="tentang_noto">About Noto</string>
     <string name="tentang_noto_ket">Notice Your Time Out</string>

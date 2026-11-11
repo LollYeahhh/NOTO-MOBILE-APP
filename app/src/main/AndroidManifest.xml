@@ -8,12 +8,22 @@
         tools:ignore="ProtectedPermissions" />
     <!-- Notifikasi (Android 13+): notifikasi pemantau dan pengingat kuota. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Pemantau pemakaian berjalan sebagai foreground service (layanan latar dengan notifikasi tetap). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- Menyalakan pemantau lagi setelah HP dinyalakan ulang. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Supaya daftar aplikasi di Pilih Aplikasi terlihat (Android 11+): hanya aplikasi yang punya ikon di peluncur. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <!-- Supaya launcher bisa dikenali dan tidak dicatat pemantau. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
         </intent>
     </queries>
 
@@ -38,6 +48,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Pemantau pemakaian. specialUse: tidak ada jenis foreground service bawaan untuk pelacak screen time. -->
+        <service
+            android:name=".service.PemantauService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Tracks which app is on screen to enforce the user's own screen time limits." />
+        </service>
+
+        <receiver
+            android:name=".service.MulaiSaatBoot"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

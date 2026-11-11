@@ -222,6 +222,9 @@
     <string name="izinkan_notifikasi">Izinkan notifikasi</string>
     <string name="buka_setelan_baterai">Buka Setelan Baterai</string>
     <string name="nanti_saja">Nanti saja</string>
+    <string name="saluran_pemantau">Pemantau pemakaian</string>
+    <string name="pemantau_judul">Noto sedang berjalan</string>
+    <string name="pemantau_isi">Pemakaian aplikasi dihitung sesuai jadwal aturanmu.</string>
     <string name="seksi_tentang">Tentang</string>
     <string name="tentang_noto">Tentang Noto</string>
     <string name="tentang_noto_ket">Notice Your Time Out</string>
