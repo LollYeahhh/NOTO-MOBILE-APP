@@ -34,6 +34,8 @@ import id.noto.app.data.AturanLengkap
 import id.noto.app.ui.blocks.AturanViewModel
 import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.blocks.AplikasiPilihan
+import id.noto.app.ui.permission.Izin
+import id.noto.app.ui.permission.SheetIzinBerurutan
 import id.noto.app.ui.blocks.keBeranda
 import id.noto.app.ui.blocks.keDaftar
 import id.noto.app.ui.blocks.keDetail
@@ -139,6 +141,8 @@ fun NotoNavGraph() {
     var pilihLewatTombol by remember { mutableStateOf(false) }
     // Setelah "Pilih N Aplikasi", Tambah tampil dengan Sheet Atur Jadwal sudah terbuka (FigCraft node 2456).
     var bukaJadwal by remember { mutableStateOf(false) }
+    // Sheet izin yang menunggu tampil (setelah aturan disimpan, atau dari baris izin di Setelan).
+    var antreanIzin by remember { mutableStateOf(emptyList<Izin>()) }
 
     // Dissolve splash → Beranda: cangkang (Beranda beserta nav) muncul memudar di atas splash.
     val pudarSplash = tween<Float>(DURASI_PUDAR_SPLASH_MS, easing = EaseInOutFigCraft)
@@ -146,6 +150,7 @@ fun NotoNavGraph() {
     // Layar lama tetap terlihat penuh di bawah layar baru selama animasi (move in).
     val diamDiBawah = fadeOut(tween(DURASI_PUSH_MS), targetAlpha = 1f)
 
+    Box(Modifier.fillMaxSize()) {
     NavHost(
         navController = navController,
         startDestination = RUTE_SPLASH,
@@ -180,6 +185,7 @@ fun NotoNavGraph() {
                 onHapus = { aturanVm.hapus(idDetail); dihapus = true },
                 onAktif = { aturanVm.ubahAktif(idDetail, it) },
                 onSenyap = { aturanVm.ubahSenyap(idDetail, it) },
+                onMintaIzin = { antreanIzin = listOf(it) },
             )
         }
         composable(
@@ -201,6 +207,7 @@ fun NotoNavGraph() {
                 onSimpan = {
                     // Nama kosong → nama otomatis (Blokir, Blokir 1, …).
                     aturanVm.tambah(form, form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan) })
+                    antreanIzin = Izin.entries
                     navController.popBackStack()
                 },
                 onPilihAplikasi = { pilihLewatTombol = false; bukaJadwal = false; navController.navigate(RUTE_PILIH) },
@@ -256,6 +263,7 @@ fun NotoNavGraph() {
                         val nama = form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan - lama.aturan.nama) }
                         aturanVm.ubah(lama.aturan, form, nama)
                     }
+                    antreanIzin = Izin.entries
                     navController.popBackStack()
                 },
                 onHapus = { aturanVm.hapus(idDetail); dihapus = true; navController.popBackStack() },
@@ -265,6 +273,9 @@ fun NotoNavGraph() {
                 namaAplikasi = { p -> aplikasiTerpasang.firstOrNull { it.paket == p }?.nama ?: p },
             )
         }
+    }
+    // Setiap aturan disimpan: sheet izin yang belum diberikan muncul berurutan di atas layar.
+    SheetIzinBerurutan(antreanIzin) { antreanIzin = it }
     }
 }
 
@@ -282,6 +293,7 @@ private fun CangkangTab(
     onHapus: () -> Unit,
     onAktif: (Boolean) -> Unit,
     onSenyap: (Boolean) -> Unit,
+    onMintaIzin: (Izin) -> Unit,
 ) {
     val navController = rememberNavController()
     // Sheet Hapus Aturan dari tombol "Hapus aturan" di Detail.
@@ -471,6 +483,7 @@ private fun CangkangTab(
                 SetelanScreen(
                     onNotifikasi = { navController.navigate(RUTE_SETELAN_NOTIF) },
                     onAturan = { navController.navigate(RUTE_SETELAN_ATURAN) },
+                    onMintaIzin = onMintaIzin,
                     onTentang = { navController.navigate(RUTE_SETELAN_TENTANG) },
                 )
             }

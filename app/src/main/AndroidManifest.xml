@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Akses penggunaan: membaca aplikasi yang sedang di layar. Diberikan pengguna di Setelan Android, bukan lewat dialog. -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <!-- Notifikasi (Android 13+): notifikasi pemantau dan pengingat kuota. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <!-- Supaya daftar aplikasi di Pilih Aplikasi terlihat (Android 11+): hanya aplikasi yang punya ikon di peluncur. -->
     <queries>
         <intent>

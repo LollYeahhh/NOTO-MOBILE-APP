@@ -30,6 +30,11 @@ import androidx.compose.ui.unit.dp
 import id.noto.app.R
 import id.noto.app.ui.components.NotoBarisSetelan
 import id.noto.app.ui.components.NotoHeaderLogo
+import id.noto.app.ui.permission.Izin
+import id.noto.app.ui.permission.bukaSetelanAksesPenggunaan
+import id.noto.app.ui.permission.bukaSetelanBaterai
+import id.noto.app.ui.permission.bukaSetelanNotifikasi
+import id.noto.app.ui.permission.rememberIzinBelum
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
@@ -44,8 +49,27 @@ internal val TINGGI_NAV = 114.dp
  * Akses penggunaan dan Aksesibilitas membuka halaman setelan Android yang sesuai.
  */
 @Composable
-fun SetelanScreen(onNotifikasi: () -> Unit, onAturan: () -> Unit, onTentang: () -> Unit) {
+fun SetelanScreen(
+    onNotifikasi: () -> Unit,
+    onAturan: () -> Unit,
+    onTentang: () -> Unit,
+    onMintaIzin: (Izin) -> Unit = {},
+) {
     val context = LocalContext.current
+    val izinBelum = rememberIzinBelum()
+
+    // Baris izin: belum diberikan = "Izinkan" dan membuka sheet izinnya; sudah = "Aktif" dan membuka Setelan Android.
+    @Composable
+    fun BarisIzin(izin: Izin, ikon: Int, judul: Int, ket: Int, bukaSetelan: () -> Unit) {
+        val belum = izin in izinBelum
+        NotoBarisSetelan(
+            painterResource(ikon),
+            stringResource(judul),
+            keterangan = stringResource(ket),
+            nilai = stringResource(if (belum) R.string.status_izinkan else R.string.status_aktif),
+            onKlik = { if (belum) onMintaIzin(izin) else bukaSetelan() },
+        )
+    }
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderLogo()
         IsiSetelan {
@@ -68,14 +92,16 @@ fun SetelanScreen(onNotifikasi: () -> Unit, onAturan: () -> Unit, onTentang: () 
                 )
             }
             SeksiSetelan(R.string.seksi_izin) {
-                // shortcut: status "Aktif" masih contoh; dibaca dari izin sungguhan di Tahap 6–7.
-                NotoBarisSetelan(
-                    painterResource(R.drawable.ic_perisai),
-                    stringResource(R.string.akses_penggunaan),
-                    keterangan = stringResource(R.string.akses_penggunaan_ket),
-                    nilai = stringResource(R.string.status_aktif),
-                    onKlik = { bukaSetelanAndroid(context, Settings.ACTION_USAGE_ACCESS_SETTINGS) },
-                )
+                BarisIzin(Izin.AksesPenggunaan, R.drawable.ic_perisai, R.string.akses_penggunaan, R.string.akses_penggunaan_ket) {
+                    bukaSetelanAksesPenggunaan(context)
+                }
+                BarisIzin(Izin.Notifikasi, R.drawable.ic_lonceng, R.string.notifikasi_izin, R.string.notifikasi_izin_ket) {
+                    bukaSetelanNotifikasi(context)
+                }
+                BarisIzin(Izin.Baterai, R.drawable.ic_baterai, R.string.baterai, R.string.baterai_ket) {
+                    bukaSetelanBaterai(context)
+                }
+                // shortcut: status "Aktif" Aksesibilitas masih contoh (permintaan pemilik proyek); dibaca dari izin sungguhan di Tahap 7.
                 NotoBarisSetelan(
                     painterResource(R.drawable.ic_kunci),
                     stringResource(R.string.aksesibilitas),
