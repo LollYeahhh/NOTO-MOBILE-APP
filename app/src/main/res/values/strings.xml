@@ -44,6 +44,11 @@
     <string name="info_di_luar_jadwal">Outside the schedule, these apps are free to use. The quota starts counting at\u00A0%1$s.</string>
     <string name="info_nonaktif">This rule is paused. Turn on “Rule active” below to start limiting again.</string>
     <string name="info_waktu_dihitung">Time is only counted while the app is open. Tomorrow at\u00A0%1$s the quota is full again.</string>
+    <string name="status_hampir_habis">Almost out</string>
+    <string name="status_bebas_lagi">Free again at %1$s</string>
+    <string name="kuota_habis_time_out">Quota used up, time for a time out</string>
+    <string name="terpakai_saja">%1$s used</string>
+    <string name="info_waktu_dihitung_hari">Time is only counted while the app is open. On %1$s at\u00A0%2$s the quota is full again.</string>
     <string name="jadwal">Schedule</string>
     <string name="dibatasi_jam">Limited %1$s, free to use outside those hours</string>
     <string name="pemakaian_hari_ini">Today\'s usage</string>

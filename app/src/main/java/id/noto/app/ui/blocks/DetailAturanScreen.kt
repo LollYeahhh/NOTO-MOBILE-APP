@@ -140,7 +140,7 @@ private fun KartuSisaKuota(d: DetailAturan) {
             Text(stringResource(R.string.dari_kuota, d.kuota), Modifier.alignByBaseline(), style = NotoTeks.Teks, color = NotoWarna.TeksSekunder)
         }
         Box(Modifier.fillMaxWidth().height(8.dp).clip(CircleShape).background(NotoWarna.InfoLatar)) {
-            Box(Modifier.fillMaxWidth(d.progres).fillMaxHeight().background(NotoWarna.PrimerMuda, CircleShape))
+            Box(Modifier.fillMaxWidth(d.progres).fillMaxHeight().background(d.warnaProgres, CircleShape))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(stringResource(R.string.terpakai_dibuka, d.terpakai, d.dibuka), style = NotoTeks.KecilTeks, color = NotoWarna.TeksSekunder)

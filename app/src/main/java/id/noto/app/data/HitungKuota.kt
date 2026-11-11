@@ -1,6 +1,7 @@
 package id.noto.app.data
 
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 // Jendela jadwal aturan: rentang waktu saat pemakaian dihitung terhadap kuota.
 // Aturan jadwal sama dengan dalamJadwal() di TampilanAturan: mulai = selesai berarti sehari penuh,
@@ -33,6 +34,12 @@ fun jendelaBerikutnya(a: Aturan, t: LocalDateTime): LocalDateTime? {
         if (tanggal.dayOfWeek.value - 1 in hari && mulai.isAfter(t)) return mulai
     }
     return null
+}
+
+/** Catatan kuota aturan [a] di jendela jadwal yang sedang berjalan pada [t]; kosong kalau di luar jadwal. */
+fun pemakaianJendela(a: Aturan, kuota: List<Kuota>, t: LocalDateTime): List<Kuota> {
+    val mulai = jendelaSekarang(a, t)?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli() ?: return emptyList()
+    return kuota.filter { it.aturanId == a.id && it.mulaiJendela == mulai }
 }
 
 private fun java.time.LocalDate.atMenit(menit: Int): LocalDateTime = atTime(menit / 60, menit % 60)

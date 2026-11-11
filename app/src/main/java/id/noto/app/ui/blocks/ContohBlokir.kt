@@ -1,7 +1,9 @@
 package id.noto.app.ui.blocks
 
+import androidx.compose.ui.graphics.Color
 import id.noto.app.ui.components.StatusAturan
 import id.noto.app.ui.components.TipeBadge
+import id.noto.app.ui.theme.NotoWarna
 
 // Data contoh sama dengan FigCraft "Blokir - Daftar" dan "Blokir - Detail Aturan".
 // Diganti data dari Room di Tahap 4, dihapus sebelum rilis bersama logo pihak ketiga.
@@ -57,6 +59,7 @@ data class DetailAturan(
     val sekarangMenit: Int,
     val aplikasi: List<PemakaianAplikasi>,
     val badge: TipeBadge = TipeBadge.Aktif,
+    val warnaProgres: Color = NotoWarna.PrimerMuda,
     /** Teks kanan bawah kartu Sisa Kuota; null = "Bebas lagi dalam [bebasLagi]". */
     val keteranganKanan: String? = null,
     /** Teks panel info; null = "Waktu hanya dihitung … [jamReset] …". */

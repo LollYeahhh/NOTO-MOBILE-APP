@@ -31,6 +31,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.noto.app.R
 import id.noto.app.data.AturanLengkap
+import id.noto.app.data.Kuota
 import id.noto.app.ui.blocks.AturanViewModel
 import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.blocks.AplikasiPilihan
@@ -124,6 +125,7 @@ fun NotoNavGraph() {
     val aturanVm: AturanViewModel = viewModel()
     val daftarAturan by aturanVm.semua.collectAsState()
     val aplikasiTerpasang by aturanVm.terpasang.collectAsState()
+    val kuotaTercatat by aturanVm.kuota.collectAsState()
     val setelanVm: SetelanViewModel = viewModel()
     val setelan by setelanVm.setelan.collectAsState()
     // Isian form Tambah/Edit yang sedang dikerjakan (belum disimpan).
@@ -176,6 +178,7 @@ fun NotoNavGraph() {
             CangkangTab(
                 aturan = daftarAturan,
                 terpasang = aplikasiTerpasang,
+                kuotaTercatat = kuotaTercatat,
                 setelanVm = setelanVm,
                 onTambah = { form = FormAturan(); navController.navigate(RUTE_TAMBAH) },
                 onEdit = { aturanDetail?.let { form = it.keForm(); navController.navigate(RUTE_EDIT) } },
@@ -284,6 +287,7 @@ fun NotoNavGraph() {
 private fun CangkangTab(
     aturan: List<AturanLengkap>,
     terpasang: List<AplikasiPilihan>,
+    kuotaTercatat: List<Kuota>,
     setelanVm: SetelanViewModel,
     onTambah: () -> Unit,
     onEdit: () -> Unit,
@@ -358,6 +362,7 @@ private fun CangkangTab(
 
     // Status aturan (Berlaku / Di Luar Jadwal) dihitung dari jam sekarang, diperbarui tiap menit.
     val waktu = rememberWaktu()
+    val ambang = setelanVm.setelan.collectAsState().value.ambangHampirHabis
 
     val bukaDetail: (Long) -> Unit = { onBukaDetail(it); navController.navigate(RUTE_DETAIL) }
     // Aturan terakhir di Detail, supaya Sheet Hapus tetap berisi selama memudar setelah aturannya terhapus.
@@ -366,7 +371,7 @@ private fun CangkangTab(
 
     @Composable
     fun DaftarBlokir() = BlokirScreen(
-        aturan = aturan.map { it.keDaftar(waktu, terpasang) },
+        aturan = aturan.map { it.keDaftar(waktu, terpasang, kuotaTercatat, ambang) },
         onBukaDetail = bukaDetail,
         onTambah = onTambah,
     )
@@ -418,7 +423,7 @@ private fun CangkangTab(
                         onKembali = { navController.popBackStack() },
                         onEdit = onEdit,
                         onHapus = { hapusDariDetail = true },
-                        detail = d.keDetail(waktu, terpasang),
+                        detail = d.keDetail(waktu, terpasang, kuotaTercatat, ambang),
                         aktif = d.aturan.aktif,
                         onAktif = onAktif,
                         senyap = d.aturan.senyap,

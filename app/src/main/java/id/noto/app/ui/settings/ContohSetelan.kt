@@ -21,7 +21,10 @@ data class SetelanNoto(
     val kunciEdit: Boolean = false,
     val latihanNapas: Boolean = true,
     val sisaWaktu: Boolean = true,
-)
+) {
+    /** Sisa kuota (menit) yang membuat status jadi Hampir Habis: chip terbesar, 15 kalau tidak ada yang dipilih. */
+    val ambangHampirHabis: Int get() = sisaMenit.maxOrNull() ?: 15
+}
 
 val contohSetelan = SetelanNoto()
 

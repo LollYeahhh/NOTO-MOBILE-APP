@@ -41,6 +41,11 @@
     <string name="info_di_luar_jadwal">Di luar jadwal, aplikasi bebas dipakai. Kuota mulai dihitung pukul\u00A0%1$s.</string>
     <string name="info_nonaktif">Aturan sedang dijeda. Nyalakan Aturan aktif di bawah untuk membatasi lagi.</string>
     <string name="info_waktu_dihitung">Waktu hanya dihitung saat aplikasi dibuka. Besok pukul\u00A0%1$s kuota kembali penuh.</string>
+    <string name="status_hampir_habis">Hampir habis</string>
+    <string name="status_bebas_lagi">Bebas lagi %1$s</string>
+    <string name="kuota_habis_time_out">Kuota habis, waktunya time out</string>
+    <string name="terpakai_saja">%1$s terpakai</string>
+    <string name="info_waktu_dihitung_hari">Waktu hanya dihitung saat aplikasi dibuka. %1$s pukul\u00A0%2$s kuota kembali penuh.</string>
     <string name="jadwal">Jadwal</string>
     <string name="dibatasi_jam">Dibatasi %1$s, di luar jam itu bebas dipakai</string>
     <string name="pemakaian_hari_ini">Pemakaian Hari Ini</string>

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import id.noto.app.data.Aturan
 import id.noto.app.data.AturanLengkap
 import id.noto.app.data.AturanRepository
+import id.noto.app.data.Kuota
 import id.noto.app.data.NotoDatabase
 import id.noto.app.data.muatAplikasiTerpasang
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,15 @@ class AturanViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Semua aturan; kosong sampai Room selesai dibaca (tertutup splash). */
     val semua: StateFlow<List<AturanLengkap>> = repository.semua.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    /**
+     * Catatan kuota 2 hari terakhir (jendela terpanjang 24 jam), diperbarui pemantau tiap 2 detik.
+     * shortcut: batasnya dihitung sekali saat ViewModel dibuat; kalau aplikasi terbuka berhari-hari,
+     * catatan lama ikut terbaca. Hitungan tetap benar karena disaring per jendela.
+     */
+    val kuota: StateFlow<List<Kuota>> = NotoDatabase.ambil(app).kuotaDao()
+        .sejak(System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000L)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _terpasang = MutableStateFlow<List<AplikasiPilihan>>(emptyList())
 

@@ -3,20 +3,26 @@ package id.noto.app.ui.blocks
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import id.noto.app.R
 import id.noto.app.data.Aturan
 import id.noto.app.data.AturanLengkap
+import id.noto.app.data.Kuota
+import id.noto.app.data.jendelaBerikutnya
+import id.noto.app.data.pemakaianJendela
 import id.noto.app.data.bitmaskKeHari
 import id.noto.app.data.hariKeBitmask
 import id.noto.app.ui.components.StatusAturan
 import id.noto.app.ui.components.TipeBadge
 import id.noto.app.ui.home.AturanBeranda
+import id.noto.app.ui.theme.NotoWarna
 import id.noto.app.util.formatDurasi
 import id.noto.app.util.formatJam
 import id.noto.app.util.ringkasHari
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
+import java.time.format.TextStyle
 
 // Mengubah aturan dari Room menjadi data yang siap ditampilkan di Blokir dan Beranda.
 
@@ -52,13 +58,28 @@ fun dalamJadwal(a: Aturan, w: Waktu): Boolean {
 }
 
 /**
- * Status aturan saat [w].
- * shortcut: pemakaian dianggap 0 sampai Tahap 6, jadi Hampir Habis dan Time Out belum pernah muncul.
+ * Status aturan saat [w]. Di dalam jadwal, status ditentukan sisa kuota: habis = Time Out,
+ * sisa <= [ambangMenit] = Hampir Habis.
  */
-fun statusAturan(a: Aturan, w: Waktu): StatusAturan = when {
-    !a.aktif -> StatusAturan.Nonaktif
-    dalamJadwal(a, w) -> StatusAturan.Berlaku
-    else -> StatusAturan.DiLuarJadwal
+fun statusAturan(a: Aturan, w: Waktu, terpakaiDetik: Long = 0, ambangMenit: Int = 15): StatusAturan {
+    if (!a.aktif) return StatusAturan.Nonaktif
+    if (!dalamJadwal(a, w)) return StatusAturan.DiLuarJadwal
+    val sisaDetik = a.kuotaMenit * 60L - terpakaiDetik
+    return when {
+        sisaDetik <= 0 -> StatusAturan.TimeOut
+        sisaDetik <= ambangMenit * 60L -> StatusAturan.HampirHabis
+        else -> StatusAturan.Berlaku
+    }
+}
+
+/** Ringkasan pemakaian aturan di jendela jadwal yang sedang berjalan. */
+private class Terpakai(a: Aturan, val catatan: List<Kuota>) {
+    val detik = catatan.sumOf { it.detik }
+    val dibuka = catatan.sumOf { it.dibuka }
+    val menit = (detik / 60).toInt()
+    // Sisa = kuota - menit terpakai (dibulatkan ke bawah), jadi sisa + terpakai selalu sama dengan kuota.
+    val sisaMenit = (a.kuotaMenit - menit).coerceAtLeast(0)
+    val progres = (detik / (a.kuotaMenit * 60f)).coerceIn(0f, 1f)
 }
 
 /** Isian form yang sudah [FormAturan.lengkap] → baris tabel aturan. */
@@ -91,10 +112,16 @@ fun Aturan.jadwalRingkas(): String {
 
 /** Kartu Blokir - Daftar. */
 @Composable
-fun AturanLengkap.keDaftar(w: Waktu, terpasang: List<AplikasiPilihan>): AturanDaftar {
+fun AturanLengkap.keDaftar(
+    w: Waktu,
+    terpasang: List<AplikasiPilihan>,
+    kuotaTercatat: List<Kuota> = emptyList(),
+    ambangMenit: Int = 15,
+): AturanDaftar {
     val a = aturan
     val logo = aplikasiDariPaket(paket, terpasang)
-    val status = statusAturan(a, w)
+    val pakai = Terpakai(a, pemakaianJendela(a, kuotaTercatat, LocalDateTime.now()))
+    val status = statusAturan(a, w, pakai.detik, ambangMenit)
     val jadwal = a.jadwalRingkas()
     val kuota = formatDurasi(a.kuotaMenit)
     return when (status) {
@@ -109,12 +136,20 @@ fun AturanLengkap.keDaftar(w: Waktu, terpasang: List<AplikasiPilihan>): AturanDa
             stringResource(R.string.mulai_lagi, formatJam(a.mulaiMenit)),
             0f, logo, a.id,
         )
+        StatusAturan.TimeOut -> AturanDaftar(
+            a.nama, jadwal, status,
+            stringResource(R.string.status_bebas_lagi, formatJam(a.selesaiMenit)),
+            stringResource(R.string.kuota_habis_time_out),
+            stringResource(R.string.terpakai_saja, formatDurasi(pakai.menit)),
+            1f, logo, a.id,
+        )
         else -> AturanDaftar(
             a.nama, jadwal, status,
-            stringResource(R.string.status_berlaku_sd, formatJam(a.selesaiMenit)),
-            stringResource(R.string.sisa_menit, kuota),
-            stringResource(R.string.terpakai_dari, formatDurasi(0), kuota),
-            0f, logo, a.id,
+            if (status == StatusAturan.HampirHabis) stringResource(R.string.status_hampir_habis)
+            else stringResource(R.string.status_berlaku_sd, formatJam(a.selesaiMenit)),
+            stringResource(R.string.sisa_menit, formatDurasi(pakai.sisaMenit)),
+            stringResource(R.string.terpakai_dari, formatDurasi(pakai.menit), kuota),
+            pakai.progres, logo, a.id,
         )
     }
 }
@@ -133,41 +168,62 @@ fun AturanLengkap.keBeranda(terpasang: List<AplikasiPilihan>) = AturanBeranda(
 fun menitSampaiSelesai(a: Aturan, w: Waktu): Int = (a.selesaiMenit - w.menit + 24 * 60) % (24 * 60)
 
 /**
- * Isi layar Detail Aturan.
- * shortcut: pemakaian dianggap 0 sampai Tahap 6 (sisa = kuota penuh, dibuka 0 kali).
- * Di Luar Jadwal dan Nonaktif mengikuti frame "Blokir - Detail Aturan (Di Luar Jadwal)" dan "(Nonaktif)".
+ * Isi layar Detail Aturan. Status lain mengikuti frame "Blokir - Detail Aturan (Hampir Habis)", "(Time Out)",
+ * "(Di Luar Jadwal)", dan "(Nonaktif)".
  */
 @Composable
-fun AturanLengkap.keDetail(w: Waktu, terpasang: List<AplikasiPilihan>): DetailAturan {
+fun AturanLengkap.keDetail(
+    w: Waktu,
+    terpasang: List<AplikasiPilihan>,
+    kuotaTercatat: List<Kuota> = emptyList(),
+    ambangMenit: Int = 15,
+): DetailAturan {
     val a = aturan
-    val daftar = keDaftar(w, terpasang)
-    val status = statusAturan(a, w)
+    val sekarang = LocalDateTime.now()
+    val daftar = keDaftar(w, terpasang, kuotaTercatat, ambangMenit)
+    val pakai = Terpakai(a, pemakaianJendela(a, kuotaTercatat, sekarang))
+    val status = daftar.status
+    // Pemakaian per aplikasi; yang paling banyak dipakai di atas.
+    val perAplikasi = pakai.catatan.associateBy { it.paket }
+    val aplikasi = daftar.logo
+        .map { app -> app to perAplikasi[app.paket] }
+        .sortedByDescending { it.second?.detik ?: 0 }
+        .map { (app, k) -> PemakaianAplikasi(app, k?.dibuka ?: 0, formatDurasi(((k?.detik ?: 0) / 60).toInt())) }
+    // "Besok pukul 07.00" atau "Senin pukul 07.00": kapan jendela berikutnya dimulai.
+    val berikut = jendelaBerikutnya(a, sekarang)
+    val bahasa = LocalConfiguration.current.locales[0]
     return DetailAturan(
         nama = a.nama,
         labelStatus = daftar.labelStatus,
-        sisa = formatDurasi(a.kuotaMenit),
+        sisa = formatDurasi(pakai.sisaMenit),
         kuota = formatDurasi(a.kuotaMenit),
-        progres = 0f,
-        terpakai = formatDurasi(0),
-        dibuka = 0,
+        progres = if (status == StatusAturan.TimeOut) 1f else pakai.progres,
+        terpakai = formatDurasi(pakai.menit),
+        dibuka = pakai.dibuka,
         bebasLagi = formatDurasi(menitSampaiSelesai(a, w)),
-        jamReset = formatJam(a.mulaiMenit),
+        jamReset = formatJam(berikut?.let { it.hour * 60 + it.minute } ?: a.mulaiMenit),
         jam = stringResource(R.string.rentang_singkat, formatJam(a.mulaiMenit), formatJam(a.selesaiMenit)),
         hariAktif = bitmaskKeHari(a.hariAktif),
         mulaiMenit = a.mulaiMenit,
         selesaiMenit = a.selesaiMenit,
         sekarangMenit = w.menit,
-        aplikasi = daftar.logo.map { PemakaianAplikasi(it, 0, formatDurasi(0)) },
+        aplikasi = aplikasi,
         badge = status.badge,
+        warnaProgres = status.warnaProgress ?: NotoWarna.PrimerMuda,
         keteranganKanan = when (status) {
-            StatusAturan.Berlaku -> null
             StatusAturan.Nonaktif -> ""
-            else -> stringResource(R.string.mulai_lagi, formatJam(a.mulaiMenit))
-        },
-        teksInfo = when (status) {
-            StatusAturan.Nonaktif -> stringResource(R.string.info_nonaktif)
-            StatusAturan.DiLuarJadwal -> stringResource(R.string.info_di_luar_jadwal, formatJam(a.mulaiMenit))
+            StatusAturan.DiLuarJadwal -> stringResource(R.string.mulai_lagi, formatJam(a.mulaiMenit))
             else -> null
+        },
+        teksInfo = when {
+            status == StatusAturan.Nonaktif -> stringResource(R.string.info_nonaktif)
+            status == StatusAturan.DiLuarJadwal -> stringResource(R.string.info_di_luar_jadwal, formatJam(a.mulaiMenit))
+            berikut == null || berikut.toLocalDate() == sekarang.toLocalDate().plusDays(1) -> null
+            else -> stringResource(
+                R.string.info_waktu_dihitung_hari,
+                berikut.dayOfWeek.getDisplayName(TextStyle.FULL, bahasa),
+                formatJam(berikut.hour * 60 + berikut.minute),
+            )
         },
     )
 }

@@ -1,13 +1,16 @@
 package id.noto.app
 
 import id.noto.app.data.Aturan
+import id.noto.app.data.Kuota
 import id.noto.app.data.hariKeBitmask
 import id.noto.app.data.jendelaBerikutnya
 import id.noto.app.data.jendelaSekarang
+import id.noto.app.data.pemakaianJendela
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class HitungKuotaTest {
     // 2026-11-09 = Senin, 2026-11-13 = Jumat, 2026-11-14 = Sabtu.
@@ -52,5 +55,18 @@ class HitungKuotaTest {
         assertEquals(t(9, 7), jendelaBerikutnya(senJum, t(9, 6)))
         // Senin siang (sedang berjalan) → Selasa.
         assertEquals(t(10, 7), jendelaBerikutnya(senJum, t(9, 12)))
+    }
+
+    @Test
+    fun pemakaianJendela_hanyaJendelaSekarangDanAturanIni() {
+        val a = senJum.copy(id = 1)
+        fun ms(t: LocalDateTime) = t.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val catatan = listOf(
+            Kuota(1, ms(t(9, 7)), "yt", 600, 2), // kemarin
+            Kuota(1, ms(t(10, 7)), "yt", 120, 1), // jendela Selasa: dihitung
+            Kuota(2, ms(t(10, 7)), "yt", 300, 1), // aturan lain
+        )
+        assertEquals(listOf(catatan[1]), pemakaianJendela(a, catatan, t(10, 12)))
+        assertEquals(emptyList<Kuota>(), pemakaianJendela(a, catatan, t(10, 22)))
     }
 }

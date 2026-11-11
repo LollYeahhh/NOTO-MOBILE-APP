@@ -61,6 +61,18 @@ class TampilanAturanTest {
     }
 
     @Test
+    fun statusDariSisaKuota() {
+        // Kuota 60m, ambang Hampir Habis 15m, Senin 12.00 (dalam jadwal).
+        val a = aturan(senJum, 7 * 60, 21 * 60)
+        val w = Waktu(0, 12 * 60)
+        assertEquals(StatusAturan.Berlaku, statusAturan(a, w, 44 * 60L + 59, 15))
+        assertEquals(StatusAturan.HampirHabis, statusAturan(a, w, 45 * 60L, 15))
+        assertEquals(StatusAturan.TimeOut, statusAturan(a, w, 60 * 60L, 15))
+        // Di luar jadwal kuota tidak berlaku, walau sudah habis.
+        assertEquals(StatusAturan.DiLuarJadwal, statusAturan(a, Waktu(0, 22 * 60), 60 * 60L, 15))
+    }
+
+    @Test
     fun formKeAturan() {
         val form = FormAturan(
             aplikasi = listOf("Instagram"),
