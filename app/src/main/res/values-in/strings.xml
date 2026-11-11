@@ -82,4 +82,68 @@
     <string name="rata_rata_per_hari">Rata-rata %1$s per hari</string>
     <string name="ringkasan_pilihan">%1$d aplikasi dipilih · rata-rata %2$s per hari</string>
     <string name="pilih_n_aplikasi">Pilih %1$d Aplikasi</string>
+    <string name="hari_senin">Senin</string>
+    <string name="hari_selasa">Selasa</string>
+    <string name="hari_rabu">Rabu</string>
+    <string name="hari_kamis">Kamis</string>
+    <string name="hari_jumat">Jumat</string>
+    <string name="hari_sabtu">Sabtu</string>
+    <string name="hari_minggu">Minggu</string>
+    <string name="setiap_hari">Setiap hari</string>
+    <string name="setiap_hari_kalimat">setiap hari</string>
+    <string name="rentang_singkat">%1$s–%2$s</string>
+    <string name="rentang_hari_panjang">%1$s sampai %2$s</string>
+    <string name="atur_jadwal">Atur Jadwal</string>
+    <string name="atur_jadwal_ket">Aturan hanya berlaku di hari dan jam yang kamu pilih</string>
+    <string name="hari_berlaku">Hari berlaku</string>
+    <string name="jam_terbatas">Jam terbatas</string>
+    <string name="mulai">Mulai</string>
+    <string name="selesai">Selesai</string>
+    <string name="catatan_jam_terbatas">Di luar jam ini, aplikasi bebas dipakai tanpa kuota.</string>
+    <string name="template_cepat">Template cepat</string>
+    <string name="template_label">%1$s · %2$s</string>
+    <string name="template_siang">Siang</string>
+    <string name="template_jam_kerja">Jam Kerja</string>
+    <string name="template_jam_sekolah">Jam Sekolah</string>
+    <string name="template_malam">Malam</string>
+    <string name="simpan_jadwal">Simpan Jadwal</string>
+    <string name="atur_kuota">Atur Kuota</string>
+    <string name="atur_kuota_ket">Berapa lama boleh dipakai selama jadwal berlaku?</string>
+    <string name="kuota_satuan">per hari aktif, dipakai bersama</string>
+    <string name="kesadaran_judul">Biasanya kamu pakai %1$s di jam ini</string>
+    <string name="kesadaran_ket">Dengan kuota %1$s, ada sekitar %2$s yang bisa kamu pakai untuk hal lain.</string>
+    <string name="catatan_kuota">Kuota sama untuk semua hari aktif dan kembali penuh setiap jadwal dimulai.</string>
+    <string name="simpan_kuota">Simpan Kuota</string>
+    <string name="jam_mulai">Jam Mulai</string>
+    <string name="jam_mulai_ket">Kuota mulai dihitung pada jam ini</string>
+    <string name="jam_selesai">Jam Selesai</string>
+    <string name="jam_selesai_ket">Setelah jam ini, aplikasi bebas dipakai lagi</string>
+    <string name="simpan_jam">Simpan Jam</string>
+    <string name="hapus_judul">Hapus aturan %1$s?</string>
+    <string name="hapus_ket">%1$s akan bebas dipakai lagi. Kamu bisa membuat aturan ini lagi kapan saja.</string>
+    <string name="hapus_subjek_satu">Aplikasinya</string>
+    <string name="hapus_subjek_banyak">Ke%1$s aplikasinya</string>
+    <string name="hapus_subjek_semua">Semua aplikasinya</string>
+    <string name="jeda_judul">Cuma butuh jeda?</string>
+    <string name="jeda_ket">Matikan aturan dari halaman detail. Jadwal dan kuotanya tetap tersimpan.</string>
+    <string name="ya_hapus_aturan">Ya, hapus aturan</string>
+    <string name="batal">Batal</string>
+    <string name="terkunci_eyebrow">Time out · %1$s</string>
+    <string name="terkunci_judul">Saatnya time out sejenak</string>
+    <string name="terkunci_isi">Kuota %1$s %2$s untuk hari ini sudah kamu pakai. %3$s bisa dibuka lagi pukul %4$s.</string>
+    <string name="terkunci_bebas_lagi">Bebas lagi dalam %1$s</string>
+    <string name="napas_judul">Tarik napas sebentar, yuk</string>
+    <string name="napas_ket">Tarik 4 detik, tahan 4 detik, lalu hembuskan pelan selama 6 detik.</string>
+    <string name="kembali_layar_utama">Kembali ke layar utama</string>
+    <string name="lihat_statistik_hari_ini">Lihat statistik hari ini</string>
+    <string-array name="angka_kata">
+        <item>dua</item>
+        <item>tiga</item>
+        <item>empat</item>
+        <item>lima</item>
+        <item>enam</item>
+        <item>tujuh</item>
+        <item>delapan</item>
+        <item>sembilan</item>
+    </string-array>
 </resources>

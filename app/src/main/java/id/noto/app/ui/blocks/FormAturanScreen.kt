@@ -3,6 +3,7 @@ package id.noto.app.ui.blocks
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -30,20 +35,31 @@ import id.noto.app.ui.components.NotoBarisForm
 import id.noto.app.ui.components.NotoBarisSetelan
 import id.noto.app.ui.components.NotoHeaderHalaman
 import id.noto.app.ui.components.NotoInput
+import id.noto.app.ui.components.NotoSheet
 import id.noto.app.ui.components.NotoTombol
 import id.noto.app.ui.components.TipeTombol
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
 import id.noto.app.ui.theme.tinggiBarisFigCraft
+import id.noto.app.util.formatDurasi
+import id.noto.app.util.formatJam
+import id.noto.app.util.ringkasHari
 
 /** Tambah = "Blokir - Tambah Aturan" (node 2231/3531), Edit = "Blokir - Edit Aturan" (node 2789). */
 enum class ModeForm { Tambah, Edit }
 
 /**
+ * Sheet yang bisa terbuka di atas form: Atur Jadwal (overlay 3612), Atur Kuota (overlay 3678), dan
+ * Jam Mulai / Jam Selesai (overlay 4528 / 4580) yang menggantikan Atur Jadwal sementara.
+ */
+enum class SheetForm { Jadwal, Kuota, JamMulai, JamSelesai, Hapus }
+
+/**
  * Form aturan: Header Halaman, konten bergulir (padding 24/16, jarak antarseksi 24), lalu Bilah Aksi.
- * Tidak ada Bottom Nav di layar ini.
- * shortcut: baris Jadwal dan Kuota (sheet) serta "Hapus aturan ini" dipasang di Tahap 3D.
+ * Tidak ada Bottom Nav di layar ini. Baris Jadwal dan Kuota membuka sheet; [sheetAwal] = sheet yang
+ * sudah terbuka saat layar tampil (setelah Pilih Aplikasi, seperti FigCraft).
+ * "Hapus aturan ini" (Edit) membuka Sheet Hapus Aturan; [onHapus] dipanggil setelah "Ya, hapus aturan".
  */
 @Composable
 fun FormAturanScreen(
@@ -55,84 +71,134 @@ fun FormAturanScreen(
     onPilihAplikasi: () -> Unit = {},
     onHapus: () -> Unit = {},
     namaTerpakai: List<String> = emptyList(),
+    sheetAwal: SheetForm? = null,
 ) {
+    var sheet by remember { mutableStateOf(sheetAwal) }
+    // Draf Sheet Atur Jadwal; tetap ada selama sheet ditukar dengan Sheet Jam.
+    var drafJadwal by remember { mutableStateOf(form.jadwal ?: jadwalBawaan) }
+    // Sheet Jadwal yang kembali dari Sheet Jam tampil tanpa animasi (FigCraft: swap overlay instant).
+    var dariJam by remember { mutableStateOf(false) }
     val tambah = mode == ModeForm.Tambah
     // Kolom nama boleh kosong; aturan lalu memakai nama otomatis (Blokir, Blokir 1, …).
     val nama = form.nama.ifBlank {
         namaOtomatis(stringResource(R.string.nama_otomatis), stringResource(R.string.nama_otomatis_nomor), namaTerpakai)
     }
-    Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
-        NotoHeaderHalaman(
-            judul = stringResource(if (tambah) R.string.aturan_baru else R.string.edit_aturan_judul),
-            onIkonKiri = onTutup,
-            ikonKiri = if (tambah) R.drawable.ic_tutup else R.drawable.ic_kembali,
-            deskripsiIkonKiri = stringResource(if (tambah) R.string.tutup else R.string.kembali),
-        )
-        Column(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-        ) {
-            Seksi(R.string.nama_aturan) {
-                NotoInput(form.nama, { onUbah(form.copy(nama = it)) }, placeholder = stringResource(R.string.nama_aturan_contoh))
-            }
-            Seksi(R.string.apa_yang_diatur) {
-                NotoBarisForm(
-                    painterResource(R.drawable.ic_aplikasi),
-                    stringResource(R.string.aplikasi),
-                    if (form.aplikasi.isEmpty()) stringResource(R.string.pilih_aplikasi_ket) else form.aplikasi.joinToString(", "),
-                    // Di Edit Aturan baris ini tidak punya interaksi di FigCraft (disepakati: ikuti desain).
-                    onKlik = if (tambah) onPilihAplikasi else ({}),
-                )
-            }
-            Seksi(R.string.kapan_berapa_lama) {
-                val jadwal = form.jadwal
-                NotoBarisForm(
-                    painterResource(R.drawable.ic_kalender),
-                    stringResource(R.string.jadwal),
-                    if (jadwal == null) stringResource(R.string.jadwal_ket) else stringResource(R.string.jadwal_ringkas, jadwal.hariSingkat, jadwal.jam),
-                    onKlik = {},
-                )
-                NotoBarisForm(
-                    painterResource(R.drawable.ic_jam_pasir),
-                    stringResource(R.string.kuota),
-                    if (form.kuota == null) stringResource(R.string.kuota_ket) else stringResource(R.string.kuota_per_hari_aktif, form.kuota),
-                    onKlik = {},
-                )
-            }
-            Seksi(R.string.saat_time_out) {
-                // Kartu Opsi: Permukaan sudut 16, padding 4/16.
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(NotoWarna.Permukaan, RoundedCornerShape(16.dp))
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                ) {
-                    NotoBarisSetelan(
-                        painterResource(R.drawable.ic_lonceng),
-                        stringResource(R.string.senyapkan_notifikasi),
-                        keterangan = stringResource(R.string.senyapkan_notifikasi_ket_form),
-                        toggle = form.senyap,
-                        onUbah = { onUbah(form.copy(senyap = it)) },
+    val hariSingkat = namaHariSingkat()
+    val setiapHari = stringResource(R.string.setiap_hari)
+    val polaRentang = stringResource(R.string.rentang_singkat)
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
+            NotoHeaderHalaman(
+                judul = stringResource(if (tambah) R.string.aturan_baru else R.string.edit_aturan_judul),
+                onIkonKiri = onTutup,
+                ikonKiri = if (tambah) R.drawable.ic_tutup else R.drawable.ic_kembali,
+                deskripsiIkonKiri = stringResource(if (tambah) R.string.tutup else R.string.kembali),
+            )
+            Column(
+                Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
+                Seksi(R.string.nama_aturan) {
+                    NotoInput(form.nama, { onUbah(form.copy(nama = it)) }, placeholder = stringResource(R.string.nama_aturan_contoh))
+                }
+                Seksi(R.string.apa_yang_diatur) {
+                    NotoBarisForm(
+                        painterResource(R.drawable.ic_aplikasi),
+                        stringResource(R.string.aplikasi),
+                        if (form.aplikasi.isEmpty()) stringResource(R.string.pilih_aplikasi_ket) else form.aplikasi.joinToString(", "),
+                        // Di Edit Aturan baris ini tidak punya interaksi di FigCraft (disepakati: ikuti desain).
+                        onKlik = if (tambah) onPilihAplikasi else ({}),
                     )
                 }
+                Seksi(R.string.kapan_berapa_lama) {
+                    val jadwal = form.jadwal
+                    NotoBarisForm(
+                        painterResource(R.drawable.ic_kalender),
+                        stringResource(R.string.jadwal),
+                        if (jadwal == null) {
+                            stringResource(R.string.jadwal_ket)
+                        } else {
+                            stringResource(
+                                R.string.jadwal_ringkas,
+                                ringkasHari(jadwal.hari, hariSingkat, setiapHari, polaRentang),
+                                teksRentangJam(jadwal),
+                            )
+                        },
+                        onKlik = { drafJadwal = form.jadwal ?: jadwalBawaan; dariJam = false; sheet = SheetForm.Jadwal },
+                    )
+                    NotoBarisForm(
+                        painterResource(R.drawable.ic_jam_pasir),
+                        stringResource(R.string.kuota),
+                        if (form.kuotaMenit == null) stringResource(R.string.kuota_ket) else stringResource(R.string.kuota_per_hari_aktif, formatDurasi(form.kuotaMenit)),
+                        onKlik = { sheet = SheetForm.Kuota },
+                    )
+                }
+                Seksi(R.string.saat_time_out) {
+                    // Kartu Opsi: Permukaan sudut 16, padding 4/16.
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(NotoWarna.Permukaan, RoundedCornerShape(16.dp))
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                    ) {
+                        NotoBarisSetelan(
+                            painterResource(R.drawable.ic_lonceng),
+                            stringResource(R.string.senyapkan_notifikasi),
+                            keterangan = stringResource(R.string.senyapkan_notifikasi_ket_form),
+                            toggle = form.senyap,
+                            onUbah = { onUbah(form.copy(senyap = it)) },
+                        )
+                    }
+                }
+                Pratinjau(form, nama)
+                if (!tambah) {
+                    NotoTombol(stringResource(R.string.hapus_aturan_ini), onKlik = { sheet = SheetForm.Hapus }, tipe = TipeTombol.Teks)
+                }
             }
-            Pratinjau(form, nama)
-            if (!tambah) {
-                NotoTombol(stringResource(R.string.hapus_aturan_ini), onKlik = onHapus, tipe = TipeTombol.Teks)
+            BilahAksi {
+                NotoTombol(
+                    stringResource(if (tambah) R.string.simpan_aturan else R.string.simpan_perubahan),
+                    onKlik = onSimpan,
+                    aktif = form.lengkap,
+                )
             }
         }
-        BilahAksi {
-            NotoTombol(
-                stringResource(if (tambah) R.string.simpan_aturan else R.string.simpan_perubahan),
-                onKlik = onSimpan,
-                aktif = form.lengkap,
+        NotoSheet(tampil = sheet == SheetForm.Jadwal, onTutup = { sheet = null }, geserMasuk = !dariJam, scrimMasuk = !dariJam) {
+            SheetJadwal(
+                drafJadwal,
+                onUbah = { drafJadwal = it },
+                onPilihJam = { mulai -> sheet = if (mulai) SheetForm.JamMulai else SheetForm.JamSelesai },
+                onTutup = { sheet = null },
+                onSimpan = { onUbah(form.copy(jadwal = it)); sheet = null },
             )
+        }
+        NotoSheet(tampil = sheet == SheetForm.Hapus, onTutup = { sheet = null }) {
+            SheetHapus(nama, form.aplikasi.size, onTutup = { sheet = null }, onHapus = onHapus)
+        }
+        // Sheet Jam: X, back, dan ketuk di luar kembali ke Atur Jadwal tanpa menyimpan jam.
+        val kembaliKeJadwal = { dariJam = true; sheet = SheetForm.Jadwal }
+        NotoSheet(tampil = sheet == SheetForm.JamMulai, onTutup = kembaliKeJadwal, scrimMasuk = false) {
+            SheetJam(R.string.jam_mulai, R.string.jam_mulai_ket, drafJadwal.mulaiMenit, drafJadwal.selesaiMenit, kembaliKeJadwal) {
+                drafJadwal = drafJadwal.copy(mulaiMenit = it); kembaliKeJadwal()
+            }
+        }
+        NotoSheet(tampil = sheet == SheetForm.JamSelesai, onTutup = kembaliKeJadwal, scrimMasuk = false) {
+            SheetJam(R.string.jam_selesai, R.string.jam_selesai_ket, drafJadwal.selesaiMenit, drafJadwal.mulaiMenit, kembaliKeJadwal) {
+                drafJadwal = drafJadwal.copy(selesaiMenit = it); kembaliKeJadwal()
+            }
+        }
+        NotoSheet(tampil = sheet == SheetForm.Kuota, onTutup = { sheet = null }) {
+            SheetKuota(form.kuotaMenit ?: KUOTA_BAWAAN_MENIT, onTutup = { sheet = null }, onSimpan = { onUbah(form.copy(kuotaMenit = it)); sheet = null })
         }
     }
 }
+
+/** "07.00–21.00" dari jam mulai dan selesai jadwal. */
+@Composable
+private fun teksRentangJam(j: JadwalForm) = stringResource(R.string.rentang_singkat, formatJam(j.mulaiMenit), formatJam(j.selesaiMenit))
 
 /** Label seksi (NOTO/Label, teks sekunder) dan isinya, jarak 8. */
 @Composable
@@ -147,8 +213,14 @@ private fun Seksi(label: Int, isi: @Composable () -> Unit) {
 @Composable
 private fun Pratinjau(form: FormAturan, nama: String) {
     val jadwal = form.jadwal
-    val teks = if (form.lengkap && jadwal != null && form.kuota != null) {
-        stringResource(R.string.pratinjau_aturan, nama, form.kuota, jadwal.jam, jadwal.hariPanjang)
+    val teks = if (form.lengkap && jadwal != null && form.kuotaMenit != null) {
+        val hari = ringkasHari(
+            jadwal.hari,
+            namaHariPanjang(),
+            stringResource(R.string.setiap_hari_kalimat),
+            stringResource(R.string.rentang_hari_panjang),
+        )
+        stringResource(R.string.pratinjau_aturan, nama, formatDurasi(form.kuotaMenit), teksRentangJam(jadwal), hari)
     } else {
         stringResource(R.string.pratinjau_kosong)
     }

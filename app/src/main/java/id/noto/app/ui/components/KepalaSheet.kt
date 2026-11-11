@@ -23,6 +23,7 @@ import id.noto.app.R
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
+import id.noto.app.ui.theme.tinggiBarisFigCraft
 
 /**
  * "Kepala Sheet" (node 1714): pegangan 36×4 di tengah, jarak 12, lalu judul (NOTO/Judul Kartu)
@@ -34,8 +35,8 @@ fun NotoKepalaSheet(judul: String, subjudul: String, onTutup: () -> Unit, modifi
         Box(Modifier.size(36.dp, 4.dp).background(NotoWarna.Garis, CircleShape))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(judul, style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
-                Text(subjudul, style = NotoTeks.Teks, color = NotoWarna.TeksSekunder)
+                Text(judul, Modifier.tinggiBarisFigCraft(NotoTeks.JudulKartu), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
+                Text(subjudul, Modifier.tinggiBarisFigCraft(NotoTeks.Teks), style = NotoTeks.Teks, color = NotoWarna.TeksSekunder)
             }
             Image(
                 painterResource(R.drawable.ic_tutup),

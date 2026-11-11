@@ -2,17 +2,16 @@ package id.noto.app.ui.blocks
 
 import id.noto.app.R
 
-// Isian form Tambah/Edit Aturan. Teks jadwal dan kuota masih teks jadi (data contoh);
-// di Tahap 4–5 dihitung dari hari, jam mulai-selesai, dan menit kuota.
+// Isian form Tambah/Edit Aturan. Teks di layar dibentuk dari data ini (lihat util/FormatWaktu.kt).
 
-/** Jadwal dalam dua bentuk: singkat untuk baris form, panjang untuk kalimat pratinjau. */
-data class JadwalForm(val hariSingkat: String, val hariPanjang: String, val jam: String)
+/** Jadwal: [hari] 0 = Senin … 6 = Minggu, jam terbatas dalam menit sejak tengah malam. */
+data class JadwalForm(val hari: Set<Int>, val mulaiMenit: Int, val selesaiMenit: Int)
 
 data class FormAturan(
     val nama: String = "",
     val aplikasi: List<String> = emptyList(),
     val jadwal: JadwalForm? = null,
-    val kuota: String? = null,
+    val kuotaMenit: Int? = null,
     val senyap: Boolean = false,
 ) {
     /**
@@ -20,7 +19,7 @@ data class FormAturan(
      * Nama tidak wajib; kalau kosong dipakai [namaOtomatis].
      */
     val lengkap: Boolean
-        get() = aplikasi.isNotEmpty() && jadwal != null && kuota != null
+        get() = aplikasi.isNotEmpty() && jadwal != null && kuotaMenit != null
 }
 
 /**
@@ -35,14 +34,18 @@ fun namaOtomatis(dasar: String, polaNomor: String, terpakai: Collection<String>)
     return polaNomor.format(nomor)
 }
 
-private val jadwalSosmed = JadwalForm("Sen–Jum", "Senin sampai Jumat", "07.00–21.00")
+/** Jadwal awal Sheet Atur Jadwal saat form belum punya jadwal (sama dengan FigCraft). */
+val jadwalBawaan = JadwalForm(hari = setOf(0, 1, 2, 3, 4), mulaiMenit = 7 * 60, selesaiMenit = 21 * 60)
+
+/** Kuota awal Sheet Atur Kuota saat form belum punya kuota (sama dengan FigCraft: 1j 30m). */
+const val KUOTA_BAWAAN_MENIT = 90
 
 /** Sama dengan FigCraft "Blokir - Tambah Aturan Terisi". */
 val contohFormTerisi = FormAturan(
     nama = "Sosmed",
     aplikasi = listOf("Instagram", "X", "TikTok", "WhatsApp"),
-    jadwal = jadwalSosmed,
-    kuota = "1j 30m",
+    jadwal = jadwalBawaan,
+    kuotaMenit = KUOTA_BAWAAN_MENIT,
     senyap = false,
 )
 
@@ -68,3 +71,22 @@ val contohKategoriAplikasi = listOf(
     KategoriAplikasi(R.string.kategori_hiburan, listOf(AplikasiPilihan(R.drawable.logo_tiktok, "TikTok", 55))),
     KategoriAplikasi(R.string.kategori_komunikasi, listOf(AplikasiPilihan(R.drawable.logo_whatsapp, "WhatsApp", 40))),
 )
+
+/** Template cepat di Sheet Atur Jadwal: id string nama, jam mulai dan selesai (menit). */
+data class TemplateJadwal(val nama: Int, val mulaiMenit: Int, val selesaiMenit: Int)
+
+val templateJadwal = listOf(
+    TemplateJadwal(R.string.template_siang, 7 * 60, 21 * 60),
+    TemplateJadwal(R.string.template_jam_kerja, 9 * 60, 17 * 60),
+    TemplateJadwal(R.string.template_jam_sekolah, 7 * 60, 15 * 60),
+    TemplateJadwal(R.string.template_malam, 18 * 60, 23 * 60),
+)
+
+/** Pilihan cepat di Sheet Atur Kuota (menit). */
+val pilihanKuotaCepat = listOf(30, 60, 90, 120)
+
+/**
+ * shortcut: rata-rata pemakaian di jam jadwal masih angka contoh dari FigCraft (2j 40m);
+ * dihitung dari UsageStatsManager di Tahap 6.
+ */
+const val CONTOH_PEMAKAIAN_BIASA_MENIT = 160

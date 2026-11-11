@@ -75,11 +75,14 @@ val Typography = Typography(
 
 /**
  * Glyph Poppins setinggi 1,4× ukuran font, jadi untuk Angka Hero (24/32) kotak teks Compose menjadi 33,6,
- * lebih tinggi dari 32 di FigCraft. Modifier ini mengunci tinggi kotak = tinggi baris, teks tetap di tengah.
- * Hanya untuk teks satu baris.
+ * lebih tinggi dari 32 di FigCraft. Modifier ini mengunci tinggi kotak = jumlah baris × tinggi baris,
+ * teks tetap di tengah. Kelebihan glyph hanya ada di baris pertama dan terakhir (kurang dari satu
+ * tinggi baris), jadi jumlah baris = tinggi ukur ÷ tinggi baris, dibulatkan.
  */
 fun Modifier.tinggiBarisFigCraft(gaya: TextStyle) = layout { ukur, batas ->
     val teks = ukur.measure(batas.copy(minHeight = 0, maxHeight = Constraints.Infinity))
-    val tinggi = gaya.lineHeight.toPx().roundToInt()
+    val tinggiBaris = gaya.lineHeight.toPx()
+    val baris = (teks.height / tinggiBaris).roundToInt().coerceAtLeast(1)
+    val tinggi = (baris * tinggiBaris).roundToInt()
     layout(teks.width, tinggi) { teks.place(0, (tinggi - teks.height) / 2) }
 }

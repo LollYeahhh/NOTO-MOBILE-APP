@@ -52,6 +52,11 @@ import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.blocks.FormAturanScreen
 import id.noto.app.ui.blocks.ModeForm
 import id.noto.app.ui.blocks.PilihAplikasiScreen
+import id.noto.app.ui.blocks.SheetForm
+import id.noto.app.ui.blocks.contohFormEdit
+import id.noto.app.ui.blocks.contohTerkunci
+import id.noto.app.ui.blocks.TerkunciScreen
+import id.noto.app.ui.blocks.jadwalBawaan
 import id.noto.app.ui.blocks.contohPilihanAwal
 import id.noto.app.ui.blocks.contohFormTerisi
 import id.noto.app.ui.home.BerandaScreen
@@ -71,7 +76,10 @@ class KatalogActivity : ComponentActivity() {
     }
 }
 
-private const val JUMLAH_HALAMAN = 9
+private const val JUMLAH_HALAMAN = 14
+
+// Latar sheet di FigCraft: nama dan aplikasi terisi, jadwal dan kuota belum.
+private val formSebelumJadwal = contohFormTerisi.copy(jadwal = null, kuotaMenit = null)
 
 @Composable
 private fun Katalog() {
@@ -82,10 +90,18 @@ private fun Katalog() {
         // (di aplikasi, kedua tab memakai data contoh yang terisi).
         // Halaman 8: Tambah Aturan Terisi (di aplikasi baru bisa tercapai setelah sheet Jadwal/Kuota, 3D).
         // Halaman 9: Pilih Aplikasi dengan pilihan seperti FigCraft (di aplikasi, pilihan awal = isi form).
+        // Halaman 10–11: Sheet Atur Jadwal / Atur Kuota di atas Tambah Aturan (nama + aplikasi terisi).
+        // Halaman 12: Sheet Jam Mulai ("Blokir - Sheet Pilih Jam").
+        // Halaman 13: Sheet Hapus Aturan di atas Edit Aturan; halaman 14: Terkunci Time Out.
         if (halaman == 5) BerandaScreen(aturan = emptyList())
         else if (halaman == 6) BlokirScreen(aturan = emptyList())
         else if (halaman == 7) FormAturanScreen(ModeForm.Tambah, contohFormTerisi, {}, {}, {})
         else if (halaman == 8) PilihAplikasiScreen(contohPilihanAwal, {}, {})
+        else if (halaman == 9) FormAturanScreen(ModeForm.Tambah, formSebelumJadwal, {}, {}, {}, sheetAwal = SheetForm.Jadwal)
+        else if (halaman == 10) FormAturanScreen(ModeForm.Tambah, formSebelumJadwal.copy(jadwal = jadwalBawaan), {}, {}, {}, sheetAwal = SheetForm.Kuota)
+        else if (halaman == 11) FormAturanScreen(ModeForm.Tambah, formSebelumJadwal, {}, {}, {}, sheetAwal = SheetForm.JamMulai)
+        else if (halaman == 12) FormAturanScreen(ModeForm.Edit, contohFormEdit, {}, {}, {}, sheetAwal = SheetForm.Hapus)
+        else if (halaman == 13) TerkunciScreen(contohTerkunci, {}, {})
         else Column(
             Modifier
                 .padding(start = 16.dp, top = 80.dp)

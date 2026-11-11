@@ -85,4 +85,68 @@
     <string name="rata_rata_per_hari">Average %1$s per day</string>
     <string name="ringkasan_pilihan">%1$d apps selected · average %2$s per day</string>
     <string name="pilih_n_aplikasi">Choose %1$d Apps</string>
+    <string name="hari_senin">Monday</string>
+    <string name="hari_selasa">Tuesday</string>
+    <string name="hari_rabu">Wednesday</string>
+    <string name="hari_kamis">Thursday</string>
+    <string name="hari_jumat">Friday</string>
+    <string name="hari_sabtu">Saturday</string>
+    <string name="hari_minggu">Sunday</string>
+    <string name="setiap_hari">Every day</string>
+    <string name="setiap_hari_kalimat">every day</string>
+    <string name="rentang_singkat">%1$s–%2$s</string>
+    <string name="rentang_hari_panjang">%1$s to %2$s</string>
+    <string name="atur_jadwal">Set Schedule</string>
+    <string name="atur_jadwal_ket">The rule only applies on the days and hours you choose</string>
+    <string name="hari_berlaku">Active days</string>
+    <string name="jam_terbatas">Limited hours</string>
+    <string name="mulai">Start</string>
+    <string name="selesai">End</string>
+    <string name="catatan_jam_terbatas">Outside these hours, the apps are free to use with no quota.</string>
+    <string name="template_cepat">Quick templates</string>
+    <string name="template_label">%1$s · %2$s</string>
+    <string name="template_siang">Daytime</string>
+    <string name="template_jam_kerja">Work Hours</string>
+    <string name="template_jam_sekolah">School Hours</string>
+    <string name="template_malam">Evening</string>
+    <string name="simpan_jadwal">Save Schedule</string>
+    <string name="atur_kuota">Set Quota</string>
+    <string name="atur_kuota_ket">How long can the apps be used while the schedule applies?</string>
+    <string name="kuota_satuan">per active day, shared</string>
+    <string name="kesadaran_judul">You usually spend %1$s in these hours</string>
+    <string name="kesadaran_ket">With a %1$s quota, you get about %2$s back for other things.</string>
+    <string name="catatan_kuota">The quota is the same on every active day and refills each time the schedule starts.</string>
+    <string name="simpan_kuota">Save Quota</string>
+    <string name="jam_mulai">Start Time</string>
+    <string name="jam_mulai_ket">The quota starts counting at this time</string>
+    <string name="jam_selesai">End Time</string>
+    <string name="jam_selesai_ket">After this time, the apps are free to use again</string>
+    <string name="simpan_jam">Save Time</string>
+    <string name="hapus_judul">Delete the %1$s rule?</string>
+    <string name="hapus_ket">%1$s will be free to use again. You can create this rule again anytime.</string>
+    <string name="hapus_subjek_satu">The app</string>
+    <string name="hapus_subjek_banyak">All %1$s apps</string>
+    <string name="hapus_subjek_semua">All the apps</string>
+    <string name="jeda_judul">Just need a break?</string>
+    <string name="jeda_ket">Turn the rule off from the detail page. Its schedule and quota stay saved.</string>
+    <string name="ya_hapus_aturan">Yes, delete rule</string>
+    <string name="batal">Cancel</string>
+    <string name="terkunci_eyebrow">Time out · %1$s</string>
+    <string name="terkunci_judul">Time for a short time out</string>
+    <string name="terkunci_isi">You have used your %1$s quota of %2$s for today. %3$s can be opened again at %4$s.</string>
+    <string name="terkunci_bebas_lagi">Free again in %1$s</string>
+    <string name="napas_judul">Take a short breath</string>
+    <string name="napas_ket">Breathe in for 4 seconds, hold for 4 seconds, then breathe out slowly for 6 seconds.</string>
+    <string name="kembali_layar_utama">Back to home screen</string>
+    <string name="lihat_statistik_hari_ini">See today\'s stats</string>
+    <string-array name="angka_kata">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>
 </resources>

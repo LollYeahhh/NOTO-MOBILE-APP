@@ -12,6 +12,9 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.withResumed
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +34,7 @@ import id.noto.app.ui.blocks.FormAturan
 import id.noto.app.ui.blocks.FormAturanScreen
 import id.noto.app.ui.blocks.ModeForm
 import id.noto.app.ui.blocks.PilihAplikasiScreen
+import id.noto.app.ui.blocks.SheetForm
 import id.noto.app.ui.blocks.contohAturanDaftar
 import id.noto.app.ui.blocks.contohDetailSosmed
 import id.noto.app.ui.blocks.contohFormEdit
@@ -77,12 +81,16 @@ fun NotoNavGraph() {
     // shortcut: nama aturan Sosmed (satu-satunya yang bisa diedit) disimpan di memori saja, hilang saat
     // aplikasi ditutup; diganti Room di Tahap 4.
     var namaSosmed by remember { mutableStateOf(contohFormEdit.nama) }
+    // shortcut: aturan Sosmed yang dihapus hanya disembunyikan di memori; diganti Room di Tahap 4.
+    var sosmedDihapus by remember { mutableStateOf(false) }
     // Nama aturan yang sudah ada, supaya nama otomatis tidak kembar (sementara dari data contoh).
     val namaAturan = contohAturanDaftar.map { if (it.judul == contohFormEdit.nama) namaSosmed else it.judul }
     val namaDasar = stringResource(R.string.nama_otomatis)
     val polaNomor = stringResource(R.string.nama_otomatis_nomor)
     // Pilih Aplikasi ditutup lewat tombol "Pilih N Aplikasi" (dissolve) atau kembali (instant).
     var pilihLewatTombol by remember { mutableStateOf(false) }
+    // Setelah "Pilih N Aplikasi", Tambah tampil dengan Sheet Atur Jadwal sudah terbuka (FigCraft node 2456).
+    var bukaJadwal by remember { mutableStateOf(false) }
 
     // Dissolve splash → Beranda: cangkang (Beranda beserta nav) muncul memudar di atas splash.
     val pudarSplash = tween<Float>(DURASI_PUDAR_SPLASH_MS, easing = EaseInOutFigCraft)
@@ -116,6 +124,7 @@ fun NotoNavGraph() {
                 onTambah = { form = FormAturan(); navController.navigate(RUTE_TAMBAH) },
                 onEdit = { form = contohFormEdit.copy(nama = namaSosmed); navController.navigate(RUTE_EDIT) },
                 namaSosmed = namaSosmed,
+                sosmedDihapus = sosmedDihapus,
             )
         }
         composable(
@@ -136,8 +145,9 @@ fun NotoNavGraph() {
                 onTutup = { navController.popBackStack() },
                 // Belum disimpan ke mana pun sampai Tahap 4.
                 onSimpan = { navController.popBackStack() },
-                onPilihAplikasi = { pilihLewatTombol = false; navController.navigate(RUTE_PILIH) },
+                onPilihAplikasi = { pilihLewatTombol = false; bukaJadwal = false; navController.navigate(RUTE_PILIH) },
                 namaTerpakai = namaAturan,
+                sheetAwal = if (bukaJadwal) SheetForm.Jadwal else null,
             )
         }
         composable(
@@ -147,19 +157,26 @@ fun NotoNavGraph() {
                 if (pilihLewatTombol) fadeOut(tween(DURASI_DISSOLVE_MS, easing = EaseOutFigCraft)) else ExitTransition.None
             },
         ) {
-            // shortcut: FigCraft membawa tombol ini ke "Tambah Aturan Terisi"; di sini kembali ke Tambah
-            // dengan aplikasi terisi (disepakati 4a).
+            // Tombol "Pilih N Aplikasi": kembali ke Tambah (aplikasi terisi) dengan Sheet Atur Jadwal terbuka.
             PilihAplikasiScreen(
                 awal = form.aplikasi,
                 onKembali = { navController.popBackStack() },
                 onPilih = {
                     form = form.copy(aplikasi = it)
                     pilihLewatTombol = true
+                    bukaJadwal = true
                     navController.popBackStack()
                 },
             )
         }
-        composable(RUTE_EDIT, enterTransition = { slideInHorizontally(gerak) { it } }) {
+        composable(
+            RUTE_EDIT,
+            enterTransition = { slideInHorizontally(gerak) { it } },
+            // "Ya, hapus aturan": dissolve 250 ms ke Blokir - Daftar; kembali dan simpan: instant.
+            popExitTransition = {
+                if (sosmedDihapus) fadeOut(tween(DURASI_DISSOLVE_MS, easing = EaseOutFigCraft)) else ExitTransition.None
+            },
+        ) {
             // Kembali dan "Simpan Perubahan": back instant.
             FormAturanScreen(
                 mode = ModeForm.Edit,
@@ -171,6 +188,7 @@ fun NotoNavGraph() {
                     namaSosmed = form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan - namaSosmed) }
                     navController.popBackStack()
                 },
+                onHapus = { sosmedDihapus = true; navController.popBackStack() },
                 // Nama aturan yang sedang diedit tidak dihitung terpakai.
                 namaTerpakai = namaAturan - namaSosmed,
             )
@@ -180,8 +198,25 @@ fun NotoNavGraph() {
 
 /** Cangkang: empat tab dan Detail Aturan dengan Bottom Nav di bawahnya. */
 @Composable
-private fun CangkangTab(onTambah: () -> Unit, onEdit: () -> Unit, namaSosmed: String) {
+private fun CangkangTab(onTambah: () -> Unit, onEdit: () -> Unit, namaSosmed: String, sosmedDihapus: Boolean) {
     val navController = rememberNavController()
+
+    // Setelah aturan dihapus dari Edit, Detail-nya tidak ada lagi: pindah ke Blokir - Daftar tanpa animasi.
+    // Navigasi ditunda sampai cangkang aktif lagi (Edit selesai memudar): navigate() saat cangkang belum aktif
+    // membuat NavHost di dalamnya mengabaikan navigasi berikutnya sampai tombol back ditekan.
+    // Selama menunggu, rute Detail sudah menampilkan isi Daftar, jadi tidak terlihat lompatan.
+    val siklus = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(sosmedDihapus) {
+        if (!sosmedDihapus) return@LaunchedEffect
+        siklus.withResumed {
+            if (navController.currentDestination?.route != RUTE_DETAIL) return@withResumed
+            if (navController.previousBackStackEntry?.destination?.route == Tab.Blokir.rute) {
+                navController.popBackStack()
+            } else {
+                navController.navigate(Tab.Blokir.rute) { popUpTo(Tab.Beranda.rute); launchSingleTop = true }
+            }
+        }
+    }
 
     // Tab aktif dibaca dari layar yang sedang tampil, jadi ketuk tab maupun tombol back
     // sama-sama membuat pill bergeser ke tab yang benar.
@@ -204,6 +239,14 @@ private fun CangkangTab(onTambah: () -> Unit, onEdit: () -> Unit, namaSosmed: St
     val push = tween<IntOffset>(DURASI_PUSH_MS, easing = EaseOutFigCraft)
     val ruteAsalDetail = setOf(Tab.Blokir.rute, Tab.Beranda.rute)
 
+    @Composable
+    fun DaftarBlokir() = BlokirScreen(
+        aturan = contohAturanDaftar.filterNot { sosmedDihapus && it.judul == contohDetailSosmed.nama }
+            .map { if (it.judul == contohDetailSosmed.nama) it.copy(judul = namaSosmed) else it },
+        onBukaDetail = { navController.navigate(RUTE_DETAIL) },
+        onTambah = onTambah,
+    )
+
     Box(Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
@@ -221,30 +264,29 @@ private fun CangkangTab(onTambah: () -> Unit, onEdit: () -> Unit, namaSosmed: St
                 popEnterTransition = { if (initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
             ) {
                 BerandaScreen(
-                    aturan = contohAturanBeranda.map { if (it.aktif) it.copy(nama = namaSosmed) else it },
+                    aturan = contohAturanBeranda.filterNot { sosmedDihapus && it.aktif }.map { if (it.aktif) it.copy(nama = namaSosmed) else it },
                     onBukaDetail = { navController.navigate(RUTE_DETAIL) },
                     onTambah = onTambah,
                 )
             }
             composable(
                 Tab.Blokir.rute,
+                // Dari Detail aturan yang baru dihapus: isinya sudah sama, jadi tanpa animasi.
+                enterTransition = { if (sosmedDihapus && initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
                 exitTransition = { if (targetState.destination.route == RUTE_DETAIL) slideOutHorizontally(push) { -it } else fadeOut(pudar) },
                 // Kembali dari Detail: instant, seperti aksi "back" di FigCraft.
                 popEnterTransition = { if (initialState.destination.route == RUTE_DETAIL) EnterTransition.None else fadeIn(pudar) },
             ) {
-                BlokirScreen(
-                    aturan = contohAturanDaftar.map { if (it.judul == contohDetailSosmed.nama) it.copy(judul = namaSosmed) else it },
-                    onBukaDetail = { navController.navigate(RUTE_DETAIL) },
-                    onTambah = onTambah,
-                )
+                DaftarBlokir()
             }
             composable(
                 RUTE_DETAIL,
                 // Dari Daftar atau Beranda: push. Kembali: instant, seperti aksi "back" di FigCraft.
                 enterTransition = { if (initialState.destination.route in ruteAsalDetail) slideInHorizontally(push) { it } else fadeIn(pudar) },
+                exitTransition = { if (sosmedDihapus) ExitTransition.None else fadeOut(pudar) },
                 popExitTransition = { if (targetState.destination.route in ruteAsalDetail) ExitTransition.None else fadeOut(pudar) },
             ) {
-                DetailAturanScreen(onKembali = { navController.popBackStack() }, onEdit = onEdit, detail = contohDetailSosmed.copy(nama = namaSosmed))
+                if (sosmedDihapus) DaftarBlokir() else DetailAturanScreen(onKembali = { navController.popBackStack() }, onEdit = onEdit, detail = contohDetailSosmed.copy(nama = namaSosmed))
             }
             composable(Tab.Statistik.rute) { StatistikScreen() }
             composable(Tab.Setelan.rute) { SetelanScreen() }
