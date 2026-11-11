@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import id.noto.app.R
 import id.noto.app.data.Aturan
 import id.noto.app.data.hariKeBitmask
-import id.noto.app.ui.blocks.contohKategoriAplikasi
+import id.noto.app.ui.blocks.contohAplikasi
 import id.noto.app.ui.blocks.jadwalRingkas
 import id.noto.app.ui.components.NotoBarisSetelan
 import id.noto.app.ui.components.NotoHeaderHalaman
@@ -58,7 +58,7 @@ import kotlin.math.ceil
 fun DetailAplikasiScreen(app: AplikasiStatistik, aturan: Aturan?, onKembali: () -> Unit, onAturan: () -> Unit) {
     val hariIni = contohHariIniAplikasi
     // Kategori dari daftar Pilih Aplikasi; aplikasi di luar daftar itu hanya bertuliskan "Hari ini".
-    val kategori = contohKategoriAplikasi.firstOrNull { k -> k.aplikasi.any { it.nama == app.nama } }?.judul
+    val kategori = contohAplikasi.firstOrNull { it.nama == app.nama }?.kategori
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderHalaman(app.nama, onIkonKiri = onKembali)
         IsiSetelan {

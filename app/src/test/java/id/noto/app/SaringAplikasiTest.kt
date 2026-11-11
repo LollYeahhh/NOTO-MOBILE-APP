@@ -1,28 +1,50 @@
 package id.noto.app
 
+import android.content.pm.ApplicationInfo
+import id.noto.app.data.kategoriDari
 import id.noto.app.ui.blocks.AplikasiPilihan
-import id.noto.app.ui.blocks.KategoriAplikasi
 import id.noto.app.ui.blocks.saringAplikasi
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class SaringAplikasiTest {
+    private val sosmed = R.string.kategori_sosial_media
+    private val lainnya = R.string.kategori_lainnya
     private val data = listOf(
-        KategoriAplikasi(1, listOf(AplikasiPilihan(0, "Instagram", 70), AplikasiPilihan(0, "X", 25), AplikasiPilihan(0, "Facebook", 15))),
-        KategoriAplikasi(2, listOf(AplikasiPilihan(0, "TikTok", 55))),
+        AplikasiPilihan("a", "X", sosmed),
+        AplikasiPilihan("b", "WhatsApp", lainnya),
+        AplikasiPilihan("c", "instagram", sosmed),
+        AplikasiPilihan("d", "Facebook", sosmed),
     )
 
-    private fun nama(hasil: List<KategoriAplikasi>) = hasil.map { k -> k.aplikasi.map { it.nama } }
-
     @Test
-    fun cariTanpaBedaHurufDanBuangKategoriKosong() {
-        assertEquals(listOf(listOf("Instagram")), nama(saringAplikasi(data, " insta ", urutAZ = false)))
-        assertEquals(emptyList<List<String>>(), nama(saringAplikasi(data, "zzz", urutAZ = false)))
+    fun cariTanpaBedaHurufDanBuangKelompokKosong() {
+        val hasil = saringAplikasi(data, " INSTA ", urutAZ = false)
+        assertEquals(listOf(sosmed), hasil.map { it.judul })
+        assertEquals(listOf("instagram"), hasil[0].aplikasi.map { it.nama })
+        assertEquals(emptyList<Any>(), saringAplikasi(data, "zzz", urutAZ = true))
     }
 
     @Test
-    fun urutan() {
-        assertEquals(listOf("Facebook", "Instagram", "X"), nama(saringAplikasi(data, "", urutAZ = true))[0])
-        assertEquals(listOf("Instagram", "X", "Facebook"), nama(saringAplikasi(data, "", urutAZ = false))[0])
+    fun kategoriUrutTetapIsiAZ() {
+        val hasil = saringAplikasi(data, "", urutAZ = false)
+        assertEquals(listOf(sosmed, lainnya), hasil.map { it.judul })
+        assertEquals(listOf("Facebook", "instagram", "X"), hasil[0].aplikasi.map { it.nama })
+    }
+
+    @Test
+    fun azSatuKelompok() {
+        val hasil = saringAplikasi(data, "", urutAZ = true)
+        assertEquals(listOf(R.string.semua_aplikasi), hasil.map { it.judul })
+        assertEquals(listOf("Facebook", "instagram", "WhatsApp", "X"), hasil[0].aplikasi.map { it.nama })
+    }
+
+    @Test
+    fun kategoriDariSistem() {
+        assertEquals(sosmed, kategoriDari(ApplicationInfo.CATEGORY_SOCIAL))
+        assertEquals(R.string.kategori_hiburan, kategoriDari(ApplicationInfo.CATEGORY_GAME))
+        assertEquals(R.string.kategori_hiburan, kategoriDari(ApplicationInfo.CATEGORY_VIDEO))
+        assertEquals(lainnya, kategoriDari(ApplicationInfo.CATEGORY_UNDEFINED))
+        assertEquals(lainnya, kategoriDari(ApplicationInfo.CATEGORY_PRODUCTIVITY))
     }
 }

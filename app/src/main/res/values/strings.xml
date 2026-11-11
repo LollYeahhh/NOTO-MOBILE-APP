@@ -83,12 +83,15 @@
     <string name="kategori_sosial_media">Social Media</string>
     <string name="kategori_hiburan">Entertainment</string>
     <string name="kategori_komunikasi">Communication</string>
+    <string name="kategori_lainnya">Other</string>
+    <string name="urut_kategori">Categories</string>
+    <string name="semua_aplikasi">All apps</string>
     <string name="pilih_semua">Select all</string>
     <string name="cari_kosong_judul">Nothing found</string>
     <string name="cari_kosong_ket">No app has that name. Try another word or check the spelling.</string>
     <string name="rata_rata_per_hari">Average %1$s per day</string>
-    <string name="ringkasan_pilihan">%1$d apps selected · average %2$s per day</string>
-    <string name="pilih_n_aplikasi">Choose %1$d Apps</string>
+    <plurals name="ringkasan_pilihan"><item quantity="one">%d app selected</item><item quantity="other">%d apps selected</item></plurals>
+    <plurals name="pilih_n_aplikasi"><item quantity="one">Choose %d App</item><item quantity="other">Choose %d Apps</item></plurals>
     <string name="hari_senin">Monday</string>
     <string name="hari_selasa">Tuesday</string>
     <string name="hari_rabu">Wednesday</string>

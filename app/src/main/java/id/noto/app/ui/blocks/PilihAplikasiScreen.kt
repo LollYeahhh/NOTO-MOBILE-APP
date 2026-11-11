@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -36,29 +37,29 @@ import id.noto.app.ui.components.NotoHeaderHalaman
 import id.noto.app.ui.components.NotoInput
 import id.noto.app.ui.components.NotoItemAplikasi
 import id.noto.app.ui.components.NotoTombol
+import id.noto.app.ui.components.painterAplikasi
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
 import id.noto.app.ui.theme.tinggiBarisFigCraft
-import id.noto.app.util.formatDurasi
 
 /**
- * "Blokir - Pilih Aplikasi" (node 2316): Header Halaman, pencarian dan urutan, daftar per kategori,
- * lalu Bilah Aksi dengan ringkasan pilihan. Tidak ada Bottom Nav.
- * Pencarian dan chip urutan bekerja pada [kategori]; di Tahap 5 isinya diganti aplikasi terpasang.
+ * "Blokir - Pilih Aplikasi (Kategori)" dan "(A–Z)": Header Halaman, pencarian dan chip tampilan,
+ * daftar per kategori atau satu daftar "Semua aplikasi", lalu Bilah Aksi dengan jumlah pilihan.
+ * [awal] dan hasil [onPilih] berisi nama paket. Tidak ada Bottom Nav.
  */
 @Composable
 fun PilihAplikasiScreen(
     awal: List<String>,
     onKembali: () -> Unit,
     onPilih: (List<String>) -> Unit,
-    kategori: List<KategoriAplikasi> = contohKategoriAplikasi,
+    aplikasi: List<AplikasiPilihan> = contohAplikasi,
 ) {
     var dipilih by rememberSaveable { mutableStateOf(awal.toSet()) }
     var cari by remember { mutableStateOf("") }
     var urutAZ by remember { mutableStateOf(false) }
-    val semua = kategori.flatMap { it.aplikasi }
-    val terpilih = semua.filter { it.nama in dipilih }
+    // Paket yang sudah tidak terpasang tidak ikut dihitung dan hilang dari aturan saat "Pilih" ditekan.
+    val terpilih = aplikasi.filter { it.paket in dipilih }
 
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderHalaman(stringResource(R.string.pilih_aplikasi_judul), onIkonKiri = onKembali)
@@ -73,38 +74,32 @@ fun PilihAplikasiScreen(
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 NotoInput(cari, { cari = it }, placeholder = stringResource(R.string.cari_aplikasi), tampilkanIkon = true)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    NotoChip(stringResource(R.string.urut_paling_sering), aktif = !urutAZ, onKlik = { urutAZ = false })
+                    NotoChip(stringResource(R.string.urut_kategori), aktif = !urutAZ, onKlik = { urutAZ = false })
                     NotoChip(stringResource(R.string.urut_a_z), aktif = urutAZ, onKlik = { urutAZ = true })
                 }
-                Text(
-                    stringResource(R.string.catatan_rata_rata),
-                    Modifier.fillMaxWidth(),
-                    style = NotoTeks.KecilTeks,
-                    color = NotoWarna.TeksSekunder,
-                )
             }
-            val hasil = saringAplikasi(kategori, cari, urutAZ)
+            val hasil = saringAplikasi(aplikasi, cari, urutAZ)
             if (hasil.isEmpty()) TidakDitemukan()
             hasil.forEach { k ->
                 Kategori(
                     k,
                     dipilih = dipilih,
-                    onUbah = { nama, pilih -> dipilih = if (pilih) dipilih + nama else dipilih - nama },
-                    onPilihSemua = { dipilih = dipilih + k.aplikasi.map { it.nama } },
+                    onUbah = { paket, pilih -> dipilih = if (pilih) dipilih + paket else dipilih - paket },
+                    onPilihSemua = { dipilih = dipilih + k.aplikasi.map { it.paket } },
                 )
             }
         }
         // Bilah Aksi: padding atas 12 di bawah garis 1 px, bawah 34, ringkasan lalu tombol (jarak 8).
         BilahAksi(atas = 13.dp, bawah = 34.dp) {
             Text(
-                stringResource(R.string.ringkasan_pilihan, terpilih.size, formatDurasi(terpilih.sumOf { it.rataRataMenit })),
+                pluralStringResource(R.plurals.ringkasan_pilihan, terpilih.size, terpilih.size),
                 Modifier.tinggiBarisFigCraft(NotoTeks.KecilTeks),
                 style = NotoTeks.KecilTeks,
                 color = NotoWarna.TeksSekunder,
             )
             NotoTombol(
-                stringResource(R.string.pilih_n_aplikasi, terpilih.size),
-                onKlik = { onPilih(terpilih.map { it.nama }) },
+                pluralStringResource(R.plurals.pilih_n_aplikasi, terpilih.size, terpilih.size),
+                onKlik = { onPilih(terpilih.map { it.paket }) },
                 aktif = terpilih.isNotEmpty(),
             )
         }
@@ -164,14 +159,14 @@ private fun Kategori(
                 .padding(horizontal = 16.dp, vertical = 4.dp),
         ) {
             k.aplikasi.forEach { a ->
-                val pilih = a.nama in dipilih
+                val pilih = a.paket in dipilih
                 NotoItemAplikasi(
-                    painterResource(a.logo),
+                    painterAplikasi(a.ikon, a.logoContoh),
                     a.nama,
-                    stringResource(R.string.rata_rata_per_hari, formatDurasi(a.rataRataMenit)),
-                    modifier = Modifier.clickable(interactionSource = null, indication = null, role = Role.Checkbox) { onUbah(a.nama, !pilih) },
+                    keterangan = null, // "Rata-rata … per hari" disembunyikan sampai Tahap 6
+                    modifier = Modifier.clickable(interactionSource = null, indication = null, role = Role.Checkbox) { onUbah(a.paket, !pilih) },
                     dipilih = pilih,
-                    onUbah = { onUbah(a.nama, it) },
+                    onUbah = { onUbah(a.paket, it) },
                 )
             }
         }
@@ -184,16 +179,26 @@ private fun PreviewPilihAplikasi() {
     NOTOAPPTheme { PilihAplikasiScreen(contohPilihanAwal, {}, {}) }
 }
 
+/** Urutan kelompok di tampilan Kategori. */
+private val urutanKategori = listOf(
+    R.string.kategori_sosial_media,
+    R.string.kategori_hiburan,
+    R.string.kategori_komunikasi,
+    R.string.kategori_lainnya,
+)
+
 /**
- * Kategori untuk ditampilkan: hanya aplikasi yang namanya memuat [cari] (huruf besar/kecil sama saja),
- * diurut A–Z atau dari rata-rata pemakaian terbesar ("Paling sering"). Kategori tanpa hasil dibuang.
+ * Kelompok untuk ditampilkan: hanya aplikasi yang namanya memuat [cari] (huruf besar/kecil sama saja), urut A–Z.
+ * [urutAZ] = satu kelompok "Semua aplikasi"; selain itu per kategori. Kelompok tanpa hasil dibuang.
  */
-fun saringAplikasi(kategori: List<KategoriAplikasi>, cari: String, urutAZ: Boolean): List<KategoriAplikasi> =
-    kategori.mapNotNull { k ->
-        val cocok = k.aplikasi.filter { it.nama.contains(cari.trim(), ignoreCase = true) }
-        val urut = if (urutAZ) cocok.sortedBy { it.nama.lowercase() } else cocok.sortedByDescending { it.rataRataMenit }
-        if (urut.isEmpty()) null else k.copy(aplikasi = urut)
-    }
+fun saringAplikasi(aplikasi: List<AplikasiPilihan>, cari: String, urutAZ: Boolean): List<KategoriAplikasi> {
+    val cocok = aplikasi.filter { it.nama.contains(cari.trim(), ignoreCase = true) }.sortedBy { it.nama.lowercase() }
+    if (cocok.isEmpty()) return emptyList()
+    if (urutAZ) return listOf(KategoriAplikasi(R.string.semua_aplikasi, cocok))
+    return cocok.groupBy { it.kategori }
+        .map { (judul, isi) -> KategoriAplikasi(judul, isi) }
+        .sortedBy { urutanKategori.indexOf(it.judul) }
+}
 
 /** Pilihan di FigCraft: semua kecuali Facebook. */
-val contohPilihanAwal = listOf("Instagram", "X", "TikTok", "WhatsApp")
+val contohPilihanAwal = contohAplikasi.map { it.paket } - "com.facebook.katana"

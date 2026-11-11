@@ -1,5 +1,6 @@
 package id.noto.app.ui.blocks
 
+import androidx.compose.ui.graphics.ImageBitmap
 import id.noto.app.R
 
 // Isian form Tambah/Edit Aturan. Teks di layar dibentuk dari data ini (lihat util/FormatWaktu.kt).
@@ -55,21 +56,28 @@ val contohFormEdit = contohFormTerisi.copy(
     senyap = true,
 )
 
-/** Satu aplikasi di layar Pilih Aplikasi; [rataRataMenit] = rata-rata pemakaian harian 7 hari. */
-data class AplikasiPilihan(val logo: Int, val nama: String, val rataRataMenit: Int)
+/**
+ * Satu aplikasi di layar Pilih Aplikasi. [paket] = nama paket (disimpan di aturan), [kategori] = id string kelompok.
+ * [ikon] dari sistem (null = ikon cadangan); [logoContoh] hanya untuk data contoh.
+ */
+data class AplikasiPilihan(
+    val paket: String,
+    val nama: String,
+    val kategori: Int,
+    val ikon: ImageBitmap? = null,
+    val logoContoh: Int? = null,
+)
 
 /** Kelompok di Pilih Aplikasi; [judul] = id string nama kategori. */
 data class KategoriAplikasi(val judul: Int, val aplikasi: List<AplikasiPilihan>)
 
-/** Sama dengan FigCraft "Blokir - Pilih Aplikasi". Di Tahap 5 diganti daftar aplikasi terpasang. */
-val contohKategoriAplikasi = listOf(
-    KategoriAplikasi(R.string.kategori_sosial_media, listOf(
-        AplikasiPilihan(R.drawable.logo_instagram, "Instagram", 70),
-        AplikasiPilihan(R.drawable.logo_twitter, "X", 25),
-        AplikasiPilihan(R.drawable.logo_facebook, "Facebook", 15),
-    )),
-    KategoriAplikasi(R.string.kategori_hiburan, listOf(AplikasiPilihan(R.drawable.logo_tiktok, "TikTok", 55))),
-    KategoriAplikasi(R.string.kategori_komunikasi, listOf(AplikasiPilihan(R.drawable.logo_whatsapp, "WhatsApp", 40))),
+/** Data contoh untuk Preview dan Statistik; aplikasi asli dari muatAplikasiTerpasang(). */
+val contohAplikasi = listOf(
+    AplikasiPilihan("com.instagram.android", "Instagram", R.string.kategori_sosial_media, logoContoh = R.drawable.logo_instagram),
+    AplikasiPilihan("com.twitter.android", "X", R.string.kategori_sosial_media, logoContoh = R.drawable.logo_twitter),
+    AplikasiPilihan("com.facebook.katana", "Facebook", R.string.kategori_sosial_media, logoContoh = R.drawable.logo_facebook),
+    AplikasiPilihan("com.zhiliaoapp.musically", "TikTok", R.string.kategori_hiburan, logoContoh = R.drawable.logo_tiktok),
+    AplikasiPilihan("com.whatsapp", "WhatsApp", R.string.kategori_komunikasi, logoContoh = R.drawable.logo_whatsapp),
 )
 
 /** Template cepat di Sheet Atur Jadwal: id string nama, jam mulai dan selesai (menit). */

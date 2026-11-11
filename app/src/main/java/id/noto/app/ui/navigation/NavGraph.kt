@@ -120,6 +120,7 @@ fun NotoNavGraph() {
     // Aturan dibaca dari dan disimpan ke Room; Setelan dari DataStore. Keduanya satu untuk seluruh layar.
     val aturanVm: AturanViewModel = viewModel()
     val daftarAturan by aturanVm.semua.collectAsState()
+    val aplikasiTerpasang by aturanVm.terpasang.collectAsState()
     val setelanVm: SetelanViewModel = viewModel()
     val setelan by setelanVm.setelan.collectAsState()
     // Isian form Tambah/Edit yang sedang dikerjakan (belum disimpan).
@@ -205,6 +206,7 @@ fun NotoNavGraph() {
                 sheetAwal = if (bukaJadwal) SheetForm.Jadwal else null,
                 jadwalAwal = setelan.jadwalBawaan,
                 kuotaAwal = setelan.kuotaBawaanMenit,
+                namaAplikasi = { p -> aplikasiTerpasang.firstOrNull { it.paket == p }?.nama ?: p },
             )
         }
         composable(
@@ -215,8 +217,11 @@ fun NotoNavGraph() {
             },
         ) {
             // Tombol "Pilih N Aplikasi": kembali ke Tambah (aplikasi terisi) dengan Sheet Atur Jadwal terbuka.
+            // Daftar dibaca ulang tiap layar dibuka, supaya aplikasi yang baru dipasang ikut muncul.
+            LaunchedEffect(Unit) { aturanVm.muatAplikasi() }
             PilihAplikasiScreen(
                 awal = form.aplikasi,
+                aplikasi = aplikasiTerpasang,
                 onKembali = { navController.popBackStack() },
                 onPilih = {
                     form = form.copy(aplikasi = it)
@@ -255,6 +260,7 @@ fun NotoNavGraph() {
                 onPilihAplikasi = { pilihLewatTombol = false; bukaJadwal = false; navController.navigate(RUTE_PILIH) },
                 // Nama aturan yang sedang diedit tidak dihitung terpakai.
                 namaTerpakai = namaAturan - aturanDetail?.aturan?.nama.orEmpty(),
+                namaAplikasi = { p -> aplikasiTerpasang.firstOrNull { it.paket == p }?.nama ?: p },
             )
         }
     }

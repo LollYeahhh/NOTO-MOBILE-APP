@@ -114,7 +114,7 @@ fun NotoBarisSetelan(
 fun NotoItemAplikasi(
     logo: Painter,
     nama: String,
-    keterangan: String,
+    keterangan: String?,
     modifier: Modifier = Modifier,
     durasi: String? = null,
     dipilih: Boolean? = null,

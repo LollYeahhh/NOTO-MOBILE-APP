@@ -75,6 +75,7 @@ fun FormAturanScreen(
     sheetAwal: SheetForm? = null,
     jadwalAwal: JadwalForm = jadwalBawaan,
     kuotaAwal: Int = KUOTA_BAWAAN_MENIT,
+    namaAplikasi: (String) -> String = { it },
 ) {
     var sheet by remember { mutableStateOf(sheetAwal) }
     // Draf Sheet Atur Jadwal; tetap ada selama sheet ditukar dengan Sheet Jam.
@@ -111,7 +112,7 @@ fun FormAturanScreen(
                     NotoBarisForm(
                         painterResource(R.drawable.ic_aplikasi),
                         stringResource(R.string.aplikasi),
-                        if (form.aplikasi.isEmpty()) stringResource(R.string.pilih_aplikasi_ket) else form.aplikasi.joinToString(", "),
+                        if (form.aplikasi.isEmpty()) stringResource(R.string.pilih_aplikasi_ket) else form.aplikasi.joinToString(", ") { namaAplikasi(it) },
                         onKlik = onPilihAplikasi,
                     )
                 }

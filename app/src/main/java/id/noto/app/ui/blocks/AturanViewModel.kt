@@ -7,10 +7,14 @@ import id.noto.app.data.Aturan
 import id.noto.app.data.AturanLengkap
 import id.noto.app.data.AturanRepository
 import id.noto.app.data.NotoDatabase
+import id.noto.app.data.muatAplikasiTerpasang
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** ViewModel aturan: daftar aturan dari Room untuk Beranda dan Blokir, serta penyimpanannya. */
 class AturanViewModel(app: Application) : AndroidViewModel(app) {
@@ -18,6 +22,22 @@ class AturanViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Semua aturan; kosong sampai Room selesai dibaca (tertutup splash). */
     val semua: StateFlow<List<AturanLengkap>> = repository.semua.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val _terpasang = MutableStateFlow<List<AplikasiPilihan>>(emptyList())
+
+    /** Aplikasi terpasang di HP untuk Pilih Aplikasi; dimuat saat aplikasi dibuka (tertutup splash). */
+    val terpasang: StateFlow<List<AplikasiPilihan>> = _terpasang
+
+    init {
+        muatAplikasi()
+    }
+
+    /** Baca ulang aplikasi terpasang (di latar belakang); daftar lama tetap tampil sampai yang baru siap. */
+    fun muatAplikasi() {
+        viewModelScope.launch {
+            _terpasang.value = withContext(Dispatchers.IO) { muatAplikasiTerpasang(getApplication()) }
+        }
+    }
 
     /** Simpan aturan baru dari form yang sudah lengkap. */
     fun tambah(form: FormAturan, nama: String) {

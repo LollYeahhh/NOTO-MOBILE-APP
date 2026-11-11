@@ -80,12 +80,15 @@
     <string name="kategori_sosial_media">Sosial Media</string>
     <string name="kategori_hiburan">Hiburan</string>
     <string name="kategori_komunikasi">Komunikasi</string>
+    <string name="kategori_lainnya">Lainnya</string>
+    <string name="urut_kategori">Kategori</string>
+    <string name="semua_aplikasi">Semua aplikasi</string>
     <string name="pilih_semua">Pilih semua</string>
     <string name="cari_kosong_judul">Yahh Nggak Ketemu</string>
     <string name="cari_kosong_ket">Tidak ada aplikasi dengan nama itu. Coba kata lain atau periksa ejaannya, ya.</string>
     <string name="rata_rata_per_hari">Rata-rata %1$s per hari</string>
-    <string name="ringkasan_pilihan">%1$d aplikasi dipilih · rata-rata %2$s per hari</string>
-    <string name="pilih_n_aplikasi">Pilih %1$d Aplikasi</string>
+    <plurals name="ringkasan_pilihan"><item quantity="other">%d aplikasi dipilih</item></plurals>
+    <plurals name="pilih_n_aplikasi"><item quantity="other">Pilih %d Aplikasi</item></plurals>
     <string name="hari_senin">Senin</string>
     <string name="hari_selasa">Selasa</string>
     <string name="hari_rabu">Rabu</string>

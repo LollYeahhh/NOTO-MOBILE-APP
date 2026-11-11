@@ -79,8 +79,7 @@ fun FormAturan.keAturan(nama: String): Aturan {
  * shortcut: dicari di data contoh Pilih Aplikasi; diganti ikon dari PackageManager di Tahap 5.
  */
 private fun logoAplikasi(paket: List<String>): List<Int> {
-    val semua = contohKategoriAplikasi.flatMap { it.aplikasi }
-    return paket.mapNotNull { nama -> semua.firstOrNull { it.nama == nama }?.logo }
+    return paket.mapNotNull { nama -> contohAplikasi.firstOrNull { it.nama == nama }?.logoContoh }
 }
 
 /** "07.00–21.00 · Sen–Jum". */
@@ -143,7 +142,6 @@ fun AturanLengkap.keDetail(w: Waktu): DetailAturan {
     val a = aturan
     val daftar = keDaftar(w)
     val status = statusAturan(a, w)
-    val logo = contohKategoriAplikasi.flatMap { it.aplikasi }
     return DetailAturan(
         nama = a.nama,
         labelStatus = daftar.labelStatus,
@@ -160,7 +158,7 @@ fun AturanLengkap.keDetail(w: Waktu): DetailAturan {
         selesaiMenit = a.selesaiMenit,
         sekarangMenit = w.menit,
         aplikasi = paket.mapNotNull { nama ->
-            logo.firstOrNull { it.nama == nama }?.let { PemakaianAplikasi(it.logo, nama, 0, formatDurasi(0)) }
+            contohAplikasi.firstOrNull { it.nama == nama }?.logoContoh?.let { PemakaianAplikasi(it, nama, 0, formatDurasi(0)) }
         },
         badge = status.badge,
         keteranganKanan = when (status) {
