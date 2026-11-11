@@ -109,8 +109,7 @@ fun FormAturanScreen(
                         painterResource(R.drawable.ic_aplikasi),
                         stringResource(R.string.aplikasi),
                         if (form.aplikasi.isEmpty()) stringResource(R.string.pilih_aplikasi_ket) else form.aplikasi.joinToString(", "),
-                        // Di Edit Aturan baris ini tidak punya interaksi di FigCraft (disepakati: ikuti desain).
-                        onKlik = if (tambah) onPilihAplikasi else ({}),
+                        onKlik = onPilihAplikasi,
                     )
                 }
                 Seksi(R.string.kapan_berapa_lama) {

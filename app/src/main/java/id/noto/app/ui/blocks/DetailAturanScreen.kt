@@ -21,10 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,10 +55,20 @@ private val namaHari = listOf(
 /**
  * Blokir - Detail Aturan (node 2030): Header Halaman + ikon pensil di kanan, lalu konten bergulir
  * (padding 24/16, jarak antarkartu 16).
- * shortcut: "Hapus aturan" (Sheet Hapus) dipasang di Tahap 3D.
+ * "Hapus aturan" membuka Sheet Hapus Aturan ([onHapus]); sheet-nya digambar di cangkang, di atas Bottom Nav.
+ * Toggle Kartu Pengaturan disimpan pemanggil ([aktif], [senyap]) supaya tidak kembali ke awal saat halaman dibuka lagi.
  */
 @Composable
-fun DetailAturanScreen(onKembali: () -> Unit, onEdit: () -> Unit = {}, detail: DetailAturan = contohDetailSosmed) {
+fun DetailAturanScreen(
+    onKembali: () -> Unit,
+    onEdit: () -> Unit = {},
+    onHapus: () -> Unit = {},
+    detail: DetailAturan = contohDetailSosmed,
+    aktif: Boolean = true,
+    onAktif: (Boolean) -> Unit = {},
+    senyap: Boolean = true,
+    onSenyap: (Boolean) -> Unit = {},
+) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         Box {
             NotoHeaderHalaman(judul = detail.nama, onIkonKiri = onKembali)
@@ -84,10 +90,10 @@ fun DetailAturanScreen(onKembali: () -> Unit, onEdit: () -> Unit = {}, detail: D
             KartuSisaKuota(detail)
             KartuJadwal(detail)
             KartuPemakaian(detail)
-            KartuPengaturan()
+            KartuPengaturan(aktif, onAktif, senyap, onSenyap)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 NotoTombol(stringResource(R.string.edit_aturan), onKlik = onEdit, modifier = Modifier.weight(1f), tipe = TipeTombol.Permukaan)
-                NotoTombol(stringResource(R.string.hapus_aturan), onKlik = {}, modifier = Modifier.weight(1f), tipe = TipeTombol.Teks)
+                NotoTombol(stringResource(R.string.hapus_aturan), onKlik = onHapus, modifier = Modifier.weight(1f), tipe = TipeTombol.Teks)
             }
         }
     }
@@ -158,7 +164,7 @@ private fun KartuJadwal(d: DetailAturan) {
         JudulKartu(stringResource(R.string.jadwal), stringResource(R.string.dibatasi_jam, d.jam))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             namaHari.forEachIndexed { i, hari ->
-                NotoChipHari(stringResource(hari), aktif = i in d.hariAktif, onKlik = {})
+                NotoChipHari(stringResource(hari), aktif = i in d.hariAktif, onKlik = null)
             }
         }
         NotoBar24Jam(d.mulaiMenit, d.selesaiMenit, sekarangMenit = d.sekarangMenit)
@@ -183,25 +189,23 @@ private fun KartuPemakaian(d: DetailAturan) {
     }
 }
 
-/** Kartu Pengaturan (node 2158): padding 4/16, dua Baris Setelan dengan toggle (belum disimpan, Tahap 4). */
+/** Kartu Pengaturan (node 2158): padding 4/16, dua Baris Setelan dengan toggle. */
 @Composable
-private fun KartuPengaturan() {
+private fun KartuPengaturan(aktif: Boolean, onAktif: (Boolean) -> Unit, senyap: Boolean, onSenyap: (Boolean) -> Unit) {
     Kartu(Modifier.padding(horizontal = 16.dp, vertical = 4.dp), jarak = 0) {
-        var aktif by remember { mutableStateOf(true) }
-        var senyap by remember { mutableStateOf(true) }
         NotoBarisSetelan(
             painterResource(R.drawable.ic_jeda),
             stringResource(R.string.aturan_aktif),
             keterangan = stringResource(R.string.aturan_aktif_ket),
             toggle = aktif,
-            onUbah = { aktif = it },
+            onUbah = onAktif,
         )
         NotoBarisSetelan(
             painterResource(R.drawable.ic_lonceng),
             stringResource(R.string.senyapkan_notifikasi),
             keterangan = stringResource(R.string.senyapkan_notifikasi_ket),
             toggle = senyap,
-            onUbah = { senyap = it },
+            onUbah = onSenyap,
         )
     }
 }

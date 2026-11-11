@@ -44,9 +44,11 @@ fun NotoChip(teks: String, aktif: Boolean, onKlik: () -> Unit, modifier: Modifie
     }
 }
 
-/** Chip Hari bulat 40: Aktif = Primer + teks Putih; Tidak Aktif = Putih + garis Garis + teks sekunder. */
+/** Chip Hari bulat 40: Aktif = Primer + teks Putih; Tidak Aktif = Putih + garis Garis + teks sekunder.
+ * [onKlik] null = hanya tampilan (Detail Aturan): tidak bisa diketuk dan tidak dibaca sebagai tombol.
+ */
 @Composable
-fun NotoChipHari(hari: String, aktif: Boolean, onKlik: () -> Unit, modifier: Modifier = Modifier) {
+fun NotoChipHari(hari: String, aktif: Boolean, onKlik: (() -> Unit)?, modifier: Modifier = Modifier) {
     Box(
         modifier
             .size(40.dp)
@@ -55,7 +57,7 @@ fun NotoChipHari(hari: String, aktif: Boolean, onKlik: () -> Unit, modifier: Mod
                 else Modifier.background(NotoWarna.Putih, CircleShape).border(1.dp, NotoWarna.Garis, CircleShape),
             )
             .semantics { selected = aktif }
-            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik),
+            .then(if (onKlik == null) Modifier else Modifier.clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)),
         contentAlignment = Alignment.Center,
     ) {
         Text(hari, style = NotoTeks.KecilLabel, color = if (aktif) NotoWarna.Putih else NotoWarna.TeksSekunder, maxLines = 1)

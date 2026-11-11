@@ -39,8 +39,7 @@ import id.noto.app.util.formatDurasi
 /**
  * "Blokir - Pilih Aplikasi" (node 2316): Header Halaman, pencarian dan urutan, daftar per kategori,
  * lalu Bilah Aksi dengan ringkasan pilihan. Tidak ada Bottom Nav.
- * shortcut: pencarian dan chip urutan hanya tampilan (disepakati 6a); berfungsi di Tahap 5
- * bersama daftar aplikasi terpasang dari PackageManager.
+ * Pencarian dan chip urutan bekerja pada [kategori]; di Tahap 5 isinya diganti aplikasi terpasang.
  */
 @Composable
 fun PilihAplikasiScreen(
@@ -78,7 +77,7 @@ fun PilihAplikasiScreen(
                     color = NotoWarna.TeksSekunder,
                 )
             }
-            kategori.forEach { k ->
+            saringAplikasi(kategori, cari, urutAZ).forEach { k ->
                 Kategori(
                     k,
                     dipilih = dipilih,
@@ -151,6 +150,17 @@ private fun Kategori(
 private fun PreviewPilihAplikasi() {
     NOTOAPPTheme { PilihAplikasiScreen(contohPilihanAwal, {}, {}) }
 }
+
+/**
+ * Kategori untuk ditampilkan: hanya aplikasi yang namanya memuat [cari] (huruf besar/kecil sama saja),
+ * diurut A–Z atau dari rata-rata pemakaian terbesar ("Paling sering"). Kategori tanpa hasil dibuang.
+ */
+fun saringAplikasi(kategori: List<KategoriAplikasi>, cari: String, urutAZ: Boolean): List<KategoriAplikasi> =
+    kategori.mapNotNull { k ->
+        val cocok = k.aplikasi.filter { it.nama.contains(cari.trim(), ignoreCase = true) }
+        val urut = if (urutAZ) cocok.sortedBy { it.nama.lowercase() } else cocok.sortedByDescending { it.rataRataMenit }
+        if (urut.isEmpty()) null else k.copy(aplikasi = urut)
+    }
 
 /** Pilihan di FigCraft: semua kecuali Facebook. */
 val contohPilihanAwal = listOf("Instagram", "X", "TikTok", "WhatsApp")
