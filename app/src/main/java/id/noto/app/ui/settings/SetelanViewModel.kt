@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import id.noto.app.data.SetelanRepository
+import id.noto.app.service.jadwalkanRingkasan
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -20,6 +21,10 @@ class SetelanViewModel(app: Application) : AndroidViewModel(app) {
     val setelan: StateFlow<SetelanNoto> = repository.setelan.stateIn(viewModelScope, SharingStarted.Eagerly, SetelanNoto())
 
     fun ubah(baru: SetelanNoto) {
-        viewModelScope.launch { repository.simpan(baru) }
+        viewModelScope.launch {
+            repository.simpan(baru)
+            // Jam ringkasan, sakelar mingguan, atau jam tenang bisa berubah: setel ulang alarmnya.
+            jadwalkanRingkasan(getApplication())
+        }
     }
 }

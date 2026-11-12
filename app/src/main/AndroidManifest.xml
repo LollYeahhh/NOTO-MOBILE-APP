@@ -93,6 +93,10 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <!-- Alarm ringkasan harian/mingguan (Tahap 8D-3); hanya dipanggil AlarmManager milik Noto. -->
+        <receiver
+            android:name=".service.RingkasanAlarm"
+            android:exported="false" />
     </application>
 
 </manifest>

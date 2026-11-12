@@ -121,11 +121,6 @@ private fun hapusPengingatKuotaUsang(context: Context, aturan: List<AturanLengka
 }
 
 private fun kirim(context: Context, p: Pengingat) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-    ) {
-        return
-    }
     val a = p.aturan
     val selesai = selesaiJendela(a, p.mulaiJendela).let { formatJam(it.hour * 60 + it.minute) }
     val (judul, isi) = when (p.jenis) {
@@ -138,8 +133,22 @@ private fun kirim(context: Context, p: Pengingat) {
         else -> context.getString(R.string.notif_sisa_judul, formatDurasi(p.menit), a.nama) to
             context.getString(R.string.contoh_pengingat_isi)
     }
+    // Dua notifikasi per aturan (jadwal dan kuota): yang baru menggantikan yang lama di kelompok yang sama.
+    val kelompok = if (p.jenis == JenisKejadian.NOTIF_MULAI || p.jenis == JenisKejadian.NOTIF_SELESAI) KELOMPOK_JADWAL else KELOMPOK_KUOTA
+    tampilkanNotifikasi(context, idNotifikasi(a.id, kelompok), judul, isi, keStatistik = false)
+}
+
+/** Tampilkan notifikasi di saluran "Pengingat". Diketuk: buka Noto ([keStatistik] = langsung tab Statistik). */
+fun tampilkanNotifikasi(context: Context, id: Int, judul: String, isi: String, keStatistik: Boolean) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+    ) {
+        return
+    }
     buatSaluranPengingat(context)
-    val buka = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+    val intent = Intent(context, MainActivity::class.java).putExtra(MainActivity.KE_STATISTIK, keStatistik)
+    // Kode permintaan berbeda supaya extra ke Statistik tidak tertukar dengan notifikasi lain.
+    val buka = PendingIntent.getActivity(context, if (keStatistik) 1 else 0, intent, PendingIntent.FLAG_IMMUTABLE)
     val notifikasi = NotificationCompat.Builder(context, SALURAN_PENGINGAT)
         .setSmallIcon(R.drawable.ic_notifikasi)
         .setContentTitle(judul)
@@ -147,9 +156,7 @@ private fun kirim(context: Context, p: Pengingat) {
         .setContentIntent(buka)
         .setAutoCancel(true)
         .build()
-    // Dua notifikasi per aturan (jadwal dan kuota): yang baru menggantikan yang lama di kelompok yang sama.
-    val kelompok = if (p.jenis == JenisKejadian.NOTIF_MULAI || p.jenis == JenisKejadian.NOTIF_SELESAI) KELOMPOK_JADWAL else KELOMPOK_KUOTA
-    NotificationManagerCompat.from(context).notify(idNotifikasi(a.id, kelompok), notifikasi)
+    NotificationManagerCompat.from(context).notify(id, notifikasi)
 }
 
 private fun buatSaluranPengingat(context: Context) {
@@ -160,6 +167,7 @@ private fun buatSaluranPengingat(context: Context) {
 private const val SALURAN_PENGINGAT = "pengingat"
 // ID 1 dipakai notifikasi pemantau.
 private const val ID_PENGINGAT_AWAL = 1000
+const val ID_RINGKASAN = 999
 private const val KELOMPOK_JADWAL = 0
 private const val KELOMPOK_KUOTA = 1
 

@@ -132,6 +132,9 @@ pengguna harus menyalakannya lagi. Baris Setelan otomatis kembali "Izinkan".
 | K3 | Kuota habis | "X sedang time out — Bebas lagi pukul …" | E, X | E ✓ 2026-11-12 |
 | K4 | Jadwal selesai | "Jadwal X selesai" (kalau sakelar nyala); notifikasi sisa/time out aturan itu hilang | E, X | E ✓ 2026-11-12 |
 | K5 | Jam tenang nyala, pukul 22.00–06.00 | Tidak ada notifikasi pengingat; tidak dikirim belakangan | X | |
+| K6 | Jam ringkasan harian diset beberapa menit ke depan | "Ringkasan hari ini — Waktu layar …. Paling lama di …" (boleh telat beberapa menit); diketuk membuka Statistik; alarm besok tersetel | E, X | E ✓ 2026-11-12 |
+| K7 | Minggu, ringkasan mingguan nyala | "Ringkasan minggu ini — Rata-rata … per hari[, x% lebih sadar]." menggantikan harian | X | (unit test) |
+| K8 | Nyalakan ulang perangkat | Alarm ringkasan tersetel lagi tanpa membuka Noto | X | |
 
 ## F. Otomatis (dijalankan tiap build)
 

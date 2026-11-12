@@ -10,7 +10,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.lifecycleScope
 import id.noto.app.service.PemantauService
+import id.noto.app.service.jadwalkanRingkasan
+import kotlinx.coroutines.launch
 import id.noto.app.ui.navigation.NotoNavGraph
 import id.noto.app.ui.theme.NOTOAPPTheme
 
@@ -45,6 +48,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // Setiap aplikasi dibuka (termasuk kembali dari halaman izin): nyalakan pemantau kalau Akses penggunaan sudah diizinkan.
         PemantauService.mulai(this)
+        lifecycleScope.launch { jadwalkanRingkasan(this@MainActivity) }
     }
 
     companion object {

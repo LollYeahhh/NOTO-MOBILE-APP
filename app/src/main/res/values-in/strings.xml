@@ -276,6 +276,12 @@
     <string name="notif_mulai_isi">Kuota %1$s berlaku sampai %2$s.</string>
     <string name="notif_selesai_judul">Jadwal %1$s selesai</string>
     <string name="notif_selesai_isi">Aplikasinya bebas dipakai lagi.</string>
+    <string name="notif_ringkasan_harian_judul">Ringkasan hari ini</string>
+    <string name="notif_ringkasan_harian_isi">Waktu layar %1$s. Paling lama di %2$s.</string>
+    <string name="notif_ringkasan_harian_isi_singkat">Waktu layar %1$s.</string>
+    <string name="notif_ringkasan_mingguan_judul">Ringkasan minggu ini</string>
+    <string name="notif_ringkasan_mingguan_isi_turun">Rata-rata %1$s per hari, %2$d%% lebih sadar.</string>
+    <string name="notif_ringkasan_mingguan_isi">Rata-rata %1$s per hari.</string>
     <string name="seksi_ringkasan">Ringkasan</string>
     <string name="ringkasan_harian">Ringkasan harian</string>
     <string name="ringkasan_harian_ket">Kilas balik pemakaian hari ini</string>

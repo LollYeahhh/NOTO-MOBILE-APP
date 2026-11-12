@@ -279,6 +279,12 @@
     <string name="notif_mulai_isi">%1$s quota applies until %2$s.</string>
     <string name="notif_selesai_judul">%1$s schedule ended</string>
     <string name="notif_selesai_isi">Its apps are free to use again.</string>
+    <string name="notif_ringkasan_harian_judul">Today\'s summary</string>
+    <string name="notif_ringkasan_harian_isi">Screen time %1$s. Most used: %2$s.</string>
+    <string name="notif_ringkasan_harian_isi_singkat">Screen time %1$s.</string>
+    <string name="notif_ringkasan_mingguan_judul">This week\'s summary</string>
+    <string name="notif_ringkasan_mingguan_isi_turun">Average %1$s a day, %2$d%% more mindful.</string>
+    <string name="notif_ringkasan_mingguan_isi">Average %1$s a day.</string>
     <string name="seksi_ringkasan">Summary</string>
     <string name="ringkasan_harian">Daily summary</string>
     <string name="ringkasan_harian_ket">A look back at today\'s usage</string>
