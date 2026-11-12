@@ -72,6 +72,11 @@ import id.noto.app.ui.stats.AplikasiStatistik
 import id.noto.app.ui.stats.DetailAplikasiScreen
 import id.noto.app.ui.stats.DetailDistribusiScreen
 import id.noto.app.ui.stats.StatistikScreen
+import id.noto.app.ui.stats.StatistikViewModel
+import id.noto.app.ui.stats.harianAplikasi
+import id.noto.app.ui.stats.statistikBulanan
+import id.noto.app.ui.stats.statistikHariIni
+import java.time.LocalDate
 
 /** Durasi animasi geser pill nav saat pindah tab (smart animate 400 ms di FigCraft). */
 const val DURASI_GESER_MS = 400
@@ -320,9 +325,11 @@ private fun CangkangTab(
     val navController = rememberNavController()
     // Sheet Hapus Aturan dari tombol "Hapus aturan" di Detail.
     var hapusDariDetail by remember { mutableStateOf(false) }
-    // shortcut: aplikasi yang dibuka di Detail Aplikasi disimpan di memori, bukan argumen rute; cukup untuk data contoh,
-    // diganti nama paket aplikasi sebagai argumen rute di Tahap 8.
+    // Aplikasi yang dibuka di Detail Aplikasi (disimpan di memori, bukan argumen rute).
     var aplikasiStat by remember { mutableStateOf(AplikasiStatistik(R.drawable.logo_instagram, "Instagram", 70)) }
+    val statistikVm: StatistikViewModel = viewModel()
+    val pemakaian by statistikVm.pemakaian.collectAsState()
+    val petaAplikasi = remember(terpasang) { terpasang.associateBy { it.paket } }
 
     // Setelah aturan dihapus dari Edit, Detail-nya tidak ada lagi: pindah ke Blokir - Daftar tanpa animasi.
     // Navigasi ditunda sampai cangkang aktif lagi (Edit selesai memudar): navigate() saat cangkang belum aktif
@@ -462,7 +469,10 @@ private fun CangkangTab(
                 exitTransition = { if (targetState.destination.route in RUTE_STAT_DALAM) slideOutHorizontally(push) { -it } else fadeOut(pudar) },
                 popEnterTransition = { if (initialState.destination.route in RUTE_STAT_DALAM) EnterTransition.None else fadeIn(pudar) },
             ) {
+                val hari = LocalDate.now()
                 StatistikScreen(
+                    hariIni = remember(pemakaian, petaAplikasi, hari) { statistikHariIni(pemakaian, hari, petaAplikasi) },
+                    bulanan = remember(pemakaian, petaAplikasi, hari) { statistikBulanan(pemakaian, hari, petaAplikasi) },
                     onDistribusi = { navController.navigate(RUTE_STAT_DISTRIBUSI) },
                     onAplikasi = { aplikasiStat = it; navController.navigate(RUTE_STAT_APLIKASI) },
                 )
@@ -488,13 +498,17 @@ private fun CangkangTab(
                             navController.navigate(RUTE_STAT_APLIKASI)
                         }
                     } else {
-                        // Aturan pertama yang memuat aplikasi ini (dicocokkan dengan nama sampai Tahap 5).
-                        val aturanApp = aturan.firstOrNull { aplikasiStat.nama in it.paket }
+                        // Aturan pertama yang memuat aplikasi ini.
+                        val aturanApp = aturan.firstOrNull { aplikasiStat.paket in it.paket }
+                        val terpasangApp = petaAplikasi[aplikasiStat.paket]
                         DetailAplikasiScreen(
                             aplikasiStat,
                             aturan = aturanApp?.aturan,
                             onKembali = kembali,
                             onAturan = { aturanApp?.let { bukaDetail(it.aturan.id) } },
+                            kategori = terpasangApp?.kategori,
+                            // Aplikasi contoh (Minggu Ini, sampai Tahap 8C) tidak terpasang: tetap data contoh.
+                            harian = terpasangApp?.let { harianAplikasi(pemakaian, it.paket, LocalDate.now()) },
                         )
                     }
                 }

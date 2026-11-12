@@ -27,10 +27,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import id.noto.app.ui.components.painterAplikasi
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
@@ -62,7 +62,7 @@ fun ScreenTimeIsi(data: StatistikHariIni, onAplikasi: (PemakaianHariIni) -> Unit
         GrafikPerJam(data.menitPerJam)
         Spacer(Modifier.height(29.dp))
         Column(Modifier.padding(start = 18.dp).width(357.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            val maks = data.aplikasi.maxOf { it.menit }.coerceAtLeast(1)
+            val maks = data.aplikasi.maxOfOrNull { it.menit }?.coerceAtLeast(1) ?: 1
             data.aplikasi.forEach { BarisAplikasi(it, it.menit.toFloat() / maks) { onAplikasi(it) } }
         }
     }
@@ -125,7 +125,7 @@ private fun BarisAplikasi(app: PemakaianHariIni, porsi: Float, onKlik: () -> Uni
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(painterResource(app.logo), contentDescription = null, modifier = Modifier.size(30.dp))
+        Image(painterAplikasi(app.ikon, app.logo), contentDescription = null, modifier = Modifier.size(30.dp))
         Column(Modifier.width(271.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Text(app.nama, style = NotoTeks.Label, color = NotoWarna.TeksUtama, maxLines = 1)
             Box(Modifier.fillMaxWidth().height(4.dp).background(NotoWarna.InfoLatar, RoundedCornerShape(4.dp))) {

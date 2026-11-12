@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
+import id.noto.app.ui.components.painterAplikasi
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoTeksLama
@@ -149,8 +150,8 @@ private val TINGGI_BATANG_MAKS = 75f
 private fun KartuEmpatMinggu(data: StatistikBulanan) = Kartu {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.penggunaan_4_minggu), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
-        // Chip: Biru pucet, sudut penuh, padding 2/8, jarak 4.
-        Row(
+        // Chip: Biru pucet, sudut penuh, padding 2/8, jarak 4. Disembunyikan kalau tidak turun (pilihan pemilik proyek).
+        if (data.turunPersen > 0) Row(
             Modifier.background(NotoWarna.InfoLatar, CircleShape).padding(horizontal = 8.dp, vertical = 2.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -247,7 +248,7 @@ private fun BarisAplikasiBulanan(app: AplikasiBulanan, onKlik: () -> Unit) {
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(36.dp).background(NotoWarna.Garis, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                Image(painterResource(app.logo), contentDescription = null, modifier = Modifier.size(27.dp))
+                Image(painterAplikasi(app.ikon, app.logo), contentDescription = null, modifier = Modifier.size(27.dp))
             }
             Column {
                 Text(app.nama, Modifier.tinggiBarisFigCraft(NotoTeksLama.JudulBulanIni), style = NotoTeksLama.JudulBulanIni, color = NotoWarna.TeksUtama, maxLines = 1)

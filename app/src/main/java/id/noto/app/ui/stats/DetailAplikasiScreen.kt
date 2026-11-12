@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
+import id.noto.app.ui.components.painterAplikasi
 import id.noto.app.data.Aturan
 import id.noto.app.data.hariKeBitmask
 import id.noto.app.ui.blocks.contohAplikasi
@@ -55,20 +56,28 @@ import kotlin.math.ceil
  * batang grafik tidak dibedakan dalam/luar jadwal, dan baris yang menyangkut aturan tidak ditampilkan.
  */
 @Composable
-fun DetailAplikasiScreen(app: AplikasiStatistik, aturan: Aturan?, onKembali: () -> Unit, onAturan: () -> Unit) {
-    val hariIni = contohHariIniAplikasi
+fun DetailAplikasiScreen(
+    app: AplikasiStatistik,
+    aturan: Aturan?,
+    onKembali: () -> Unit,
+    onAturan: () -> Unit,
     // Kategori dari daftar Pilih Aplikasi; aplikasi di luar daftar itu hanya bertuliskan "Hari ini".
-    val kategori = contohAplikasi.firstOrNull { it.nama == app.nama }?.kategori
+    kategori: Int? = contohAplikasi.firstOrNull { it.nama == app.nama }?.kategori,
+    // Data asli hari ini; null = data contoh (Preview, aplikasi contoh Minggu Ini sampai Tahap 8C).
+    harian: HarianAplikasi? = null,
+) {
+    // shortcut: latihan napas, batal membuka, dan time out masih angka contoh; data asli di Tahap 8B.
+    val hariIni = contohHariIniAplikasi
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderHalaman(app.nama, onIkonKiri = onKembali)
         IsiSetelan {
-            KartuPemakaian(app, kategori, aturan)
+            KartuPemakaian(app, kategori, aturan, harian)
             SeksiSetelan(R.string.hari_ini) {
                 NotoBarisSetelan(
                     painterResource(R.drawable.ic_aplikasi),
                     stringResource(R.string.dibuka),
-                    keterangan = stringResource(R.string.kemarin_kali, hariIni.dibukaKemarin),
-                    nilai = stringResource(R.string.jumlah_kali, hariIni.dibuka),
+                    keterangan = stringResource(R.string.kemarin_kali, harian?.dibukaKemarin ?: hariIni.dibukaKemarin),
+                    nilai = stringResource(R.string.jumlah_kali, harian?.dibuka ?: hariIni.dibuka),
                     onKlik = null,
                 )
                 if (aturan != null) {
@@ -108,7 +117,7 @@ private fun String.hurufKalimat(): String = lowercase().replaceFirstChar { it.up
 
 /** Kartu (node 5728): Permukaan sudut 16, padding 16, jarak 12. */
 @Composable
-private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, jadwal: Aturan?) {
+private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, jadwal: Aturan?, harian: HarianAplikasi?) {
     Column(
         Modifier.fillMaxWidth().background(NotoWarna.Permukaan, RoundedCornerShape(16.dp)).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -122,7 +131,7 @@ private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, jadwal: Atura
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(36.dp).background(NotoWarna.Garis, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                    Image(painterResource(app.logo), contentDescription = null, modifier = Modifier.size(27.dp))
+                    Image(painterAplikasi(app.ikon, app.logo), contentDescription = null, modifier = Modifier.size(27.dp))
                 }
                 Column {
                     Text(app.nama, style = NotoTeks.JudulItem, color = NotoWarna.TeksUtama, maxLines = 1)
@@ -135,10 +144,10 @@ private fun KartuPemakaian(app: AplikasiStatistik, kategori: Int?, jadwal: Atura
                     )
                 }
             }
-            Text(formatDurasiRinci(app.menit), style = NotoTeks.AngkaHero, color = NotoWarna.TeksUtama, maxLines = 1)
+            Text(formatDurasiRinci(harian?.menit ?: app.menit), style = NotoTeks.AngkaHero, color = NotoWarna.TeksUtama, maxLines = 1)
         }
         Text(stringResource(R.string.pemakaian_per_jam), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
-        GrafikJam(contohMenitPerJam(app.menit), jadwal?.let { it.mulaiMenit to it.selesaiMenit })
+        GrafikJam(harian?.menitPerJam ?: contohMenitPerJam(app.menit), jadwal?.let { it.mulaiMenit to it.selesaiMenit })
         if (jadwal != null) {
             // Legenda (node 5918): garis atas 1, padding 8 atas-bawah, dua item rata kiri-kanan.
             Row(

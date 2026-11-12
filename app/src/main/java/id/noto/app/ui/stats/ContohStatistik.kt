@@ -1,12 +1,16 @@
 package id.noto.app.ui.stats
 
+import androidx.compose.ui.graphics.ImageBitmap
 import id.noto.app.R
 
 // Data contoh layar Statistik, persis seperti FigCraft. Data asli menggantikannya di Tahap 8.
 // Logo pihak ketiga hanya untuk data contoh (CLAUDE.md §8): hapus bersama file ini sebelum rilis.
 
-/** Pemakaian satu aplikasi hari ini, untuk Daftar Aplikasi di Screen Time. */
-data class PemakaianHariIni(val logo: Int, val nama: String, val menit: Int)
+/**
+ * Pemakaian satu aplikasi hari ini, untuk Daftar Aplikasi di Screen Time.
+ * [logo] = drawable data contoh (Preview); data asli memakai [ikon] dari sistem dan [paket].
+ */
+data class PemakaianHariIni(val logo: Int?, val nama: String, val menit: Int, val ikon: ImageBitmap? = null, val paket: String = nama)
 
 /** Isi "Statistik - Screen Time": total hari ini, pemakaian per jam (menit), dan daftar aplikasi. */
 data class StatistikHariIni(val totalMenit: Int, val menitPerJam: List<Float>, val aplikasi: List<PemakaianHariIni>)
@@ -83,7 +87,14 @@ val contohMingguan = StatistikMingguan(
 )
 
 /** Satu aplikasi di Top List Aplikasi Bulanan. */
-data class AplikasiBulanan(val logo: Int, val nama: String, val dibuka: Int, val menit: Int)
+data class AplikasiBulanan(
+    val logo: Int?,
+    val nama: String,
+    val dibuka: Int,
+    val menit: Int,
+    val ikon: ImageBitmap? = null,
+    val paket: String = nama,
+)
 
 /** Isi "Statistik - Bulan Ini". [bulan] 1–12; [menitPerPekan] berisi 4 pekan, pekan terakhir disorot. */
 data class StatistikBulanan(
@@ -117,7 +128,7 @@ val contohDistribusiLengkap = contohMingguan.aplikasi + listOf(
 )
 
 /** Aplikasi yang dibuka di Detail Aplikasi: logo, nama, dan total menit dari baris yang diketuk. */
-data class AplikasiStatistik(val logo: Int, val nama: String, val menit: Int)
+data class AplikasiStatistik(val logo: Int?, val nama: String, val menit: Int, val ikon: ImageBitmap? = null, val paket: String = nama)
 
 /** Angka seksi "Hari ini" di Detail Aplikasi. */
 data class HariIniAplikasi(
