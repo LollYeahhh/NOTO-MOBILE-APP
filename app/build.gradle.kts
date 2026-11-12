@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -7,7 +9,7 @@ plugins {
 // Kunci rilis: keystore.properties (tidak di-commit) menunjuk ke file .jks dan file sandi di luar repo.
 // Kalau file ini tidak ada, build release tetap jalan tapi tidak ditandatangani.
 val kunciRilis = rootProject.file("keystore.properties").takeIf { it.exists() }
-    ?.let { f -> java.util.Properties().apply { f.inputStream().use { load(it) } } }
+    ?.let { f -> Properties().apply { f.inputStream().use { load(it) } } }
 
 android {
     namespace = "id.noto.app"
