@@ -91,7 +91,7 @@ private fun BerandaKosong() {
                 color = NotoWarna.TeksUtama,
                 textAlign = TextAlign.Center,
             )
-            Row(Modifier.size(281.2.dp, 18.dp), horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.size(281.2.dp, 18.dp), horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.kosong_ajakan), style = NotoTeks.KecilTeks, color = NotoWarna.TeksSekunder, maxLines = 1)
                 Box(Modifier.size(10.2.dp), contentAlignment = Alignment.Center) {
                     Image(painterResource(R.drawable.ic_lama_blokir_inline), null, Modifier.requiredSize(15.143.dp))
