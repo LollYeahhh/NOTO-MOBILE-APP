@@ -75,25 +75,27 @@ Kolom hasil diisi saat QA: ✅ lolos, ❌ gagal (tulis catatan), – tidak berla
 
 | No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
 |---|---|---|---|---|
-| G1 | Simpan aturan saat izin Tampil di atas belum ada | Sheet "Izinkan Noto tampil di atas aplikasi" muncul setelah sheet Baterai | E, X | |
-| G2 | Ketuk "Buka Setelan" | Halaman "Tampil di atas aplikasi lain" untuk Noto terbuka; setelah dinyalakan, baris Setelan jadi "Aktif" | E, X | |
+| G1 | Simpan aturan saat izin Tampil di atas belum ada | Sheet "Izinkan Noto tampil di atas aplikasi" muncul setelah sheet Baterai | E, X | E ✓ 2026-11-12 |
+| G2 | Ketuk "Buka Setelan" | Halaman "Tampil di atas aplikasi lain" untuk Noto terbuka; setelah dinyalakan, baris Setelan jadi "Aktif" | E, X | E ✓ 2026-11-12 |
 | G3 | Simpan aturan pertama kali di Xiaomi/Oppo/vivo/dll. | Sheet "Satu langkah lagi untuk perangkatmu" muncul sekali saja | X | |
 | G4 | Ketuk "Buka Info Aplikasi" di Xiaomi | Editor izin MIUI (atau Info Aplikasi) Noto terbuka | X | |
 | G5 | Simpan aturan lagi setelah G3 | Sheet perangkat tidak muncul lagi; baris "Izin tambahan perangkat" tetap "Atur" | X | |
-| G6 | Emulator / Samsung / Pixel | Sheet dan baris "Izin tambahan perangkat" tidak ada | E | |
+| G6 | Emulator / Samsung / Pixel | Sheet dan baris "Izin tambahan perangkat" tidak ada | E | E ✓ 2026-11-12 |
 
 ## H. Layar Terkunci (Tahap 7B)
 
 | No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
 |---|---|---|---|---|
-| H1 | Pakai aplikasi di aturan sampai kuota habis, di dalam jadwal | Layar Terkunci muncul ≤ 2 detik, isi sesuai aturan (nama, kuota, aplikasi, jam bebas) | E, X | |
-| H2 | Tombol back di layar Terkunci | Ke layar utama Android, bukan ke aplikasi yang dikunci | E, X | |
-| H3 | "Kembali ke layar utama" | Ke layar utama Android | E, X | |
-| H4 | "Lihat statistik hari ini" | Noto terbuka di tab Statistik | E, X | |
-| H5 | Buka lagi aplikasi yang dikunci | Layar Terkunci muncul lagi | E, X | |
-| H6 | Matikan "Latihan napas" / "Tampilkan sisa waktu" | Panel Napas / badge "Bebas lagi dalam …" hilang | E | |
-| H7 | Di luar jadwal | Aplikasi bebas, layar Terkunci tidak muncul | E, X | |
-| H8 | Izin Tampil di atas dicabut | Layar Terkunci tidak muncul, status tetap Time Out, tanpa crash | E, X | |
+| H1 | Pakai aplikasi di aturan sampai kuota habis, di dalam jadwal | Layar Terkunci muncul ≤ 2 detik, isi sesuai aturan (nama, kuota, aplikasi, jam bebas) | E, X | E ✓ 2026-11-12 |
+| H2 | Tombol back di layar Terkunci | Ke layar utama Android, bukan ke aplikasi yang dikunci | E, X | E ✓ 2026-11-12 |
+| H3 | "Kembali ke layar utama" | Ke layar utama Android | E, X | E ✓ 2026-11-12 |
+| H4 | "Lihat statistik hari ini" | Noto terbuka di tab Statistik | E, X | E ✓ 2026-11-12 |
+| H5 | Buka lagi aplikasi yang dikunci | Layar Terkunci muncul lagi | E, X | E ✓ 2026-11-12 |
+| H6 | Matikan "Latihan napas" / "Tampilkan sisa waktu" | Panel Napas / badge "Bebas lagi dalam …" hilang | E | E ✓ 2026-11-12 |
+| H7 | Di luar jadwal | Aplikasi bebas, layar Terkunci tidak muncul | E, X | E ✓ 2026-11-12 |
+| H8 | Izin Tampil di atas dicabut | Layar Terkunci tidak muncul, status tetap Time Out, tanpa crash | E, X | E ✓ 2026-11-12 |
+| H9 | Layar Terkunci terbuka sampai jadwal selesai | Menutup sendiri ke layar utama tepat di jam selesai | E, X | E ✓ 2026-11-12 |
+| H10 | Nonaktifkan aturan saat kuota habis | Aplikasinya bebas dibuka lagi | E, X | E ✓ 2026-11-12 |
 
 ## F. Otomatis (dijalankan tiap build)
 

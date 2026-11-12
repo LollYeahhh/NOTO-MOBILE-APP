@@ -167,9 +167,11 @@ class PemantauService : Service() {
 
     /**
      * Buka layar Terkunci di atas [paket]. Android 10+ hanya mengizinkan Activity dibuka dari latar belakang
-     * kalau izin "Tampil di atas aplikasi lain" diberikan (Tahap 7A); tanpa izin itu panggilan ini diabaikan sistem.
+     * kalau izin "Tampil di atas aplikasi lain" diberikan (Tahap 7A). Tanpa izin itu tidak dicoba, karena sistem
+     * pasti menolak dan setiap penolakan (tiap 2 detik) membuang kerja dan memenuhi log sistem.
      */
     private fun tampilkanTerkunci(paket: String, kunci: KunciAplikasi) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !izinDiberikan(this, Izin.TampilDiAtas)) return
         val nama = try {
             packageManager.getApplicationLabel(packageManager.getApplicationInfo(paket, 0)).toString()
         } catch (_: PackageManager.NameNotFoundException) {

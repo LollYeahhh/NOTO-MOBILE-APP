@@ -9,6 +9,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,7 @@ import id.noto.app.ui.blocks.InfoTerkunci
 import id.noto.app.ui.blocks.TerkunciScreen
 import id.noto.app.ui.blocks.rememberWaktu
 import id.noto.app.ui.theme.NOTOAPPTheme
+import kotlinx.coroutines.delay
 import java.time.ZoneId
 
 /**
@@ -48,6 +50,11 @@ class TerkunciActivity : ComponentActivity() {
             val selesai = data.getLongExtra(SELESAI, 0)
             val sisaMenit = remember(waktu, selesai) {
                 ((selesai - System.currentTimeMillis() + 59_999) / 60_000).toInt().coerceAtLeast(0)
+            }
+            // Jadwal selesai: aplikasi bebas lagi, layar Terkunci menutup sendiri ke layar utama.
+            LaunchedEffect(selesai) {
+                delay(selesai - System.currentTimeMillis())
+                keLayarUtama()
             }
             val s = setelan ?: return@setContent
             NOTOAPPTheme {
