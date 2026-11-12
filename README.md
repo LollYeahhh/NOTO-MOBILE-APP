@@ -11,7 +11,7 @@
 [![Android](https://img.shields.io/badge/Android-8.0%2B-1F2B25?logo=android&logoColor=white)](#-unduh-dan-pasang)
 [![Lisensi](https://img.shields.io/badge/lisensi-MIT-3368A0)](LICENSE)
 
-[![Download APK v0.1](https://img.shields.io/badge/Download-APK%20v0.1-5B7B6A?style=for-the-badge&logo=android&logoColor=white)](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)
+[![Download APK v0.2](https://img.shields.io/badge/Download-APK%20v0.2-5B7B6A?style=for-the-badge&logo=android&logoColor=white)](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)
 
 <img src="docs/gambar/blokir.png" width="200" alt="Daftar aturan blokir">
 <img src="docs/gambar/aturan-baru.png" width="200" alt="Membuat aturan baru">
@@ -34,12 +34,12 @@ Bukan hukuman, melainkan pengingat bahwa sekarang saatnya berhenti sejenak.
 
 | | |
 | --- | --- |
-| Versi terbaru | **v0.1** (November 2026) |
+| Versi terbaru | **v0.2** (November 2026) |
 | Butuh | Android 8.0 (Oreo) atau lebih baru |
 | Ukuran | ± 2 MB |
 | Bahasa | Indonesia, English |
 
-1. Buka halaman **[Rilis terbaru](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)**, lalu unduh `noto-v0.1.apk` di bagian **Assets**.
+1. Buka halaman **[Rilis terbaru](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)**, lalu unduh `noto-v0.2.apk` di bagian **Assets**.
 2. Buka file-nya. Kalau diminta, izinkan pemasangan dari sumber ini.
 3. Buka Noto, lalu ikuti petunjuk izinnya.
 
@@ -84,6 +84,16 @@ Semua data tetap di perangkatmu. Noto **tidak meminta izin internet**, tidak ada
 Baca selengkapnya di **[Kebijakan Privasi](docs/rilis/kebijakan-privasi.md)**.
 
 ## 📦 Riwayat Rilis
+
+### v0.2 — November 2026
+
+Perbaikan:
+
+- Izin Akses penggunaan diminta saat Noto pertama dibuka
+- Statistik langsung berisi pemakaian 7 hari terakhir
+- Bulan Ini mengikuti pekan di bulan berjalan (Pekan 1 = tanggal 1–7, dan seterusnya)
+- Batang Ritme 7 Hari tidak lagi keluar dari kartu
+- Teks ajakan di Beranda kosong kini rata tengah
 
 ### v0.1 — November 2026
 

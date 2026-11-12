@@ -330,6 +330,13 @@
     <string name="faq_ket">Jawaban untuk pertanyaan umum</string>
     <string name="subjek_masukan">Masukan Noto</string>
     <string name="subjek_pertanyaan">Pertanyaan tentang Noto</string>
+    <string name="rilis_02_label">Versi 0.2 · November 2026</string>
+    <string name="rilis_02_judul">Perbaikan</string>
+    <string name="rilis_02_isi">• Izin Akses penggunaan diminta saat Noto pertama dibuka
+• Statistik langsung berisi pemakaian 7 hari terakhir
+• Bulan Ini mengikuti pekan di bulan berjalan
+• Batang Ritme 7 Hari tidak lagi keluar dari kartu
+• Teks ajakan di Beranda kosong kini rata tengah</string>
     <string name="rilis_label">Versi 0.1 · November 2026</string>
     <string name="rilis_judul">Rilis pertama</string>
     <string name="rilis_isi">• Atur aplikasi dengan jadwal dan kuota screen time\n• Aplikasi terkunci saat kuota habis, bebas di luar jadwal\n• Kuota kembali penuh setiap jadwal dimulai\n• Statistik harian, mingguan, dan bulanan\n• Pengingat sisa kuota dan ringkasan pemakaian</string>

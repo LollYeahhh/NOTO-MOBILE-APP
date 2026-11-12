@@ -333,6 +333,13 @@
     <string name="faq_ket">Answers to common questions</string>
     <string name="subjek_masukan">Noto feedback</string>
     <string name="subjek_pertanyaan">Question about Noto</string>
+    <string name="rilis_02_label">Version 0.2 · November 2026</string>
+    <string name="rilis_02_judul">Fixes</string>
+    <string name="rilis_02_isi">• Usage access is requested when Noto first opens
+• Statistics show your last 7 days of usage right away
+• This Month follows the weeks of the current month
+• 7-Day Rhythm bars no longer overflow the card
+• The empty Home prompt is now centered</string>
     <string name="rilis_label">Version 0.1 · November 2026</string>
     <string name="rilis_judul">First release</string>
     <string name="rilis_isi">• Limit apps with schedules and screen time quotas\n• Apps lock when the quota runs out, free outside the schedule\n• The quota refills every time the schedule starts\n• Daily, weekly, and monthly statistics\n• Remaining quota reminders and usage summaries</string>

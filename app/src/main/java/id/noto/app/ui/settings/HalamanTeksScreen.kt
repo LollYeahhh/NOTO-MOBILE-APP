@@ -33,6 +33,9 @@ import id.noto.app.util.rapikanTeksLisensi
 @Composable
 fun CatatanRilisScreen(onKembali: () -> Unit) {
     HalamanTeks(stringResource(R.string.catatan_rilis_judul), onKembali) {
+        SeksiTeks(R.string.rilis_02_label) {
+            KartuTeks(stringResource(R.string.rilis_02_judul), stringResource(R.string.rilis_02_isi))
+        }
         SeksiTeks(R.string.rilis_label) {
             KartuTeks(stringResource(R.string.rilis_judul), stringResource(R.string.rilis_isi))
         }
