@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+// Kunci rilis: keystore.properties (tidak di-commit) menunjuk ke file .jks dan file sandi di luar repo.
+// Kalau file ini tidak ada, build release tetap jalan tapi tidak ditandatangani.
+val kunciRilis = rootProject.file("keystore.properties").takeIf { it.exists() }
+    ?.let { f -> java.util.Properties().apply { f.inputStream().use { load(it) } } }
+
 android {
     namespace = "id.noto.app"
     compileSdk {
@@ -20,8 +25,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (kunciRilis != null) create("release") {
+            val sandi = file(kunciRilis.getProperty("passwordFile")).readText().trim()
+            storeFile = file(kunciRilis.getProperty("storeFile"))
+            storePassword = sandi
+            keyAlias = kunciRilis.getProperty("keyAlias")
+            keyPassword = sandi
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             optimization {
                 enable = true
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")

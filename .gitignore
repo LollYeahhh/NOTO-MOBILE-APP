@@ -15,3 +15,6 @@
 local.properties
 .omc/
 .idea/
+keystore.properties
+*.jks
+.kotlin/
