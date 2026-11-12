@@ -57,7 +57,7 @@ data class InfoTerkunci(
     val sisaMenit: Int,
 )
 
-/** Data contoh dari FigCraft; data asli datang dari layanan pemantau di Tahap 7. */
+/** Data contoh dari FigCraft untuk Preview; data asli diisi TerkunciActivity. */
 val contohTerkunci = InfoTerkunci("Sosmed", 90, "Instagram", bebasMenit = 21 * 60, sisaMenit = 134)
 
 /** Warna efek blur dekoratif dari FigCraft (pengecualian hex langsung, lihat CLAUDE.md §8). */
@@ -67,9 +67,16 @@ private val WarnaBlur = Color(0xFFC4ECCF)
  * "Blokir - Terkunci Time Out" (node 2976): latar Permukaan, Header Tipe=Logo, blur dekoratif,
  * Konten (Ikon Jeda, Pesan, Panel Napas; jarak 24) di y 196, dan Aksi di bawah. Tanpa Bottom Nav.
  * Saat time out tidak ada tombol tambahan waktu (CLAUDE.md §5).
+ * [tampilNapas] dan [tampilSisa] = setelan "Latihan napas" dan "Tampilkan sisa waktu" (Aturan Pembatasan).
  */
 @Composable
-fun TerkunciScreen(info: InfoTerkunci, onKembali: () -> Unit, onStatistik: () -> Unit) {
+fun TerkunciScreen(
+    info: InfoTerkunci,
+    onKembali: () -> Unit,
+    onStatistik: () -> Unit,
+    tampilNapas: Boolean = true,
+    tampilSisa: Boolean = true,
+) {
     Box(Modifier.fillMaxSize().background(NotoWarna.Permukaan)) {
         BlurDekoratif(Modifier.offset(x = 46.dp, y = 150.dp).size(300.dp))
         Column(
@@ -78,8 +85,8 @@ fun TerkunciScreen(info: InfoTerkunci, onKembali: () -> Unit, onStatistik: () ->
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             IkonJeda()
-            Pesan(info)
-            PanelNapas()
+            Pesan(info, tampilSisa)
+            if (tampilNapas) PanelNapas()
         }
         // Aksi: bawahnya 52 dari tepi layar (y 700 + 100 di frame 852), jarak 4.
         Column(
@@ -138,7 +145,7 @@ private fun IkonJeda() {
 
 /** Pesan (jarak 8, rata tengah): eyebrow, judul, isi, Badge Info. */
 @Composable
-private fun Pesan(info: InfoTerkunci) {
+private fun Pesan(info: InfoTerkunci, tampilSisa: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             stringResource(R.string.terkunci_eyebrow, info.namaAturan).uppercase(),
@@ -154,7 +161,7 @@ private fun Pesan(info: InfoTerkunci) {
             color = NotoWarna.TeksSekunder,
             textAlign = TextAlign.Center,
         )
-        NotoBadge(stringResource(R.string.terkunci_bebas_lagi, formatDurasi(info.sisaMenit)), TipeBadge.Info)
+        if (tampilSisa) NotoBadge(stringResource(R.string.terkunci_bebas_lagi, formatDurasi(info.sisaMenit)), TipeBadge.Info)
     }
 }
 

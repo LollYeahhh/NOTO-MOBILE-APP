@@ -28,6 +28,10 @@ interface KuotaDao {
     )
     suspend fun tambahKeAda(aturanId: Long, mulaiJendela: Long, paket: String, detik: Long, dibuka: Int): Int
 
+    /** Total detik terpakai aturan [aturanId] di jendela yang dimulai [mulaiJendela]. Dipakai pemantau untuk mengunci. */
+    @Query("SELECT COALESCE(SUM(detik), 0) FROM kuota WHERE aturanId = :aturanId AND mulaiJendela = :mulaiJendela")
+    suspend fun terpakai(aturanId: Long, mulaiJendela: Long): Long
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun sisipkan(kuota: Kuota)
 }

@@ -82,6 +82,19 @@ Kolom hasil diisi saat QA: ✅ lolos, ❌ gagal (tulis catatan), – tidak berla
 | G5 | Simpan aturan lagi setelah G3 | Sheet perangkat tidak muncul lagi; baris "Izin tambahan perangkat" tetap "Atur" | X | |
 | G6 | Emulator / Samsung / Pixel | Sheet dan baris "Izin tambahan perangkat" tidak ada | E | |
 
+## H. Layar Terkunci (Tahap 7B)
+
+| No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
+|---|---|---|---|---|
+| H1 | Pakai aplikasi di aturan sampai kuota habis, di dalam jadwal | Layar Terkunci muncul ≤ 2 detik, isi sesuai aturan (nama, kuota, aplikasi, jam bebas) | E, X | |
+| H2 | Tombol back di layar Terkunci | Ke layar utama Android, bukan ke aplikasi yang dikunci | E, X | |
+| H3 | "Kembali ke layar utama" | Ke layar utama Android | E, X | |
+| H4 | "Lihat statistik hari ini" | Noto terbuka di tab Statistik | E, X | |
+| H5 | Buka lagi aplikasi yang dikunci | Layar Terkunci muncul lagi | E, X | |
+| H6 | Matikan "Latihan napas" / "Tampilkan sisa waktu" | Panel Napas / badge "Bebas lagi dalam …" hilang | E | |
+| H7 | Di luar jadwal | Aplikasi bebas, layar Terkunci tidak muncul | E, X | |
+| H8 | Izin Tampil di atas dicabut | Layar Terkunci tidak muncul, status tetap Time Out, tanpa crash | E, X | |
+
 ## F. Otomatis (dijalankan tiap build)
 
 `./gradlew testDebugUnitTest`: format waktu, jadwal, nama otomatis, saring aplikasi, kategori, hitung kuota.

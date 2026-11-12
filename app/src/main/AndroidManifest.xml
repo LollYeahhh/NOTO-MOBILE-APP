@@ -51,6 +51,16 @@
             </intent-filter>
         </activity>
 
+        <!-- Layar Terkunci: task sendiri dan tidak tampil di Recent Apps, supaya tombol back tidak membawa
+             kembali ke aplikasi yang dikunci atau ke layar Noto lain. -->
+        <activity
+            android:name=".service.TerkunciActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="id.noto.app.terkunci"
+            android:theme="@style/Theme.NOTOAPP" />
+
         <!-- Pemantau pemakaian. specialUse: tidak ada jenis foreground service bawaan untuk pelacak screen time. -->
         <service
             android:name=".service.PemantauService"

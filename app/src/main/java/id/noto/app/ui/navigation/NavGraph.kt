@@ -119,7 +119,7 @@ private const val DURASI_PUSH_MS = 300
 private const val DURASI_DISSOLVE_MS = 250
 
 @Composable
-fun NotoNavGraph() {
+fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
     val navController = rememberNavController()
     // Aturan dibaca dari dan disimpan ke Room; Setelan dari DataStore. Keduanya satu untuk seluruh layar.
     val aturanVm: AturanViewModel = viewModel()
@@ -191,6 +191,8 @@ fun NotoNavGraph() {
                 onAktif = { aturanVm.ubahAktif(idDetail, it) },
                 onSenyap = { aturanVm.ubahSenyap(idDetail, it) },
                 onMintaIzin = { antreanIzin = listOf(it) },
+                keStatistik = keStatistik,
+                onKeStatistik = onKeStatistik,
             )
         }
         composable(
@@ -303,6 +305,8 @@ private fun CangkangTab(
     onAktif: (Boolean) -> Unit,
     onSenyap: (Boolean) -> Unit,
     onMintaIzin: (Izin) -> Unit,
+    keStatistik: Boolean = false,
+    onKeStatistik: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     // Sheet Hapus Aturan dari tombol "Hapus aturan" di Detail.
@@ -356,6 +360,14 @@ private fun CangkangTab(
             popUpTo(Tab.Beranda.rute) { saveState = true }
             launchSingleTop = true
             restoreState = true
+        }
+    }
+
+    // "Lihat statistik hari ini" di layar Terkunci: pindah ke tab Statistik.
+    LaunchedEffect(keStatistik) {
+        if (keStatistik) {
+            pilihTab(Tab.Statistik)
+            onKeStatistik()
         }
     }
 
