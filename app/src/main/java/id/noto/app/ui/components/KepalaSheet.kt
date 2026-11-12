@@ -30,7 +30,8 @@ import id.noto.app.ui.theme.tinggiBarisFigCraft
  * + subjudul (NOTO/Teks) di kiri dan tombol tutup 24 di kanan.
  */
 @Composable
-fun NotoKepalaSheet(judul: String, subjudul: String, onTutup: () -> Unit, modifier: Modifier = Modifier) {
+/** [onTutup] null = tanpa tombol tutup (sheet izin wajib). */
+fun NotoKepalaSheet(judul: String, subjudul: String, onTutup: (() -> Unit)?, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.size(36.dp, 4.dp).background(NotoWarna.Garis, CircleShape))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -38,7 +39,7 @@ fun NotoKepalaSheet(judul: String, subjudul: String, onTutup: () -> Unit, modifi
                 Text(judul, Modifier.tinggiBarisFigCraft(NotoTeks.JudulKartu), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
                 Text(subjudul, Modifier.tinggiBarisFigCraft(NotoTeks.Teks), style = NotoTeks.Teks, color = NotoWarna.TeksSekunder)
             }
-            Image(
+            if (onTutup != null) Image(
                 painterResource(R.drawable.ic_tutup),
                 contentDescription = stringResource(R.string.tutup),
                 modifier = Modifier

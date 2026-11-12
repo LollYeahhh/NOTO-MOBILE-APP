@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.withResumed
 import androidx.compose.runtime.getValue
@@ -38,6 +41,8 @@ import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.blocks.AplikasiPilihan
 import id.noto.app.ui.permission.Izin
 import id.noto.app.ui.permission.SheetIzinBerurutan
+import id.noto.app.ui.permission.SheetIzinWajib
+import id.noto.app.ui.permission.izinDiberikan
 import id.noto.app.ui.blocks.keBeranda
 import id.noto.app.ui.blocks.keDaftar
 import id.noto.app.ui.blocks.keDetail
@@ -156,6 +161,15 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
     var bukaJadwal by remember { mutableStateOf(false) }
     // Sheet izin yang menunggu tampil (setelah aturan disimpan, atau dari baris izin di Setelan).
     var antreanIzin by remember { mutableStateOf(emptyList<Izin>()) }
+    // Akses penggunaan wajib: dicek ulang setiap kembali ke Noto (misalnya dari Setelan Android).
+    val konteks = LocalContext.current
+    var aksesPenggunaan by remember { mutableStateOf(izinDiberikan(konteks, Izin.AksesPenggunaan)) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        val sekarang = izinDiberikan(konteks, Izin.AksesPenggunaan)
+        // Baru diberikan dari sheet wajib: lanjut ke izin lain (boleh dilewati); yang sudah ada dilewati otomatis.
+        if (sekarang && !aksesPenggunaan) antreanIzin = listOf(Izin.Notifikasi, Izin.TampilDiAtas, Izin.Baterai)
+        aksesPenggunaan = sekarang
+    }
     // "Jeda sebelum mematikan": nama aturan dan aksi (matikan/hapus) yang dijalankan setelah hitungan habis.
     var jeda by remember { mutableStateOf<Pair<String, () -> Unit>?>(null) }
     // Isi terakhir, supaya sheet tetap berisi selama memudar setelah ditutup.
@@ -308,6 +322,9 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
             )
         }
     }
+    // Pertama dibuka (atau izinnya dicabut): sheet Akses penggunaan wajib, setelah splash selesai.
+    val ruteSekarang = navController.currentBackStackEntryAsState().value?.destination?.route
+    SheetIzinWajib(tampil = !aksesPenggunaan && ruteSekarang != null && ruteSekarang != RUTE_SPLASH)
     // Setiap aturan disimpan: sheet izin yang belum diberikan muncul berurutan di atas layar.
     SheetIzinBerurutan(
         antreanIzin,

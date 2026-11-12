@@ -80,9 +80,11 @@ private fun isiSheet(izin: Izin) = when (izin) {
  * Isi "Izin - Sheet Akses Penggunaan / Notifikasi / Optimasi Baterai / Tampil di Atas / Aksesibilitas / Perangkat": Kepala Sheet, panel petunjuk
  * (sama dengan Panel Alternatif Sheet Hapus), lalu tombol utama dan "Nanti saja".
  * [onSelesai] dipanggil setelah tombol utama atau "Nanti saja": sheet berikutnya (kalau ada) yang tampil.
+ * [wajib]: tanpa tombol tutup dan "Nanti saja", dan tetap terbuka setelah tombol utama sampai izinnya diberikan
+ * (frame "Izin - Sheet Akses Penggunaan (Wajib, Pertama Dibuka)").
  */
 @Composable
-fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit) {
+fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit, wajib: Boolean = false) {
     val context = LocalContext.current
     val isi = isiSheet(izin)
     // Android 13+: dialog izin notifikasi. Kalau sistem tidak mau menampilkannya lagi (sudah ditolak dua kali),
@@ -112,11 +114,11 @@ fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit
                 // Izin sudah ada tapi notifikasi dimatikan di Setelan (atau Android < 13): buka halamannya.
                 Izin.Notifikasi -> bukaSetelanNotifikasi(context)
             }
-            onSelesai()
+            if (!wajib) onSelesai()
         }
     }
 
-    NotoKepalaSheet(stringResource(isi.judul), stringResource(isi.ket), onTutup)
+    NotoKepalaSheet(stringResource(isi.judul), stringResource(isi.ket), onTutup.takeUnless { wajib })
     Row(
         Modifier.fillMaxWidth().background(NotoWarna.Permukaan, RoundedCornerShape(12.dp)).padding(12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -129,7 +131,7 @@ fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         NotoTombol(stringResource(isi.tombol), onKlik = aksi)
-        NotoTombol(stringResource(isi.tombolKedua), onKlik = onSelesai, tipe = TipeTombol.Permukaan)
+        if (!wajib) NotoTombol(stringResource(isi.tombolKedua), onKlik = onSelesai, tipe = TipeTombol.Permukaan)
     }
 }
 
@@ -151,6 +153,23 @@ fun SheetIzinBerurutan(antrean: List<Izin>, onDijawab: (Izin) -> Unit = {}, onUb
             )
         }
     }
+}
+
+/**
+ * Sheet Akses penggunaan yang tidak bisa ditutup (tombol kembali dan scrim tidak berbuat apa-apa): tanpa izin ini
+ * Noto tidak bisa menghitung apa pun. Hilang sendiri setelah izinnya diberikan.
+ */
+@Composable
+fun SheetIzinWajib(tampil: Boolean) {
+    NotoSheet(tampil = tampil, onTutup = {}) {
+        SheetIzin(Izin.AksesPenggunaan, onTutup = {}, onSelesai = {}, wajib = true)
+    }
+}
+
+@Preview(name = "Izin - Sheet Akses Penggunaan (Wajib)", widthDp = 393, heightDp = 852)
+@Composable
+private fun PreviewSheetIzinWajib() {
+    NOTOAPPTheme { SheetIzinWajib(tampil = true) }
 }
 
 @Preview(name = "Izin - Sheet Akses Penggunaan", widthDp = 393, heightDp = 852)
