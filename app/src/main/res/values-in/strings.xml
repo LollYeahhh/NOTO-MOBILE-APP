@@ -268,6 +268,14 @@
     <string name="contoh_pengingat">Contoh: Sisa %1$s untuk %2$s</string>
     <string name="contoh_nama_aturan">Sosmed</string>
     <string name="contoh_pengingat_isi">Masih ada waktu. Pakai dengan sadar, ya.</string>
+    <string name="saluran_pengingat">Pengingat</string>
+    <string name="notif_sisa_judul">Sisa %1$s untuk %2$s</string>
+    <string name="notif_habis_judul">%1$s sedang time out</string>
+    <string name="notif_habis_isi">Saatnya time out sejenak. Bebas lagi pukul %1$s.</string>
+    <string name="notif_mulai_judul">Jadwal %1$s dimulai</string>
+    <string name="notif_mulai_isi">Kuota %1$s berlaku sampai %2$s.</string>
+    <string name="notif_selesai_judul">Jadwal %1$s selesai</string>
+    <string name="notif_selesai_isi">Aplikasinya bebas dipakai lagi.</string>
     <string name="seksi_ringkasan">Ringkasan</string>
     <string name="ringkasan_harian">Ringkasan harian</string>
     <string name="ringkasan_harian_ket">Kilas balik pemakaian hari ini</string>

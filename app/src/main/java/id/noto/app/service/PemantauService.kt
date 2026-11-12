@@ -22,9 +22,11 @@ import id.noto.app.R
 import id.noto.app.data.AturanLengkap
 import id.noto.app.data.KuotaDao
 import id.noto.app.data.NotoDatabase
+import id.noto.app.data.SetelanRepository
 import id.noto.app.data.jendelaSekarang
 import id.noto.app.ui.permission.Izin
 import id.noto.app.ui.permission.izinDiberikan
+import id.noto.app.ui.settings.SetelanNoto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -54,6 +56,8 @@ class PemantauService : Service() {
     private val pelacak = PelacakLatar()
     // Aturan dari database (selalu terbaru), untuk menghitung kuota aplikasi yang sedang di layar.
     private var aturan: List<AturanLengkap> = emptyList()
+    // Setelan notifikasi terbaru, untuk pengingat.
+    private var setelan = SetelanNoto()
 
     // Waktu layar terakhir mati; null = pemantau baru menyala.
     private var layarMatiPada: Long? = null
@@ -86,6 +90,7 @@ class PemantauService : Service() {
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
         cakupan.launch { NotoDatabase.ambil(this@PemantauService).aturanDao().semua().collect { aturan = it } }
+        cakupan.launch { SetelanRepository(this@PemantauService).setelan.collect { setelan = it } }
         // Catatan kuota dan kejadian lebih dari 1 tahun tidak dipakai lagi: dihapus sekali tiap pemantau mulai.
         cakupan.launch {
             val db = NotoDatabase.ambil(this@PemantauService)
@@ -151,6 +156,8 @@ class PemantauService : Service() {
                     // Kuota aturannya sudah habis: tutup aplikasi itu dengan layar Terkunci.
                     kunciKalauHabis(this@PemantauService, aturan, it, waktu, kuotaDao)
                 }
+                // Pengingat sisa kuota, kuota habis, dan jadwal mulai/selesai.
+                periksaPengingat(this@PemantauService, aturan, setelan, waktu, kuotaDao, db.kejadianDao())
                 // Sisa milidetik tidak dibuang: dibawa ke putaran berikutnya.
                 sebelumnya = sekarang - (sekarang - sebelumnya) % 1000
             }

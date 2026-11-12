@@ -123,6 +123,16 @@ pengguna harus menyalakannya lagi. Baris Setelan otomatis kembali "Izinkan".
 | J5 | Layar Terkunci tertutup sendiri saat jadwal selesai | Tidak menambah "Batal membuka" | E | |
 | J6 | Buka Statistik - Minggu Ini lalu Detail | 7 hari terakhir (Sen–Min, hari ini disorot), badge "Lebih Sadar" hanya saat turun, skor dan label, kategori 3 bagian berjumlah 100%, keterangan jeda/tertahan/dibuka | E, X | E ✓ 2026-11-12 |
 
+## K. Notifikasi pengingat (Tahap 8D)
+
+| No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
+|---|---|---|---|---|
+| K1 | Sakelar "Saat jadwal mulai dan selesai" nyala, jadwal aturan dimulai | "Jadwal X dimulai — Kuota … berlaku sampai …", sekali per jadwal | E, X | E ✓ 2026-11-12 |
+| K2 | Sisa kuota melewati ambang (kuota lebih besar dari ambang) | "Sisa 5m untuk X"; lewat dua ambang sekaligus = satu notifikasi ambang terkecil | E, X | E ✓ 2026-11-12 |
+| K3 | Kuota habis | "X sedang time out — Bebas lagi pukul …" | E, X | E ✓ 2026-11-12 |
+| K4 | Jadwal selesai | "Jadwal X selesai" (kalau sakelar nyala); notifikasi sisa/time out aturan itu hilang | E, X | E ✓ 2026-11-12 |
+| K5 | Jam tenang nyala, pukul 22.00–06.00 | Tidak ada notifikasi pengingat; tidak dikirim belakangan | X | |
+
 ## F. Otomatis (dijalankan tiap build)
 
 `./gradlew testDebugUnitTest`: format waktu, jadwal, nama otomatis, saring aplikasi, kategori, hitung kuota.

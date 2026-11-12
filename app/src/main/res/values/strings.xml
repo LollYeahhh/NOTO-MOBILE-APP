@@ -271,6 +271,14 @@
     <string name="contoh_pengingat">Example: %1$s left for %2$s</string>
     <string name="contoh_nama_aturan">Social</string>
     <string name="contoh_pengingat_isi">There\'s still time. Use it mindfully.</string>
+    <string name="saluran_pengingat">Reminders</string>
+    <string name="notif_sisa_judul">%1$s left for %2$s</string>
+    <string name="notif_habis_judul">%1$s is on time out</string>
+    <string name="notif_habis_isi">Time for a short break. Free again at %1$s.</string>
+    <string name="notif_mulai_judul">%1$s schedule started</string>
+    <string name="notif_mulai_isi">%1$s quota applies until %2$s.</string>
+    <string name="notif_selesai_judul">%1$s schedule ended</string>
+    <string name="notif_selesai_isi">Its apps are free to use again.</string>
     <string name="seksi_ringkasan">Summary</string>
     <string name="ringkasan_harian">Daily summary</string>
     <string name="ringkasan_harian_ket">A look back at today\'s usage</string>
