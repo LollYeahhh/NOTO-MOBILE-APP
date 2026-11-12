@@ -161,8 +161,11 @@ private fun BoxScope.BlurHero() {
 /** Jarak dasar batang (y116) ke garis Batas Harian (y48): batang setinggi ini = tepat di batas. */
 private const val TINGGI_BATAS_DP = 68f
 
-/** Tinggi batang (dp) sebanding menit: menit = batas → setinggi garis Batas Harian. Lewat batas → di atas garis. */
-internal fun tinggiBatang(menit: Int, batasMenit: Int): Float = menit * TINGGI_BATAS_DP / batasMenit
+/** Batang tertinggi = setinggi kolom (96), supaya pemakaian jauh di atas batas tidak keluar dari kartu. */
+private const val TINGGI_BATANG_MAKS_DP = 96f
+
+/** Tinggi batang (dp) sebanding menit: menit = batas → setinggi garis Batas Harian. Lewat batas → di atas garis, maksimal 96. */
+internal fun tinggiBatang(menit: Int, batasMenit: Int): Float = (menit * TINGGI_BATAS_DP / batasMenit).coerceAtMost(TINGGI_BATANG_MAKS_DP)
 
 /** "Mendekati batas" mulai 90% batas harian; di bawahnya "Sesuai niat sadar". */
 internal fun mendekatiBatas(menit: Int, batasMenit: Int): Boolean = menit * 10 >= batasMenit * 9

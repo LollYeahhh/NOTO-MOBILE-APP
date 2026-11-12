@@ -13,6 +13,8 @@ class RitmeTest {
         assertEquals(68f, tinggiBatang(180, 180), 0.001f)
         assertEquals(34f, tinggiBatang(90, 180), 0.001f)
         assertEquals(71.778f, tinggiBatang(190, 180), 0.001f)
+        // Jauh di atas batas (6 jam vs kuota 15m): dibatasi setinggi kolom, tidak keluar kartu.
+        assertEquals(96f, tinggiBatang(360, 15), 0.001f)
     }
 
     @Test
