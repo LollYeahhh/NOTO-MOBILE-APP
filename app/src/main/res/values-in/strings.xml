@@ -187,10 +187,11 @@
     <string name="rata_rata_harian">Rata-rata Harian</string>
     <string name="selisih_kurung">(%1$s)</string>
     <string name="bulan_lalu">Bulan Lalu</string>
-    <string name="penggunaan_4_minggu">Penggunaan 4 Minggu</string>
+    <string name="penggunaan_bulan">Penggunaan %1$s</string>
     <string name="persen_turun">%1$d%% turun</string>
     <string name="pekan_n">Pekan %1$d</string>
-    <string name="pekan_1_3">Pekan 1–3</string>
+    <string name="pekan_lain">Pekan lain</string>
+    <string name="pekan_ini">Pekan %1$d (ini)</string>
     <string name="menit_singkat">%1$dm</string>
     <string name="top_list_bulanan">Top List Aplikasi Bulanan</string>
     <string name="top_list_ket">Screen time &amp; jumlah buka selama sebulan</string>

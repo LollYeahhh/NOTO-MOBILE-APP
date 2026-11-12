@@ -141,7 +141,7 @@ private fun KartuRingkasan(data: StatistikBulanan) = Kartu {
     }
 }
 
-// ---------- Penggunaan 4 Minggu (node 513) ----------
+// ---------- Penggunaan <bulan> (node 513) ----------
 
 /** Tinggi batang pekan dengan pemakaian terbanyak; pekan lain sebanding (FigCraft: 170m = 75). */
 private val TINGGI_BATANG_MAKS = 75f
@@ -149,7 +149,8 @@ private val TINGGI_BATANG_MAKS = 75f
 @Composable
 private fun KartuEmpatMinggu(data: StatistikBulanan) = Kartu {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-        Text(stringResource(R.string.penggunaan_4_minggu), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
+        val bahasa = LocalConfiguration.current.locales[0]
+        Text(stringResource(R.string.penggunaan_bulan, Month.of(data.bulan).getDisplayName(TextStyle.FULL_STANDALONE, bahasa)), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
         // Chip: Biru pucet, sudut penuh, padding 2/8, jarak 4. Disembunyikan kalau tidak turun (pilihan pemilik proyek).
         if (data.turunPersen > 0) Row(
             Modifier.background(NotoWarna.InfoLatar, CircleShape).padding(horizontal = 8.dp, vertical = 2.dp),
@@ -166,7 +167,7 @@ private fun KartuEmpatMinggu(data: StatistikBulanan) = Kartu {
         Row(Modifier.padding(top = 40.dp).fillMaxWidth().height(96.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             val maks = data.menitPerPekan.maxOrNull()?.coerceAtLeast(1) ?: 1
             data.menitPerPekan.forEachIndexed { i, menit ->
-                KolomPekan(i + 1, menit, menit * TINGGI_BATANG_MAKS / maks, sorot = i == data.menitPerPekan.lastIndex)
+                KolomPekan(i + 1, menit, menit * TINGGI_BATANG_MAKS / maks, sorot = i + 1 == data.pekanIni)
             }
         }
     }
@@ -179,12 +180,12 @@ private fun KartuEmpatMinggu(data: StatistikBulanan) = Kartu {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        LegendaPekan(NotoWarna.Pasif, stringResource(R.string.pekan_1_3))
-        LegendaPekan(NotoWarna.Primer, stringResource(R.string.pekan_n, data.menitPerPekan.size))
+        LegendaPekan(NotoWarna.Pasif, stringResource(R.string.pekan_lain))
+        LegendaPekan(NotoWarna.Primer, stringResource(R.string.pekan_ini, data.pekanIni))
     }
 }
 
-/** Nilai, batang lebar 26 sudut atas 8, nama pekan; jarak 6. Pekan terakhir: Primer dan SemiBold. */
+/** Nilai, batang lebar 26 sudut atas 8, nama pekan; jarak 6. Pekan berjalan: Primer dan SemiBold. */
 @Composable
 private fun RowScope.KolomPekan(pekan: Int, menit: Int, tinggi: Float, sorot: Boolean) {
     val (gaya, warnaTeks) = if (sorot) NotoTeks.KecilTebal to NotoWarna.Primer else NotoTeks.KecilLabel to NotoWarna.TeksSekunder

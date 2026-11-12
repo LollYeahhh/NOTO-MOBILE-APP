@@ -41,27 +41,37 @@ fun statistikHariIni(data: List<Pemakaian>, hari: LocalDate, aplikasi: Map<Strin
 
 /**
  * "Statistik - Bulan Ini". Rata-rata harian = total ÷ hari yang sudah lewat (termasuk hari ini);
- * bulan lalu = total bulan lalu ÷ jumlah harinya. Empat pekan = 4 × 7 hari yang berakhir hari ini (pekan 4 =
- * 7 hari terakhir), nilainya rata-rata harian. [StatistikBulanan.turunPersen] 0 = tidak turun / belum ada pembanding.
+ * bulan lalu = total bulan lalu ÷ jumlah harinya. Pekan mengikuti tanggal bulan berjalan (pilihan pemilik proyek 3a):
+ * Pekan 1 = tgl 1–7, 2 = 8–14, 3 = 15–21, 4 = 22–akhir bulan. Nilai pekan = rata-rata harian dari hari yang sudah
+ * lewat; pekan yang belum tiba 0. [StatistikBulanan.turunPersen]: pekan ini dibanding 7 hari sebelum pekan ini
+ * dimulai (untuk Pekan 1 = akhir bulan lalu); 0 = tidak turun / belum ada pembanding.
  */
+/** Pekan ke berapa [hari] di bulannya: 1–7 → 1, 8–14 → 2, 15–21 → 3, 22 dst → 4. */
+internal fun pekanKe(hari: LocalDate): Int = ((hari.dayOfMonth - 1) / 7 + 1).coerceAtMost(4)
+
 fun statistikBulanan(data: List<Pemakaian>, hari: LocalDate, aplikasi: Map<String, AplikasiPilihan>): StatistikBulanan {
     val milik = data.milik(aplikasi)
     val awal = hari.withDayOfMonth(1)
     val bulanIni = milik.antara(awal, hari)
     val awalLalu = awal.minusMonths(1)
     val total = menit(bulanIni.sumOf { it.detik })
-    val pekan = (3 downTo 0).map { k ->
-        val akhir = hari.minusDays(7L * k)
-        menit(milik.antara(akhir.minusDays(6), akhir).sumOf { it.detik }) / 7
+    val pekanIni = pekanKe(hari)
+    val pekan = (1..4).map { k ->
+        val mulai = awal.plusDays(7L * (k - 1))
+        val akhir = minOf(if (k == 4) awal.plusMonths(1).minusDays(1) else mulai.plusDays(6), hari)
+        if (akhir < mulai) 0 else menit(milik.antara(mulai, akhir).sumOf { it.detik }) / (akhir.toEpochDay() - mulai.toEpochDay() + 1).toInt()
     }
-    val (p1, p4) = pekan.first() to pekan.last()
+    val mulaiPekanIni = awal.plusDays(7L * (pekanIni - 1))
+    val sebelum = menit(milik.antara(mulaiPekanIni.minusDays(7), mulaiPekanIni.minusDays(1)).sumOf { it.detik }) / 7
+    val sekarang = pekan[pekanIni - 1]
     return StatistikBulanan(
         bulan = hari.monthValue,
         totalMenit = total,
         rataRataMenit = total / hari.dayOfMonth,
         bulanLaluMenit = menit(milik.antara(awalLalu, awal.minusDays(1)).sumOf { it.detik }) / awalLalu.lengthOfMonth(),
-        turunPersen = if (p1 > 0 && p4 < p1) (p1 - p4) * 100 / p1 else 0,
+        turunPersen = if (sebelum > 0 && sekarang < sebelum) (sebelum - sekarang) * 100 / sebelum else 0,
         menitPerPekan = pekan,
+        pekanIni = pekanIni,
         aplikasi = bulanIni.groupBy { it.paket }
             .map { (paket, baris) ->
                 val a = aplikasi.getValue(paket)

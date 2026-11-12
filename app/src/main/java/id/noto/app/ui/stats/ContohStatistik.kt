@@ -101,7 +101,7 @@ data class AplikasiBulanan(
     val paket: String = nama,
 )
 
-/** Isi "Statistik - Bulan Ini". [bulan] 1–12; [menitPerPekan] berisi 4 pekan, pekan terakhir disorot. */
+/** Isi "Statistik - Bulan Ini". [bulan] 1–12; [menitPerPekan] berisi 4 pekan, [pekanIni] (1–4) disorot. */
 data class StatistikBulanan(
     val bulan: Int,
     val totalMenit: Int,
@@ -110,6 +110,7 @@ data class StatistikBulanan(
     val turunPersen: Int,
     val menitPerPekan: List<Int>,
     val aplikasi: List<AplikasiBulanan>,
+    val pekanIni: Int = 4,
 )
 
 val contohBulanan = StatistikBulanan(

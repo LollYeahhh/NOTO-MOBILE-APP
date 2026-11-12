@@ -3,6 +3,7 @@ package id.noto.app
 import id.noto.app.data.Pemakaian
 import id.noto.app.ui.blocks.AplikasiPilihan
 import id.noto.app.ui.stats.harianAplikasi
+import id.noto.app.ui.stats.pekanKe
 import id.noto.app.ui.stats.statistikBulanan
 import id.noto.app.ui.stats.statistikHariIni
 import org.junit.Assert.assertEquals
@@ -33,24 +34,35 @@ class HitungStatistikTest {
     }
 
     @Test
-    fun bulanan_rataRataPekanDanTurun() {
+    fun bulanan_pekanKalenderDanTurun() {
         val data = mutableListOf<Pemakaian>()
-        // Pekan 1 (21–27 hari lalu): 140m/hari; pekan 4 (7 hari terakhir): 70m/hari.
-        for (d in 21L..27L) data += p(hari.minusDays(d), 10, "yt", 140 * 60L, 2)
-        for (d in 0L..6L) data += p(hari.minusDays(d), 10, "wa", 70 * 60L, 1)
-        // Bulan lalu: 30 hari Oktober × 31 → 31 hari, total 310m → rata-rata 10m.
+        // Pekan 1 (1–7 Nov): yt 140m/hari. Pekan 2 (8–12 Nov, baru 5 hari): wa 70m/hari.
+        for (tgl in 1..7) data += p(LocalDate.of(2026, 11, tgl), 10, "yt", 140 * 60L, 2)
+        for (tgl in 8..12) data += p(LocalDate.of(2026, 11, tgl), 10, "wa", 70 * 60L, 1)
+        // Bulan lalu: 310m ÷ 31 hari Oktober = 10m.
         data += p(LocalDate.of(2026, 10, 3), 9, "wa", 310 * 60L)
         val b = statistikBulanan(data, hari, apps)
         assertEquals(11, b.bulan)
-        assertEquals(listOf(140, 0, 0, 70), b.menitPerPekan)
-        assertEquals(50, b.turunPersen)
-        // November 1–12: wa 7 hari (6–12) × 70 = 490; yt 21–27 hari lalu = 16–22 Okt, bukan bulan ini.
-        assertEquals(490, b.totalMenit)
-        assertEquals(490 / 12, b.rataRataMenit)
-        // Oktober: 310m + yt 7 × 140 = 1290m ÷ 31.
-        assertEquals((310 + 980) / 31, b.bulanLaluMenit)
-        assertEquals(listOf("wa"), b.aplikasi.map { it.paket })
-        assertEquals(7, b.aplikasi.single().dibuka)
+        assertEquals(2, b.pekanIni)
+        assertEquals(listOf(140, 70, 0, 0), b.menitPerPekan)
+        assertEquals(50, b.turunPersen) // pekan 2 (70) dibanding pekan 1 (140)
+        assertEquals(980 + 350, b.totalMenit)
+        assertEquals((980 + 350) / 12, b.rataRataMenit)
+        assertEquals(10, b.bulanLaluMenit)
+        assertEquals(listOf("yt", "wa"), b.aplikasi.map { it.paket })
+        assertEquals(14, b.aplikasi.first().dibuka)
+    }
+
+    @Test
+    fun bulanan_pekan4BerisiTanggal22SampaiAkhirBulan() {
+        assertEquals(1, pekanKe(LocalDate.of(2026, 11, 7)))
+        assertEquals(2, pekanKe(LocalDate.of(2026, 11, 8)))
+        assertEquals(4, pekanKe(LocalDate.of(2026, 11, 22)))
+        assertEquals(4, pekanKe(LocalDate.of(2026, 12, 31)))
+        val akhir = LocalDate.of(2026, 11, 30)
+        val data = listOf(p(akhir.minusDays(1), 9, "yt", 90 * 60L), p(akhir, 9, "yt", 90 * 60L))
+        // 22–30 Nov = 9 hari, total 180m → 20m/hari.
+        assertEquals(listOf(0, 0, 0, 20), statistikBulanan(data, akhir, apps).menitPerPekan)
     }
 
     @Test
