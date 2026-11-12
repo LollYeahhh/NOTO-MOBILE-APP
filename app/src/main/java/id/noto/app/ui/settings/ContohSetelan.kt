@@ -21,6 +21,8 @@ data class SetelanNoto(
     val kunciEdit: Boolean = false,
     val latihanNapas: Boolean = true,
     val sisaWaktu: Boolean = true,
+    /** true setelah sheet "Izin tambahan perangkat" pernah dijawab: tidak muncul lagi otomatis. */
+    val izinPerangkatDijawab: Boolean = false,
 ) {
     /** Sisa kuota (menit) yang membuat status jadi Hampir Habis: chip terbesar, 15 kalau tidak ada yang dipilih. */
     val ambangHampirHabis: Int get() = sisaMenit.maxOrNull() ?: 15

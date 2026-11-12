@@ -34,6 +34,8 @@ import id.noto.app.ui.permission.Izin
 import id.noto.app.ui.permission.bukaSetelanAksesPenggunaan
 import id.noto.app.ui.permission.bukaSetelanBaterai
 import id.noto.app.ui.permission.bukaSetelanNotifikasi
+import id.noto.app.ui.permission.bukaSetelanTampilDiAtas
+import id.noto.app.ui.permission.perluIzinPerangkat
 import id.noto.app.ui.permission.rememberIzinBelum
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
@@ -100,6 +102,19 @@ fun SetelanScreen(
                 }
                 BarisIzin(Izin.Baterai, R.drawable.ic_baterai, R.string.baterai, R.string.baterai_ket) {
                     bukaSetelanBaterai(context)
+                }
+                BarisIzin(Izin.TampilDiAtas, R.drawable.ic_lapisan, R.string.tampil_di_atas, R.string.tampil_di_atas_ket) {
+                    bukaSetelanTampilDiAtas(context)
+                }
+                // Izin pabrik tidak bisa dicek, jadi selalu "Atur"; baris hanya ada di merek yang membutuhkannya.
+                if (perluIzinPerangkat()) {
+                    NotoBarisSetelan(
+                        painterResource(R.drawable.ic_hp),
+                        stringResource(R.string.izin_perangkat),
+                        keterangan = stringResource(R.string.izin_perangkat_ket),
+                        nilai = stringResource(R.string.status_atur),
+                        onKlik = { onMintaIzin(Izin.Perangkat) },
+                    )
                 }
                 // shortcut: status "Aktif" Aksesibilitas masih contoh (permintaan pemilik proyek); dibaca dari izin sungguhan di Tahap 7.
                 NotoBarisSetelan(

@@ -71,6 +71,17 @@ Kolom hasil diisi saat QA: ✅ lolos, ❌ gagal (tulis catatan), – tidak berla
 | E12 | Biarkan HP terkunci 1 jam | Pemantau tidak menghabiskan baterai mencolok; waktu layar mati tidak dihitung | X | |
 | E13 | Halaman optimasi baterai | Terbuka dari sheet izin | X | |
 
+## G. Izin penguncian (Tahap 7A)
+
+| No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
+|---|---|---|---|---|
+| G1 | Simpan aturan saat izin Tampil di atas belum ada | Sheet "Izinkan Noto tampil di atas aplikasi" muncul setelah sheet Baterai | E, X | |
+| G2 | Ketuk "Buka Setelan" | Halaman "Tampil di atas aplikasi lain" untuk Noto terbuka; setelah dinyalakan, baris Setelan jadi "Aktif" | E, X | |
+| G3 | Simpan aturan pertama kali di Xiaomi/Oppo/vivo/dll. | Sheet "Satu langkah lagi untuk perangkatmu" muncul sekali saja | X | |
+| G4 | Ketuk "Buka Info Aplikasi" di Xiaomi | Editor izin MIUI (atau Info Aplikasi) Noto terbuka | X | |
+| G5 | Simpan aturan lagi setelah G3 | Sheet perangkat tidak muncul lagi; baris "Izin tambahan perangkat" tetap "Atur" | X | |
+| G6 | Emulator / Samsung / Pixel | Sheet dan baris "Izin tambahan perangkat" tidak ada | E | |
+
 ## F. Otomatis (dijalankan tiap build)
 
 `./gradlew testDebugUnitTest`: format waktu, jadwal, nama otomatis, saring aplikasi, kategori, hitung kuota.

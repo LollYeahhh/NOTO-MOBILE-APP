@@ -52,10 +52,18 @@ private fun isiSheet(izin: Izin) = when (izin) {
         R.string.izin_baterai_judul, R.string.izin_baterai_ket, R.drawable.ic_info,
         R.string.izin_baterai_panel_judul, R.string.izin_baterai_panel_ket, R.string.buka_setelan_baterai,
     )
+    Izin.TampilDiAtas -> IsiSheet(
+        R.string.izin_atas_judul, R.string.izin_atas_ket, R.drawable.ic_info,
+        R.string.izin_atas_panel_judul, R.string.izin_atas_panel_ket, R.string.buka_setelan,
+    )
+    Izin.Perangkat -> IsiSheet(
+        R.string.izin_perangkat_judul, R.string.izin_perangkat_sub, R.drawable.ic_info,
+        R.string.izin_perangkat_panel_judul, R.string.izin_perangkat_panel_ket, R.string.buka_info_aplikasi,
+    )
 }
 
 /**
- * Isi "Izin - Sheet Akses Penggunaan / Notifikasi / Optimasi Baterai": Kepala Sheet, panel petunjuk
+ * Isi "Izin - Sheet Akses Penggunaan / Notifikasi / Optimasi Baterai / Tampil di Atas / Perangkat": Kepala Sheet, panel petunjuk
  * (sama dengan Panel Alternatif Sheet Hapus), lalu tombol utama dan "Nanti saja".
  * [onSelesai] dipanggil setelah tombol utama atau "Nanti saja": sheet berikutnya (kalau ada) yang tampil.
  */
@@ -84,6 +92,8 @@ fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit
             when (izin) {
                 Izin.AksesPenggunaan -> bukaSetelanAksesPenggunaan(context)
                 Izin.Baterai -> bukaSetelanBaterai(context)
+                Izin.TampilDiAtas -> bukaSetelanTampilDiAtas(context)
+                Izin.Perangkat -> bukaSetelanPerangkat(context)
                 // Izin sudah ada tapi notifikasi dimatikan di Setelan (atau Android < 13): buka halamannya.
                 Izin.Notifikasi -> bukaSetelanNotifikasi(context)
             }
@@ -110,18 +120,19 @@ fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit
 
 /**
  * Antrean sheet izin: menampilkan [antrean].first(), lalu yang berikutnya setelah dijawab.
- * Izin yang sudah diberikan dilewati. [onUbah] menerima sisa antrean.
+ * Izin yang sudah diberikan dilewati. [onUbah] menerima sisa antrean; [onDijawab] menerima izin
+ * yang sheet-nya baru ditutup atau dijawab.
  */
 @Composable
-fun SheetIzinBerurutan(antrean: List<Izin>, onUbah: (List<Izin>) -> Unit) {
+fun SheetIzinBerurutan(antrean: List<Izin>, onDijawab: (Izin) -> Unit = {}, onUbah: (List<Izin>) -> Unit) {
     val context = LocalContext.current
     val sekarang = antrean.firstOrNull { !izinDiberikan(context, it) }
     NotoSheet(tampil = sekarang != null, onTutup = { onUbah(emptyList()) }) {
         if (sekarang != null) {
             SheetIzin(
                 sekarang,
-                onTutup = { onUbah(emptyList()) },
-                onSelesai = { onUbah(antrean.dropWhile { it != sekarang }.drop(1)) },
+                onTutup = { onDijawab(sekarang); onUbah(emptyList()) },
+                onSelesai = { onDijawab(sekarang); onUbah(antrean.dropWhile { it != sekarang }.drop(1)) },
             )
         }
     }

@@ -19,10 +19,17 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 
 /**
- * Izin yang dibutuhkan pelacakan pemakaian (Tahap 6), urut seperti sheet-nya muncul.
- * Overlay, alarm tepat waktu, pop-up Xiaomi, dan Aksesibilitas menyusul di Tahap 7.
+ * Izin yang dibutuhkan pelacakan dan penguncian, urut seperti sheet-nya muncul.
+ * TampilDiAtas = izin overlay ("Tampil di atas aplikasi lain"): Activity layar Terkunci boleh dibuka
+ * dari latar belakang. Perangkat = izin buatan pabrik HP (mulai otomatis, pop-up di latar belakang).
  */
-enum class Izin { AksesPenggunaan, Notifikasi, Baterai }
+enum class Izin { AksesPenggunaan, Notifikasi, Baterai, TampilDiAtas, Perangkat }
+
+// Merek yang punya izin tambahan mulai otomatis / pop-up latar (dontkillmyapp.com). Samsung tidak.
+private val MEREK_IZIN_TAMBAHAN = setOf("xiaomi", "redmi", "poco", "huawei", "honor", "oppo", "realme", "vivo", "oneplus")
+
+/** true kalau perangkat buatan [pabrik] (Build.MANUFACTURER) butuh sheet "Izin tambahan perangkat". */
+fun perluIzinPerangkat(pabrik: String = Build.MANUFACTURER): Boolean = pabrik.lowercase() in MEREK_IZIN_TAMBAHAN
 
 /** true kalau [izin] sudah diberikan pengguna. */
 fun izinDiberikan(context: Context, izin: Izin): Boolean = when (izin) {
@@ -40,9 +47,12 @@ fun izinDiberikan(context: Context, izin: Izin): Boolean = when (izin) {
     // Mencakup izin POST_NOTIFICATIONS (Android 13+) dan sakelar notifikasi aplikasi di Setelan.
     Izin.Notifikasi -> NotificationManagerCompat.from(context).areNotificationsEnabled()
     Izin.Baterai -> context.getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(context.packageName)
+    Izin.TampilDiAtas -> Settings.canDrawOverlays(context)
+    // Izin pabrik tidak bisa dicek aplikasi; dianggap beres hanya di perangkat yang tidak membutuhkannya.
+    Izin.Perangkat -> !perluIzinPerangkat()
 }
 
-/** Izin yang belum diberikan, urut Akses penggunaan → Notifikasi → Baterai. */
+/** Izin yang belum diberikan, urut seperti [Izin]. */
 fun izinBelum(context: Context): List<Izin> = Izin.entries.filterNot { izinDiberikan(context, it) }
 
 /**
@@ -80,6 +90,28 @@ fun bukaSetelanBaterai(context: Context) {
     bukaSalahSatu(context, Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
 }
 
+/** Halaman Setelan Android untuk izin tampil di atas aplikasi lain, langsung ke Noto. */
+fun bukaSetelanTampilDiAtas(context: Context) {
+    val keNoto = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+    bukaSalahSatu(context, keNoto, Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
+}
+
+/**
+ * Halaman izin Noto buatan pabrik. Xiaomi/Redmi/POCO: editor izin MIUI (ada "Mulai otomatis" dan
+ * "Tampilkan jendela pop-up saat di latar belakang"); merek lain dan cadangannya: Info Aplikasi.
+ */
+fun bukaSetelanPerangkat(context: Context) {
+    val infoAplikasi = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))
+    val miui = Intent("miui.intent.action.APP_PERM_EDITOR")
+        .setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity")
+        .putExtra("extra_pkgname", context.packageName)
+    if (Build.MANUFACTURER.lowercase() in setOf("xiaomi", "redmi", "poco")) {
+        bukaSalahSatu(context, miui, infoAplikasi)
+    } else {
+        bukaSalahSatu(context, infoAplikasi)
+    }
+}
+
 /** Buka intent pertama yang ada di HP ini; kalau tidak ada sama sekali, buka Setelan utama. */
 fun bukaSalahSatu(context: Context, vararg intent: Intent) {
     for (i in intent) {
@@ -87,6 +119,8 @@ fun bukaSalahSatu(context: Context, vararg intent: Intent) {
             context.startActivity(i)
             return
         } catch (_: ActivityNotFoundException) {
+        } catch (_: SecurityException) {
+            // Beberapa versi MIUI menolak membuka editor izinnya dari aplikasi lain.
         }
     }
     context.startActivity(Intent(Settings.ACTION_SETTINGS))

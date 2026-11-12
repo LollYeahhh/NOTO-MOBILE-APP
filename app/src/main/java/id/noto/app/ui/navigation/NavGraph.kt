@@ -145,6 +145,8 @@ fun NotoNavGraph() {
     var bukaJadwal by remember { mutableStateOf(false) }
     // Sheet izin yang menunggu tampil (setelah aturan disimpan, atau dari baris izin di Setelan).
     var antreanIzin by remember { mutableStateOf(emptyList<Izin>()) }
+    // Sheet izin pabrik tidak bisa dicek, jadi hanya muncul otomatis sekali; setelahnya lewat baris Setelan.
+    val antreanSetelahSimpan = if (setelan.izinPerangkatDijawab) Izin.entries - Izin.Perangkat else Izin.entries
 
     // Dissolve splash → Beranda: cangkang (Beranda beserta nav) muncul memudar di atas splash.
     val pudarSplash = tween<Float>(DURASI_PUDAR_SPLASH_MS, easing = EaseInOutFigCraft)
@@ -210,7 +212,7 @@ fun NotoNavGraph() {
                 onSimpan = {
                     // Nama kosong → nama otomatis (Blokir, Blokir 1, …).
                     aturanVm.tambah(form, form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan) })
-                    antreanIzin = Izin.entries
+                    antreanIzin = antreanSetelahSimpan
                     navController.popBackStack()
                 },
                 onPilihAplikasi = { pilihLewatTombol = false; bukaJadwal = false; navController.navigate(RUTE_PILIH) },
@@ -266,7 +268,7 @@ fun NotoNavGraph() {
                         val nama = form.nama.trim().ifBlank { namaOtomatis(namaDasar, polaNomor, namaAturan - lama.aturan.nama) }
                         aturanVm.ubah(lama.aturan, form, nama)
                     }
-                    antreanIzin = Izin.entries
+                    antreanIzin = antreanSetelahSimpan
                     navController.popBackStack()
                 },
                 onHapus = { aturanVm.hapus(idDetail); dihapus = true; navController.popBackStack() },
@@ -278,7 +280,10 @@ fun NotoNavGraph() {
         }
     }
     // Setiap aturan disimpan: sheet izin yang belum diberikan muncul berurutan di atas layar.
-    SheetIzinBerurutan(antreanIzin) { antreanIzin = it }
+    SheetIzinBerurutan(
+        antreanIzin,
+        onDijawab = { if (it == Izin.Perangkat) setelanVm.ubah(setelan.copy(izinPerangkatDijawab = true)) },
+    ) { antreanIzin = it }
     }
 }
 

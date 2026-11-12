@@ -44,6 +44,7 @@ private object Kunci {
     val kunciEdit = booleanPreferencesKey("kunci_edit")
     val latihanNapas = booleanPreferencesKey("latihan_napas")
     val sisaWaktu = booleanPreferencesKey("sisa_waktu")
+    val izinPerangkatDijawab = booleanPreferencesKey("izin_perangkat_dijawab")
 }
 
 /** Isi DataStore → [SetelanNoto]; kunci yang belum ada memakai nilai bawaan. */
@@ -67,6 +68,7 @@ internal fun Preferences.keSetelan(): SetelanNoto {
         kunciEdit = this[Kunci.kunciEdit] ?: b.kunciEdit,
         latihanNapas = this[Kunci.latihanNapas] ?: b.latihanNapas,
         sisaWaktu = this[Kunci.sisaWaktu] ?: b.sisaWaktu,
+        izinPerangkatDijawab = this[Kunci.izinPerangkatDijawab] ?: b.izinPerangkatDijawab,
     )
 }
 
@@ -87,4 +89,5 @@ internal fun MutablePreferences.tulis(s: SetelanNoto) {
     this[Kunci.kunciEdit] = s.kunciEdit
     this[Kunci.latihanNapas] = s.latihanNapas
     this[Kunci.sisaWaktu] = s.sisaWaktu
+    this[Kunci.izinPerangkatDijawab] = s.izinPerangkatDijawab
 }

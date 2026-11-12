@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <!-- Menyalakan pemantau lagi setelah HP dinyalakan ulang. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Tampil di atas aplikasi lain: layar Terkunci boleh dibuka dari latar belakang (Tahap 7). -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- Supaya daftar aplikasi di Pilih Aplikasi terlihat (Android 11+): hanya aplikasi yang punya ikon di peluncur. -->
     <queries>
