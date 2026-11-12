@@ -144,6 +144,8 @@ pengguna harus menyalakannya lagi. Baris Setelan otomatis kembali "Izinkan".
 | L2 | Saat hitung mundur: "Batal, tetap aktif", X, atau tombol Home | Aturan tetap aktif | E, X | E ✓ 2026-11-12 |
 | L3 | "Hapus aturan" → "Ya, hapus aturan" (Detail atau Edit) | Hitung mundur dulu; batal → aturan tetap ada | E, X | E ✓ 2026-11-12 (Detail) |
 | L4 | Di luar jadwal, atau "Tanpa jeda" | Aturan langsung mati/terhapus tanpa hitung mundur | E | (unit test) |
+| L5 | "Kunci edit saat time out" nyala, aturan time out, buka Detail | Pensil, Aturan aktif, Edit, Hapus Pasif dan tidak bereaksi; info "Aturan dikunci … pukul {selesai}."; Senyapkan tetap bisa | E, X | E ✓ 2026-11-12 |
+| L6 | Kunci edit mati, aturan time out | Detail normal | E | E ✓ 2026-11-12 |
 
 ## F. Otomatis (dijalankan tiap build)
 

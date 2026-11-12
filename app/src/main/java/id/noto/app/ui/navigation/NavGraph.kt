@@ -52,6 +52,7 @@ import id.noto.app.ui.blocks.SheetForm
 import id.noto.app.ui.blocks.SheetHapus
 import id.noto.app.ui.blocks.SheetJedaBerjalan
 import id.noto.app.ui.components.NotoSheet
+import id.noto.app.ui.components.StatusAturan
 import id.noto.app.ui.blocks.namaOtomatis
 import id.noto.app.ui.home.BerandaScreen
 import id.noto.app.ui.settings.AturanPembatasanScreen
@@ -488,6 +489,7 @@ private fun CangkangTab(
                         onAktif = onAktif,
                         senyap = d.aturan.senyap,
                         onSenyap = onSenyap,
+                        terkunci = setelan.kunciEdit && d.keDaftar(waktu, terpasang, kuotaTercatat, ambang).status == StatusAturan.TimeOut,
                     )
                 }
             }

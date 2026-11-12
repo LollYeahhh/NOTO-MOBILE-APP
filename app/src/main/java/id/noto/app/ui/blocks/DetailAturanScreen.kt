@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -44,6 +45,7 @@ import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
 import id.noto.app.ui.theme.tinggiBarisFigCraft
+import id.noto.app.util.formatJam
 
 // Tinggi Bottom Nav (114) yang menutupi bagian bawah layar.
 private val TINGGI_NAV = 114.dp
@@ -58,6 +60,8 @@ private val namaHari = listOf(
  * (padding 24/16, jarak antarkartu 16).
  * "Hapus aturan" membuka Sheet Hapus Aturan ([onHapus]); sheet-nya digambar di cangkang, di atas Bottom Nav.
  * Toggle Kartu Pengaturan disimpan pemanggil ([aktif], [senyap]) supaya tidak kembali ke awal saat halaman dibuka lagi.
+ * [terkunci] ("Kunci edit saat time out", frame 9521): pensil, Aturan aktif, Edit dan Hapus berwarna Pasif dan
+ * tidak bisa diketuk; panel info menjelaskan kapan bisa diubah lagi. Senyapkan notifikasi tetap bisa diubah.
  */
 @Composable
 fun DetailAturanScreen(
@@ -69,7 +73,9 @@ fun DetailAturanScreen(
     onAktif: (Boolean) -> Unit = {},
     senyap: Boolean = true,
     onSenyap: (Boolean) -> Unit = {},
+    terkunci: Boolean = false,
 ) {
+    val edit = if (terkunci) ({}) else onEdit
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         Box {
             NotoHeaderHalaman(judul = detail.nama, onIkonKiri = onKembali)
@@ -79,7 +85,8 @@ fun DetailAturanScreen(
                 modifier = Modifier
                     .offset(x = 353.dp, y = 72.dp)
                     .size(24.dp)
-                    .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onEdit),
+                    .clickable(enabled = !terkunci, interactionSource = null, indication = null, role = Role.Button, onClick = onEdit),
+                colorFilter = if (terkunci) ColorFilter.tint(NotoWarna.Pasif) else null,
             )
         }
         Column(
@@ -88,13 +95,21 @@ fun DetailAturanScreen(
                 .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = TINGGI_NAV + 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            KartuSisaKuota(detail)
+            KartuSisaKuota(
+                if (terkunci) detail.copy(teksInfo = stringResource(R.string.info_dikunci, formatJam(detail.selesaiMenit))) else detail,
+            )
             KartuJadwal(detail)
             KartuPemakaian(detail)
-            KartuPengaturan(aktif, onAktif, senyap, onSenyap)
+            KartuPengaturan(aktif, onAktif, senyap, onSenyap, terkunci)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                NotoTombol(stringResource(R.string.edit_aturan), onKlik = onEdit, modifier = Modifier.weight(1f), tipe = TipeTombol.Permukaan)
-                NotoTombol(stringResource(R.string.hapus_aturan), onKlik = onHapus, modifier = Modifier.weight(1f), tipe = TipeTombol.Teks)
+                NotoTombol(
+                    stringResource(R.string.edit_aturan), onKlik = edit, modifier = Modifier.weight(1f),
+                    tipe = if (terkunci) TipeTombol.PermukaanPasif else TipeTombol.Permukaan,
+                )
+                NotoTombol(
+                    stringResource(R.string.hapus_aturan), onKlik = if (terkunci) ({}) else onHapus, modifier = Modifier.weight(1f),
+                    tipe = if (terkunci) TipeTombol.TeksPasif else TipeTombol.Teks,
+                )
             }
         }
     }
@@ -192,7 +207,7 @@ private fun KartuPemakaian(d: DetailAturan) {
 
 /** Kartu Pengaturan (node 2158): padding 4/16, dua Baris Setelan dengan toggle. */
 @Composable
-private fun KartuPengaturan(aktif: Boolean, onAktif: (Boolean) -> Unit, senyap: Boolean, onSenyap: (Boolean) -> Unit) {
+private fun KartuPengaturan(aktif: Boolean, onAktif: (Boolean) -> Unit, senyap: Boolean, onSenyap: (Boolean) -> Unit, terkunci: Boolean) {
     Kartu(Modifier.padding(horizontal = 16.dp, vertical = 4.dp), jarak = 0) {
         NotoBarisSetelan(
             painterResource(R.drawable.ic_jeda),
@@ -200,6 +215,7 @@ private fun KartuPengaturan(aktif: Boolean, onAktif: (Boolean) -> Unit, senyap: 
             keterangan = stringResource(R.string.aturan_aktif_ket),
             toggle = aktif,
             onUbah = onAktif,
+            terkunci = terkunci,
         )
         NotoBarisSetelan(
             painterResource(R.drawable.ic_lonceng),

@@ -312,6 +312,7 @@
     <string name="jeda_berjalan_judul">Tunggu sebentar, ya</string>
     <string name="jeda_berjalan_ket">%1$s mati setelah hitungan ini selesai. Masih yakin?</string>
     <string name="batal_tetap_aktif">Batal, tetap aktif</string>
+    <string name="info_dikunci">Aturan dikunci selama time out. Bisa diubah lagi pukul %1$s.</string>
     <string name="simpan">Simpan</string>
     <string name="versi_teks">Versi 0.1</string>
     <string name="hak_cipta">© 2026 HKL</string>

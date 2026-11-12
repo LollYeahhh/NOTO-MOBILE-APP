@@ -33,6 +33,9 @@ enum class TipeTombol(val latar: Color, val teks: Color) {
     Utama(NotoWarna.Primer, NotoWarna.Putih),
     Teks(Color.Transparent, NotoWarna.Primer),
     Permukaan(NotoWarna.Permukaan, NotoWarna.TeksUtama),
+    // Detail Aturan saat edit dikunci (frame 9521): label sage pucet.
+    PermukaanPasif(NotoWarna.Permukaan, NotoWarna.Pasif),
+    TeksPasif(Color.Transparent, NotoWarna.Pasif),
 }
 
 /**

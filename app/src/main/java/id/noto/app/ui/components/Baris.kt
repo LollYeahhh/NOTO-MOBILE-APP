@@ -83,11 +83,12 @@ fun NotoBarisSetelan(
     toggle: Boolean? = null,
     onKlik: (() -> Unit)? = {},
     onUbah: (Boolean) -> Unit = {},
+    terkunci: Boolean = false,
 ) {
     val aksi = if (toggle == null) {
         if (onKlik == null) Modifier else Modifier.clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onKlik)
     } else {
-        Modifier.toggleable(toggle, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onUbah)
+        Modifier.toggleable(toggle, enabled = !terkunci, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onUbah)
     }
     Row(
         modifier.fillMaxWidth().then(aksi).padding(vertical = 12.dp),
@@ -100,7 +101,7 @@ fun NotoBarisSetelan(
         if (toggle == null) {
             if (onKlik != null) Image(painterResource(R.drawable.ic_chevron_kanan), contentDescription = null, modifier = Modifier.size(24.dp))
         } else {
-            NotoToggle(toggle, onUbah)
+            NotoToggle(toggle, onUbah, terkunci = terkunci)
         }
     }
 }

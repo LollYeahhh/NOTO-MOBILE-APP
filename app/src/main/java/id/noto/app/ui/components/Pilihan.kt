@@ -25,14 +25,17 @@ import id.noto.app.ui.theme.NotoWarna
 // Toggle (node 1304) dan Checkbox (node 1308). Desain tidak punya animasi perpindahan,
 // jadi keadaan berganti langsung. Ripple dimatikan karena desain tidak punya efek tekan.
 
-/** Toggle 44×24: Nyala = Primer, kenop di kanan; Mati = sage pucet, kenop di kiri. Kenop putih 20, jarak tepi 2. */
+/**
+ * Toggle 44×24: Nyala = Primer, kenop di kanan; Mati = sage pucet, kenop di kiri. Kenop putih 20, jarak tepi 2.
+ * [terkunci]: sage pucet dan tidak bisa diketuk (Detail Aturan saat edit dikunci, frame 9521).
+ */
 @Composable
-fun NotoToggle(nyala: Boolean, onUbah: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+fun NotoToggle(nyala: Boolean, onUbah: (Boolean) -> Unit, modifier: Modifier = Modifier, terkunci: Boolean = false) {
     Box(
         modifier
             .size(44.dp, 24.dp)
-            .background(if (nyala) NotoWarna.Primer else NotoWarna.Pasif, CircleShape)
-            .toggleable(nyala, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onUbah)
+            .background(if (nyala && !terkunci) NotoWarna.Primer else NotoWarna.Pasif, CircleShape)
+            .toggleable(nyala, enabled = !terkunci, interactionSource = null, indication = null, role = Role.Switch, onValueChange = onUbah)
             .padding(2.dp),
         contentAlignment = if (nyala) Alignment.CenterEnd else Alignment.CenterStart,
     ) {
