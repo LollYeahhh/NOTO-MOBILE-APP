@@ -1,227 +1,204 @@
-# Noto - Notice Your Time.
+<div align="center">
 
-> ✨ **Noto Wektu, Noto Urip.** *Menata waktu, menata kehidupan.*
-> 
+# Noto
 
-Noto adalah aplikasi Android untuk membantu pengguna mengatur penggunaan aplikasi melalui **jadwal akses** dan **kuota screen time**, tanpa harus memblokir aplikasi sepanjang waktu.
+**Notice Your Time Out.** Batasi aplikasi dengan jadwal dan kuota screen time, tanpa memblokirnya seharian.
 
-## ⬇️ Unduh
+*Noto wektu, noto urip. Menata waktu, menata kehidupan.*
+
+[![Rilis](https://img.shields.io/github/v/release/LollYeahhh/NOTO-MOBILE-APP?label=rilis&color=5B7B6A)](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)
+[![Unduhan](https://img.shields.io/github/downloads/LollYeahhh/NOTO-MOBILE-APP/total?label=unduhan&color=6E8F76)](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases)
+[![Android](https://img.shields.io/badge/Android-8.0%2B-1F2B25?logo=android&logoColor=white)](#-unduh-dan-pasang)
+[![Lisensi](https://img.shields.io/badge/lisensi-MIT-3368A0)](LICENSE)
 
 [![Download APK v0.1](https://img.shields.io/badge/Download-APK%20v0.1-5B7B6A?style=for-the-badge&logo=android&logoColor=white)](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)
 
-Butuh Android 8.0 (Oreo) atau lebih baru.
+<img src="docs/gambar/blokir.png" width="200" alt="Daftar aturan blokir">
+<img src="docs/gambar/aturan-baru.png" width="200" alt="Membuat aturan baru">
+<img src="docs/gambar/atur-jadwal.png" width="200" alt="Mengatur jadwal">
+<img src="docs/gambar/statistik.png" width="200" alt="Statistik bulan ini">
 
-1. Ketuk tombol di atas, lalu unduh file `noto-v0.1.apk` di bagian **Assets**.
-2. Buka file-nya. Kalau diminta, izinkan pemasangan dari sumber ini.
-3. Buka Noto dan ikuti petunjuk izin (Akses penggunaan, Notifikasi, Tampil di atas aplikasi lain).
+</div>
 
-| Properti | Detail |
+---
+
+## ✨ Apa itu Noto?
+
+Noto adalah aplikasi Android untuk mengatur pemakaian aplikasi lewat **jadwal** dan **kuota screen time**.
+
+Contohnya: Sosmed boleh dipakai **1 jam** antara **07.00–21.00**. Selama jadwal berlaku, waktu hanya dihitung saat aplikasinya dibuka. Kalau kuota habis, aplikasinya **time out** sampai jadwal selesai. Di luar jadwal, semuanya **bebas dipakai**.
+
+Bukan hukuman, melainkan pengingat bahwa sekarang saatnya berhenti sejenak.
+
+## ⬇️ Unduh dan Pasang
+
+| | |
 | --- | --- |
-| 📱 Platform | Android |
-| 💻 Bahasa | Kotlin |
-| 🎨 UI | Jetpack Compose |
-| 🚀 Versi | 0.1 (rilis pertama) |
-| 📄 Lisensi | MIT |
+| Versi terbaru | **v0.1** (November 2026) |
+| Butuh | Android 8.0 (Oreo) atau lebih baru |
+| Ukuran | ± 2 MB |
+| Bahasa | Indonesia, English |
 
-## 📌 Latar Belakang
+1. Buka halaman **[Rilis terbaru](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)**, lalu unduh `noto-v0.1.apk` di bagian **Assets**.
+2. Buka file-nya. Kalau diminta, izinkan pemasangan dari sumber ini.
+3. Buka Noto, lalu ikuti petunjuk izinnya.
+
+> Noto belum tersedia di Google Play. Versi Play sedang disiapkan.
+
+## 🧩 Fitur
+
+- **Aturan untuk sekelompok aplikasi** dengan kuota bersama, hari berlaku, dan jam terbatas.
+- **Kunci otomatis** saat kuota habis, sampai jadwal selesai. Layar time out dilengkapi latihan napas singkat.
+- **Kuota kembali penuh** setiap jadwal dimulai.
+- **Bebas di luar jadwal**, tanpa hitungan apa pun.
+- **Statistik**: Screen Time hari ini, Minggu Ini, dan Bulan Ini.
+- **Pengingat**: sisa kuota, kuota habis, jadwal mulai dan selesai, ringkasan harian dan mingguan, serta jam tenang.
+- **Tidak mudah menyerah**: jeda hitung mundur sebelum mematikan aturan, dan kunci edit selama time out.
+
+## ⚙️ Cara Kerja
+
+```mermaid
+flowchart LR
+    A[Pilih aplikasi] --> B[Atur jadwal<br>07.00–21.00]
+    B --> C[Atur kuota<br>1 jam]
+    C --> D{Di dalam jadwal?}
+    D -->|Tidak| E[Bebas dipakai]
+    D -->|Ya| F{Kuota tersisa?}
+    F -->|Ya| G[Dipakai, waktu dihitung]
+    F -->|Habis| H[Time out sampai jadwal selesai]
+    H --> I[Jadwal berikutnya: kuota penuh lagi]
+```
+
+## 🔒 Izin dan Privasi
+
+Semua data tetap di perangkatmu. Noto **tidak meminta izin internet**, tidak ada iklan, dan tidak ada akun.
+
+| Izin | Untuk apa |
+| --- | --- |
+| Akses penggunaan | Menghitung lama pemakaian aplikasi |
+| Notifikasi | Pengingat dan notifikasi "Noto sedang berjalan" |
+| Tampil di atas aplikasi lain | Menampilkan layar time out |
+| Baterai tanpa pembatasan | Supaya Noto tidak ditutup sistem |
+| Aksesibilitas *(opsional)* | Mengunci lebih cepat. Hanya membaca nama aplikasi yang dibuka, bukan isi layar, ketikan, atau pesan |
+
+Baca selengkapnya di **[Kebijakan Privasi](docs/rilis/kebijakan-privasi.md)**.
+
+## 📦 Riwayat Rilis
+
+### v0.1 — November 2026
+
+Rilis pertama. Semua fitur versi 1:
+
+- Aturan pembatasan dengan jadwal dan kuota bersama
+- Penguncian otomatis dan reset kuota otomatis
+- Statistik harian, mingguan, dan bulanan
+- Notifikasi, pengingat, ringkasan, dan jam tenang
+- Setelan aturan pembatasan: bawaan aturan baru, jeda sebelum mematikan, kunci edit saat time out
+- Aksesibilitas opsional untuk penguncian lebih cepat
+
+Lihat semua rilis di **[halaman Releases](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases)**.
+
+## 🛠️ Build dari Kode Sumber
+
+Butuh Android Studio versi terbaru (JDK 17+).
+
+```bash
+git clone https://github.com/LollYeahhh/NOTO-MOBILE-APP.git
+cd NOTO-MOBILE-APP
+./gradlew assembleDebug
+```
+
+APK debug ada di `app/build/outputs/apk/debug/`.
+
+Untuk build release yang ditandatangani, buat `keystore.properties` di akar proyek (file ini tidak ikut di-commit):
+
+```properties
+storeFile=/path/ke/kunci.jks
+passwordFile=/path/ke/sandi.txt
+keyAlias=nama-alias
+```
+
+Lalu jalankan `./gradlew assembleRelease` atau `./gradlew bundleRelease`.
+
+| Komponen | Teknologi |
+| --- | --- |
+| Bahasa | Kotlin |
+| UI | Jetpack Compose (Material 3) |
+| Arsitektur | MVVM |
+| Penyimpanan | Room (aturan, pemakaian), DataStore (setelan) |
+| Pelacakan | UsageStats API dalam foreground service |
+| Penguncian | Layar time out di atas aplikasi lain, Accessibility Service opsional |
+| Penjadwalan | AlarmManager |
+| Min SDK | 26 (Android 8.0) |
+
+## 🌱 Tentang Noto
+
+<details>
+<summary><b>Latar belakang</b></summary>
+
+<br>
 
 Pada malam tanggal 3 Oktober 2026, saya mencari aplikasi yang bisa memblokir aplikasi lain. Namun, tidak ada yang benar-benar sesuai dengan kebutuhan saya: membatasi aplikasi **hanya pada jam tertentu** dengan **kuota waktu**, bukan memblokirnya sepanjang hari.
 
 Dari situ, Noto dibuat sebagai aplikasi sendiri dengan fitur yang memang sesuai dengan yang saya inginkan.
 
----
-
-## 💡 Tentang Noto
-
 Masalah penggunaan smartphone sering kali bukan karena aplikasi tertentu harus dihindari, tetapi karena **waktu penggunaannya tidak terkontrol**.
 
-Noto berbeda dari app blocker biasa. Pengguna tetap bisa memakai aplikasi yang diinginkan, tetapi selama periode tertentu aplikasi itu punya kuota waktu. Saat kuota habis, aplikasi dikunci sampai periode pembatasan berakhir. Di luar periode itu, aplikasi bebas digunakan tanpa batas.
+</details>
 
-## 🌱 Filosofi Nama
+<details>
+<summary><b>Filosofi nama</b></summary>
 
-Nama **Noto** punya dua makna sekaligus. Yang pertama dari akronim bahasa Inggris, yang kedua dari bahasa Jawa. Keduanya saling melengkapi.
+<br>
 
-### 🔤 1. Notice Your Time Out
+Nama **Noto** punya dua makna sekaligus.
 
-**Noto** adalah singkatan dari **N**otice y**O**ur **T**ime **O**ut.
+**1. Notice Your Time Out.** **N**otice y**O**ur **T**ime **O**ut. *Notice* berarti menyadari, *time out* berarti jeda. Digabung, Noto mengajak pengguna menyadari ke mana waktunya pergi dan kapan waktunya berhenti sejenak.
 
-*Notice* berarti menyadari atau memperhatikan. *Time out* berarti jeda, yaitu saat untuk berhenti sejenak.
-
-Digabung, **Notice Your Time Out** mengajak pengguna untuk menyadari ke mana waktunya pergi dan kapan waktunya berhenti sejenak. Ketika kuota habis dan aplikasi terkunci, itu bukan hukuman, melainkan pengingat bahwa sekarang saatnya *time out*.
-
-### 🪔 2. Noto dalam Bahasa Jawa
-
-Dalam bahasa Jawa, *“noto”* berarti **menata** atau **mengatur**.
+**2. Noto dalam bahasa Jawa** berarti **menata** atau **mengatur**.
 
 > ✨ **Noto wektu, noto urip.** *Menata waktu, menata kehidupan.*
-> 
-
-Maknanya: menata kehidupan yang dimulai dari hal kecil yaitu mengatur screen time. Mengatur screen time bukan cuma soal mengurangi pemakaian smartphone, tetapi tentang cara seseorang menata waktu dan kebiasaannya sehari-hari.
-
-### ☯️ Dua Makna, Satu Nama
 
 | Asal | Makna | Peran |
 | --- | --- | --- |
 | **Notice Your Time Out** (Inggris) | Menyadari waktu dan kapan harus berhenti | 👁️ *Kesadaran* |
 | **Noto** (Jawa) | Menata kehidupan dengan mengatur screen time | 🛠️ *Tindakan* |
 
-> 💬 Tanpa disadari, nama **Noto** membawa dua arti sekaligus: **sadari** waktumu, lalu **tata** hidupmu.
-> 
+> 💬 **Sadari** waktumu, lalu **tata** hidupmu.
 
-## 🎯 Tujuan Proyek
+</details>
 
-**Tujuan pribadi**
+<details>
+<summary><b>Contoh pemakaian</b></summary>
 
-- Sebagai portofolio.
-- Punya aplikasi sendiri dengan fitur yang sesuai kebutuhan pribadi.
-
-**Tujuan produk**
-
-- Membantu pengguna mengontrol penggunaan aplikasi tertentu.
-- Batas penggunaan yang lebih fleksibel dibanding daily app limit biasa.
-- Memisahkan waktu penggunaan terbatas dan waktu penggunaan bebas.
-- Membantu membangun kebiasaan smartphone yang lebih terkontrol.
-- Pengalaman screen time management yang sederhana dan mudah dipahami.
-
-## ⚙️ Fitur Utama
-
-### 1️⃣ App Selection
-
-Pilih aplikasi yang ingin dikontrol, misalnya Instagram, TikTok, YouTube, X, atau Mobile Games. Setiap aplikasi punya konfigurasi sendiri.
-
-### 2️⃣ Scheduled Restriction
-
-Tentukan periode saat pembatasan berlaku. Di luar periode itu, pembatasan tidak aktif.
-
-### 3️⃣ Screen Time Quota
-
-Tentukan jumlah waktu yang tersedia selama periode pembatasan. Waktu **hanya dihitung ketika aplikasi sedang dipakai**.
-
-### 4️⃣ Real-Time Screen Time Tracking
-
-Penggunaan aplikasi dihitung otomatis secara real-time. Informasi yang ditampilkan:
-
-- Total penggunaan
-- Sisa kuota
-- Waktu penggunaan saat ini
-- Status pembatasan
-
-### 5️⃣ Automatic App Lock
-
-Saat kuota habis, aplikasi otomatis dikunci dan tidak bisa dibuka selama periode pembatasan masih berlangsung.
-
-### 6️⃣ Automatic Quota Reset
-
-Saat periode pembatasan berikutnya dimulai, kuota kembali ke nilai awal.
-
-### 7️⃣ Unlimited Access Outside Restriction
-
-Di luar periode pembatasan, aplikasi bebas digunakan tanpa kuota.
-
-## 📦 Rilis
-
-### v0.1 — rilis pertama (November 2026)
-
-Semua fitur versi 1 sesuai desain:
-
-- **Aturan pembatasan**: satu aturan untuk sekelompok aplikasi dengan kuota bersama, hari berlaku, dan jam terbatas.
-- **Penguncian otomatis**: aplikasi time out saat kuota habis sampai jadwal selesai, dengan latihan napas singkat.
-- **Reset kuota otomatis** setiap jadwal dimulai, dan **bebas dipakai** di luar jadwal.
-- **Statistik**: Screen Time hari ini, Minggu Ini (skor keseimbangan, ritme 7 hari, distribusi), dan Bulan Ini.
-- **Notifikasi dan pengingat**: sisa kuota, kuota habis, jadwal mulai dan selesai, ringkasan harian dan mingguan, jam tenang 22.00–06.00.
-- **Aturan Pembatasan**: bawaan aturan baru, jeda hitung mundur sebelum mematikan aturan, dan kunci edit saat time out.
-- **Aksesibilitas (opsional)** untuk mengunci lebih cepat; hanya membaca nama aplikasi yang dibuka.
-- **Privasi**: semua data di perangkat, tanpa izin internet, tanpa iklan, tanpa akun.
-
-> Riwayat versi berikutnya akan ditambahkan di sini.
-
-## 🧭 Core Concept
-
-```mermaid
-flowchart TD
-    A[Select App] --> B["Set Schedule<br>07.00 – 21.00"]
-    B --> C["Set Time Quota<br>2 Hours"]
-    C --> D[Track Usage]
-    D --> E{Quota}
-    E -->|"Quota > 0"| F[App Open]
-    E -->|"Quota = 0"| G[App Locked]
-    F --> H[Schedule End]
-    G --> H
-    H --> I[Unlimited]
-    I --> J[Next Schedule]
-    J --> K[Reset Quota]
-
-```
-
----
-
-## 👥 Target Pengguna
-
-Noto cocok untuk pengguna smartphone yang:
-
-- Merasa terlalu banyak menghabiskan waktu di aplikasi tertentu.
-- Ingin mengurangi doomscrolling tanpa menghapus aplikasi.
-- Butuh batas penggunaan berdasarkan waktu.
-- Ingin pembagian waktu bebas dan waktu terbatas yang jelas.
-- Ingin kebiasaan penggunaan smartphone yang lebih teratur.
-
----
-
-## 📚 Contoh Use Case
+<br>
 
 | Skenario | Aplikasi | Jadwal | Kuota |
 | --- | --- | --- | --- |
-| 🎓 **Student** | Instagram | 07.00 – 21.00 | 1 jam |
-| 🎮 **Gaming** | Mobile Game | 08.00 – 20.00 | 2 jam |
-| 🧘 **Digital Wellbeing** | Aplikasi hiburan | 07.00 – 21.00 | Terbatas (bebas 21.00 – 07.00) |
-- **Student:** Instagram tetap bisa dipakai saat dibutuhkan, tetapi setelah 1 jam aplikasi dikunci sampai periode selesai.
-- **Gaming:** Setelah 2 jam bermain, game tidak bisa dibuka lagi sampai periode pembatasan selesai.
-- **Digital Wellbeing:** Aplikasi hiburan dibatasi di siang hari, tetapi bebas dipakai di malam hari.
+| 🎓 Pelajar | Sosial media | 07.00–21.00 | 1 jam |
+| 🎮 Gaming | Game | 08.00–20.00 | 2 jam |
+| 🧘 Digital wellbeing | Aplikasi hiburan | 07.00–21.00 | Terbatas, bebas 21.00–07.00 |
 
-## 🧩 Prinsip Desain
+</details>
+
+<details>
+<summary><b>Prinsip desain</b></summary>
+
+<br>
 
 | Prinsip | Penjelasan |
 | --- | --- |
 | 🤝 **Control, Not Punishment** | Noto tidak menghukum pengguna. Tujuannya memberi kontrol atas waktu. |
-| 🌊 **Flexible, Not Absolute** | Tidak perlu memblokir aplikasi seharian. Pembatasan bisa diterapkan di periode tertentu saja. |
+| 🌊 **Flexible, Not Absolute** | Tidak perlu memblokir aplikasi seharian. Pembatasan hanya di periode tertentu. |
 | 👀 **Awareness Before Restriction** | Pengguna bisa melihat bagaimana waktunya digunakan sebelum aplikasi dibatasi. |
 
----
+</details>
 
-## 🛠️ Teknologi
+## 💬 Masukan
 
-| Komponen | Teknologi |
-| --- | --- |
-| Platform | Android |
-| Language | Kotlin |
-| UI | Jetpack Compose |
-| Architecture | MVVM |
-| Local Storage | Room (aturan, pemakaian) dan DataStore (setelan) |
-| App Usage Tracking | Android UsageStats API dalam foreground service |
-| App Restriction | Layar time out (tampil di atas aplikasi lain), Accessibility Service opsional |
-| Scheduling | AlarmManager (ringkasan harian dan mingguan) |
-| Notification | Android Notification API |
-| Min SDK | Android 8.0 (API 26) |
-
----
-
-## 🌅 Visi
-
-Noto bukan sekadar aplikasi untuk memblokir aplikasi lain.
-
-Noto ingin membantu pengguna membangun hubungan yang lebih sehat dengan teknologi, dengan menata **kapan** teknologi digunakan, **berapa lama** digunakan, dan **kapan waktunya berhenti**.
-
-> ✨ **Noto wektu, noto urip.***Menata waktu, menata kehidupan.*
-> 
-
----
-
-## 🔒 Privasi
-
-Noto tidak mengumpulkan atau mengirim data. Semua data tersimpan di perangkat. Baca [Kebijakan Privasi](docs/rilis/kebijakan-privasi.md).
+Menemukan bug atau punya ide? Buka **[Issue](https://github.com/LollYeahhh/NOTO-MOBILE-APP/issues)**, atau kirim masukan dari Noto: **Setelan → Tentang Noto → Kirim masukan**.
 
 ## 📄 Lisensi
 
-Kode Noto dirilis dengan [Lisensi MIT](LICENSE). Font Poppins memakai [SIL Open Font License 1.1](licenses/Poppins-OFL.txt).
-
-### Adios
+Kode Noto dirilis dengan **[Lisensi MIT](LICENSE)** © 2026 HKL.
+Font Poppins memakai **[SIL Open Font License 1.1](licenses/Poppins-OFL.txt)**.
