@@ -75,7 +75,7 @@ Permissions:
 
 | Isian | Nilai |
 | --- | --- |
-| Kategori | Produktivitas (atau Gaya Hidup) |
+| Kategori | Produktivitas |
 | Tag | Screen time, Digital wellbeing, Productivity |
 | Email kontak | widierik51@gmail.com |
 | Situs web | https://github.com/LollYeahhh/NOTO-MOBILE-APP |

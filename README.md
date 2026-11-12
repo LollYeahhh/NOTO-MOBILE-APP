@@ -5,13 +5,23 @@
 
 Noto adalah aplikasi Android untuk membantu pengguna mengatur penggunaan aplikasi melalui **jadwal akses** dan **kuota screen time**, tanpa harus memblokir aplikasi sepanjang waktu.
 
+## ⬇️ Unduh
+
+[![Download APK v0.1](https://img.shields.io/badge/Download-APK%20v0.1-5B7B6A?style=for-the-badge&logo=android&logoColor=white)](https://github.com/LollYeahhh/NOTO-MOBILE-APP/releases/latest)
+
+Butuh Android 8.0 (Oreo) atau lebih baru.
+
+1. Ketuk tombol di atas, lalu unduh file `noto-v0.1.apk` di bagian **Assets**.
+2. Buka file-nya. Kalau diminta, izinkan pemasangan dari sumber ini.
+3. Buka Noto dan ikuti petunjuk izin (Akses penggunaan, Notifikasi, Tampil di atas aplikasi lain).
+
 | Properti | Detail |
 | --- | --- |
 | 📱 Platform | Android |
 | 💻 Bahasa | Kotlin |
 | 🎨 UI | Jetpack Compose |
-| 🚧 Status | In Development |
-| 📄 Lisensi | Ditentukan pada tahap pengembangan |
+| 🚀 Versi | 0.1 (rilis pertama) |
+| 📄 Lisensi | MIT |
 
 ## 📌 Latar Belakang
 
@@ -108,6 +118,23 @@ Saat periode pembatasan berikutnya dimulai, kuota kembali ke nilai awal.
 
 Di luar periode pembatasan, aplikasi bebas digunakan tanpa kuota.
 
+## 📦 Rilis
+
+### v0.1 — rilis pertama (November 2026)
+
+Semua fitur versi 1 sesuai desain:
+
+- **Aturan pembatasan**: satu aturan untuk sekelompok aplikasi dengan kuota bersama, hari berlaku, dan jam terbatas.
+- **Penguncian otomatis**: aplikasi time out saat kuota habis sampai jadwal selesai, dengan latihan napas singkat.
+- **Reset kuota otomatis** setiap jadwal dimulai, dan **bebas dipakai** di luar jadwal.
+- **Statistik**: Screen Time hari ini, Minggu Ini (skor keseimbangan, ritme 7 hari, distribusi), dan Bulan Ini.
+- **Notifikasi dan pengingat**: sisa kuota, kuota habis, jadwal mulai dan selesai, ringkasan harian dan mingguan, jam tenang 22.00–06.00.
+- **Aturan Pembatasan**: bawaan aturan baru, jeda hitung mundur sebelum mematikan aturan, dan kunci edit saat time out.
+- **Aksesibilitas (opsional)** untuk mengunci lebih cepat; hanya membaca nama aplikasi yang dibuka.
+- **Privasi**: semua data di perangkat, tanpa izin internet, tanpa iklan, tanpa akun.
+
+> Riwayat versi berikutnya akan ditambahkan di sini.
+
 ## 🧭 Core Concept
 
 ```mermaid
@@ -169,13 +196,12 @@ Noto cocok untuk pengguna smartphone yang:
 | Language | Kotlin |
 | UI | Jetpack Compose |
 | Architecture | MVVM |
-| Local Storage | Room |
-| App Usage Tracking | Android UsageStats API |
-| App Restriction | Android Accessibility / Device APIs (sesuai kebutuhan implementasi) |
+| Local Storage | Room (aturan, pemakaian) dan DataStore (setelan) |
+| App Usage Tracking | Android UsageStats API dalam foreground service |
+| App Restriction | Layar time out (tampil di atas aplikasi lain), Accessibility Service opsional |
+| Scheduling | AlarmManager (ringkasan harian dan mingguan) |
 | Notification | Android Notification API |
-
-> ⚠️ Teknologi dapat berubah selama pengembangan, tergantung kebutuhan teknis dan keterbatasan Android.
->
+| Min SDK | Android 8.0 (API 26) |
 
 ---
 
@@ -190,8 +216,12 @@ Noto ingin membantu pengguna membangun hubungan yang lebih sehat dengan teknolog
 
 ---
 
+## 🔒 Privasi
+
+Noto tidak mengumpulkan atau mengirim data. Semua data tersimpan di perangkat. Baca [Kebijakan Privasi](docs/rilis/kebijakan-privasi.md).
+
 ## 📄 Lisensi
 
-Lisensi akan ditentukan pada tahap pengembangan.
+Kode Noto dirilis dengan [Lisensi MIT](LICENSE). Font Poppins memakai [SIL Open Font License 1.1](licenses/Poppins-OFL.txt).
 
 ### Adios
