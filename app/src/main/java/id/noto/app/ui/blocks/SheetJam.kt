@@ -69,7 +69,7 @@ fun ColumnScope.SheetJam(
         Box(Modifier.fillMaxWidth().height(TINGGI_BARIS).background(NotoWarna.Permukaan, RoundedCornerShape(12.dp)))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
             KolomRoda(24, jam, onPilih = { jam = it })
-            Text(".", Modifier.tinggiBarisFigCraft(NotoTeks.AngkaHero), style = NotoTeks.AngkaHero, color = NotoWarna.TeksUtama)
+            Text(":", Modifier.tinggiBarisFigCraft(NotoTeks.AngkaHero), style = NotoTeks.AngkaHero, color = NotoWarna.TeksUtama)
             KolomRoda(60 / LANGKAH_MENIT, menit, onPilih = { menit = it }, kali = LANGKAH_MENIT)
         }
     }
