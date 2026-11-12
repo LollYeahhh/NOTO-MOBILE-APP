@@ -145,8 +145,11 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
     var bukaJadwal by remember { mutableStateOf(false) }
     // Sheet izin yang menunggu tampil (setelah aturan disimpan, atau dari baris izin di Setelan).
     var antreanIzin by remember { mutableStateOf(emptyList<Izin>()) }
-    // Sheet izin pabrik tidak bisa dicek, jadi hanya muncul otomatis sekali; setelahnya lewat baris Setelan.
-    val antreanSetelahSimpan = if (setelan.izinPerangkatDijawab) Izin.entries - Izin.Perangkat else Izin.entries
+    // Sheet izin pabrik (tidak bisa dicek) dan Aksesibilitas (opsional) hanya muncul otomatis sekali;
+    // setelahnya lewat baris Setelan.
+    val antreanSetelahSimpan = Izin.entries.filterNot {
+        (it == Izin.Perangkat && setelan.izinPerangkatDijawab) || (it == Izin.Aksesibilitas && setelan.izinAksesibilitasDijawab)
+    }
 
     // Dissolve splash → Beranda: cangkang (Beranda beserta nav) muncul memudar di atas splash.
     val pudarSplash = tween<Float>(DURASI_PUDAR_SPLASH_MS, easing = EaseInOutFigCraft)
@@ -284,7 +287,13 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
     // Setiap aturan disimpan: sheet izin yang belum diberikan muncul berurutan di atas layar.
     SheetIzinBerurutan(
         antreanIzin,
-        onDijawab = { if (it == Izin.Perangkat) setelanVm.ubah(setelan.copy(izinPerangkatDijawab = true)) },
+        onDijawab = {
+            when (it) {
+                Izin.Perangkat -> setelanVm.ubah(setelan.copy(izinPerangkatDijawab = true))
+                Izin.Aksesibilitas -> setelanVm.ubah(setelan.copy(izinAksesibilitasDijawab = true))
+                else -> {}
+            }
+        },
     ) { antreanIzin = it }
     }
 }

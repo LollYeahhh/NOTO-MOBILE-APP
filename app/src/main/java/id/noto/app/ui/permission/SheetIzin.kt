@@ -37,7 +37,15 @@ import id.noto.app.ui.theme.NotoWarna
 import id.noto.app.ui.theme.tinggiBarisFigCraft
 
 /** Teks dan ikon satu sheet izin (FigCraft "Izin - Sheet …"). */
-private class IsiSheet(val judul: Int, val ket: Int, val ikon: Int, val panelJudul: Int, val panelKet: Int, val tombol: Int)
+private class IsiSheet(
+    val judul: Int,
+    val ket: Int,
+    val ikon: Int,
+    val panelJudul: Int,
+    val panelKet: Int,
+    val tombol: Int,
+    val tombolKedua: Int = R.string.nanti_saja,
+)
 
 private fun isiSheet(izin: Izin) = when (izin) {
     Izin.AksesPenggunaan -> IsiSheet(
@@ -56,6 +64,12 @@ private fun isiSheet(izin: Izin) = when (izin) {
         R.string.izin_atas_judul, R.string.izin_atas_ket, R.drawable.ic_info,
         R.string.izin_atas_panel_judul, R.string.izin_atas_panel_ket, R.string.buka_setelan,
     )
+    // Penjelasan dan persetujuan Aksesibilitas yang diwajibkan Google Play: terpisah dari izin lain, tombol setuju.
+    Izin.Aksesibilitas -> IsiSheet(
+        R.string.izin_aksesibilitas_judul, R.string.izin_aksesibilitas_ket, R.drawable.ic_perisai,
+        R.string.izin_aksesibilitas_panel_judul, R.string.izin_aksesibilitas_panel_ket, R.string.setuju_buka_setelan,
+        tombolKedua = R.string.tidak_sekarang,
+    )
     Izin.Perangkat -> IsiSheet(
         R.string.izin_perangkat_judul, R.string.izin_perangkat_sub, R.drawable.ic_info,
         R.string.izin_perangkat_panel_judul, R.string.izin_perangkat_panel_ket, R.string.buka_info_aplikasi,
@@ -63,7 +77,7 @@ private fun isiSheet(izin: Izin) = when (izin) {
 }
 
 /**
- * Isi "Izin - Sheet Akses Penggunaan / Notifikasi / Optimasi Baterai / Tampil di Atas / Perangkat": Kepala Sheet, panel petunjuk
+ * Isi "Izin - Sheet Akses Penggunaan / Notifikasi / Optimasi Baterai / Tampil di Atas / Aksesibilitas / Perangkat": Kepala Sheet, panel petunjuk
  * (sama dengan Panel Alternatif Sheet Hapus), lalu tombol utama dan "Nanti saja".
  * [onSelesai] dipanggil setelah tombol utama atau "Nanti saja": sheet berikutnya (kalau ada) yang tampil.
  */
@@ -93,6 +107,7 @@ fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit
                 Izin.AksesPenggunaan -> bukaSetelanAksesPenggunaan(context)
                 Izin.Baterai -> bukaSetelanBaterai(context)
                 Izin.TampilDiAtas -> bukaSetelanTampilDiAtas(context)
+                Izin.Aksesibilitas -> bukaSetelanAksesibilitas(context)
                 Izin.Perangkat -> bukaSetelanPerangkat(context)
                 // Izin sudah ada tapi notifikasi dimatikan di Setelan (atau Android < 13): buka halamannya.
                 Izin.Notifikasi -> bukaSetelanNotifikasi(context)
@@ -114,7 +129,7 @@ fun ColumnScope.SheetIzin(izin: Izin, onTutup: () -> Unit, onSelesai: () -> Unit
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         NotoTombol(stringResource(isi.tombol), onKlik = aksi)
-        NotoTombol(stringResource(R.string.nanti_saja), onKlik = onSelesai, tipe = TipeTombol.Permukaan)
+        NotoTombol(stringResource(isi.tombolKedua), onKlik = onSelesai, tipe = TipeTombol.Permukaan)
     }
 }
 

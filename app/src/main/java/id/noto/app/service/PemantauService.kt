@@ -11,7 +11,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
@@ -22,8 +21,6 @@ import id.noto.app.MainActivity
 import id.noto.app.R
 import id.noto.app.data.AturanLengkap
 import id.noto.app.data.KuotaDao
-import id.noto.app.data.KunciAplikasi
-import id.noto.app.data.cariKunci
 import id.noto.app.data.NotoDatabase
 import id.noto.app.data.jendelaSekarang
 import id.noto.app.ui.permission.Izin
@@ -145,7 +142,7 @@ class PemantauService : Service() {
                     dao.tambah(tanggal, waktu.hour, it, detik, 0)
                     catatKuota(kuotaDao, waktu, it, detik, 0)
                     // Kuota aturannya sudah habis: tutup aplikasi itu dengan layar Terkunci.
-                    cariKunci(aturan, it, waktu) { id, mulai -> kuotaDao.terpakai(id, mulai) }?.let { k -> tampilkanTerkunci(it, k) }
+                    kunciKalauHabis(this@PemantauService, aturan, it, waktu, kuotaDao)
                 }
                 // Sisa milidetik tidak dibuang: dibawa ke putaran berikutnya.
                 sebelumnya = sekarang - (sekarang - sebelumnya) % 1000
@@ -163,21 +160,6 @@ class PemantauService : Service() {
             val mulai = jendelaSekarang(a.aturan, waktu) ?: continue
             kuotaDao.tambah(a.aturan.id, mulai.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), paket, detik, dibuka)
         }
-    }
-
-    /**
-     * Buka layar Terkunci di atas [paket]. Android 10+ hanya mengizinkan Activity dibuka dari latar belakang
-     * kalau izin "Tampil di atas aplikasi lain" diberikan (Tahap 7A). Tanpa izin itu tidak dicoba, karena sistem
-     * pasti menolak dan setiap penolakan (tiap 2 detik) membuang kerja dan memenuhi log sistem.
-     */
-    private fun tampilkanTerkunci(paket: String, kunci: KunciAplikasi) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !izinDiberikan(this, Izin.TampilDiAtas)) return
-        val nama = try {
-            packageManager.getApplicationLabel(packageManager.getApplicationInfo(paket, 0)).toString()
-        } catch (_: PackageManager.NameNotFoundException) {
-            paket
-        }
-        startActivity(TerkunciActivity.intent(this, kunci, nama))
     }
 
     private fun hentikanPutaran() {

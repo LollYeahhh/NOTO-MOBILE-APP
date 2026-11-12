@@ -243,6 +243,13 @@
     <string name="izin_perangkat_panel_judul">Find and turn on these permissions</string>
     <string name="izin_perangkat_panel_ket">Autostart and background pop-ups.</string>
     <string name="buka_info_aplikasi">Open App Info</string>
+    <string name="izin_aksesibilitas_judul">Lock apps faster</string>
+    <string name="izin_aksesibilitas_ket">Noto only reads the name of the app you open.</string>
+    <string name="izin_aksesibilitas_panel_judul">Your data stays on your device</string>
+    <string name="izin_aksesibilitas_panel_ket">It doesn’t read screen content, typing, or messages.</string>
+    <string name="setuju_buka_setelan">Agree and open Settings</string>
+    <string name="tidak_sekarang">Not now</string>
+    <string name="aksesibilitas_deskripsi">Noto uses this service only to know which app you just opened, so an app whose quota is used up can be locked right away. Noto doesn’t read screen content, typing, or messages, and your data stays on your device.</string>
     <string name="nanti_saja">Not now</string>
     <string name="saluran_pemantau">Usage tracking</string>
     <string name="pemantau_judul">Noto is running</string>

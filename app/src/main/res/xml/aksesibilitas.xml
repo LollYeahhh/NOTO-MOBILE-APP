@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Konfigurasi PengunciAksesibilitas: hanya kejadian "jendela berganti", tanpa membaca isi layar. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:canRetrieveWindowContent="false"
+    android:description="@string/aksesibilitas_deskripsi"
+    android:notificationTimeout="100" />

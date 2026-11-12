@@ -97,6 +97,21 @@ Kolom hasil diisi saat QA: ✅ lolos, ❌ gagal (tulis catatan), – tidak berla
 | H9 | Layar Terkunci terbuka sampai jadwal selesai | Menutup sendiri ke layar utama tepat di jam selesai | E, X | E ✓ 2026-11-12 |
 | H10 | Nonaktifkan aturan saat kuota habis | Aplikasinya bebas dibuka lagi | E, X | E ✓ 2026-11-12 |
 
+## I. Aksesibilitas (Tahap 7D)
+
+| No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
+|---|---|---|---|---|
+| I1 | Simpan aturan saat Aksesibilitas belum aktif | Sheet "Kunci aplikasi lebih cepat" muncul sekali setelah sheet Tampil di Atas | E, X | E ✓ 2026-11-12 |
+| I2 | "Setuju dan buka Setelan" lalu nyalakan Noto | Baris Setelan "Aksesibilitas" jadi "Aktif" | E, X | E ✓ 2026-11-12 |
+| I3 | Kuota habis, buka aplikasinya dengan Aksesibilitas aktif | Layar Terkunci muncul seketika (< 1 detik) | E, X | E ✓ 2026-11-12 |
+| I4 | "Tidak sekarang" | Sheet tertutup, penguncian tetap jalan lewat pemantau 2 detik | E | E ✓ 2026-11-12 |
+| I5 | Aksesibilitas aktif, izin Tampil di atas dicabut | Layar Terkunci tetap muncul | E, X | E ✓ 2026-11-12 |
+| I6 | Matikan Aksesibilitas di Setelan Android | Baris kembali "Izinkan", tanpa crash | E | E ✓ 2026-11-12 |
+
+Catatan I: di emulator kunci muncul 0,4–0,9 detik setelah aplikasi dibuka (tanpa Aksesibilitas 1,0–2 detik).
+"Paksa berhenti" Noto (termasuk Run ▶ dari Android Studio) membuat Android mematikan layanan Aksesibilitas Noto;
+pengguna harus menyalakannya lagi. Baris Setelan otomatis kembali "Izinkan".
+
 ## F. Otomatis (dijalankan tiap build)
 
 `./gradlew testDebugUnitTest`: format waktu, jadwal, nama otomatis, saring aplikasi, kategori, hitung kuota.

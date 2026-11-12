@@ -240,6 +240,13 @@
     <string name="izin_perangkat_panel_judul">Cari dan nyalakan izin ini</string>
     <string name="izin_perangkat_panel_ket">Mulai otomatis dan pop-up di latar belakang.</string>
     <string name="buka_info_aplikasi">Buka Info Aplikasi</string>
+    <string name="izin_aksesibilitas_judul">Kunci aplikasi lebih cepat</string>
+    <string name="izin_aksesibilitas_ket">Noto hanya membaca nama aplikasi yang dibuka.</string>
+    <string name="izin_aksesibilitas_panel_judul">Data tetap di perangkat</string>
+    <string name="izin_aksesibilitas_panel_ket">Tidak membaca isi layar, ketikan, atau pesan.</string>
+    <string name="setuju_buka_setelan">Setuju dan buka Setelan</string>
+    <string name="tidak_sekarang">Tidak sekarang</string>
+    <string name="aksesibilitas_deskripsi">Noto memakai layanan ini hanya untuk mengetahui aplikasi yang baru dibuka, supaya aplikasi yang kuotanya habis bisa langsung dikunci. Noto tidak membaca isi layar, ketikan, atau pesan, dan data tetap di perangkat.</string>
     <string name="nanti_saja">Nanti saja</string>
     <string name="saluran_pemantau">Pemantau pemakaian</string>
     <string name="pemantau_judul">Noto sedang berjalan</string>

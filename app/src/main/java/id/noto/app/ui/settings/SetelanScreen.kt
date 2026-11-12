@@ -1,9 +1,6 @@
 package id.noto.app.ui.settings
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +29,7 @@ import id.noto.app.ui.components.NotoBarisSetelan
 import id.noto.app.ui.components.NotoHeaderLogo
 import id.noto.app.ui.permission.Izin
 import id.noto.app.ui.permission.bukaSetelanAksesPenggunaan
+import id.noto.app.ui.permission.bukaSetelanAksesibilitas
 import id.noto.app.ui.permission.bukaSetelanBaterai
 import id.noto.app.ui.permission.bukaSetelanNotifikasi
 import id.noto.app.ui.permission.bukaSetelanTampilDiAtas
@@ -116,14 +114,9 @@ fun SetelanScreen(
                         onKlik = { onMintaIzin(Izin.Perangkat) },
                     )
                 }
-                // shortcut: status "Aktif" Aksesibilitas masih contoh (permintaan pemilik proyek); dibaca dari izin sungguhan di Tahap 7.
-                NotoBarisSetelan(
-                    painterResource(R.drawable.ic_kunci),
-                    stringResource(R.string.aksesibilitas),
-                    keterangan = stringResource(R.string.aksesibilitas_ket),
-                    nilai = stringResource(R.string.status_aktif),
-                    onKlik = { bukaSetelanAndroid(context, Settings.ACTION_ACCESSIBILITY_SETTINGS) },
-                )
+                BarisIzin(Izin.Aksesibilitas, R.drawable.ic_kunci, R.string.aksesibilitas, R.string.aksesibilitas_ket) {
+                    bukaSetelanAksesibilitas(context)
+                }
             }
             SeksiSetelan(R.string.seksi_tentang) {
                 NotoBarisSetelan(
@@ -142,15 +135,6 @@ fun SetelanScreen(
                 textAlign = TextAlign.Center,
             )
         }
-    }
-}
-
-/** Membuka halaman setelan Android (Akses penggunaan, Aksesibilitas). Beberapa HP tidak punya halamannya. */
-private fun bukaSetelanAndroid(context: Context, aksi: String) {
-    try {
-        context.startActivity(Intent(aksi))
-    } catch (_: ActivityNotFoundException) {
-        context.startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 }
 

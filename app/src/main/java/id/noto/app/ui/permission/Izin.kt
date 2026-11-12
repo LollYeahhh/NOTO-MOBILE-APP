@@ -2,6 +2,7 @@ package id.noto.app.ui.permission
 
 import android.app.AppOpsManager
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,13 +18,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import id.noto.app.service.PengunciAksesibilitas
 
 /**
  * Izin yang dibutuhkan pelacakan dan penguncian, urut seperti sheet-nya muncul.
  * TampilDiAtas = izin overlay ("Tampil di atas aplikasi lain"): Activity layar Terkunci boleh dibuka
- * dari latar belakang. Perangkat = izin buatan pabrik HP (mulai otomatis, pop-up di latar belakang).
+ * dari latar belakang. Aksesibilitas = layanan PengunciAksesibilitas (opsional, mengunci seketika).
+ * Perangkat = izin buatan pabrik HP (mulai otomatis, pop-up di latar belakang).
  */
-enum class Izin { AksesPenggunaan, Notifikasi, Baterai, TampilDiAtas, Perangkat }
+enum class Izin { AksesPenggunaan, Notifikasi, Baterai, TampilDiAtas, Aksesibilitas, Perangkat }
 
 // Merek yang punya izin tambahan mulai otomatis / pop-up latar (dontkillmyapp.com). Samsung tidak.
 private val MEREK_IZIN_TAMBAHAN = setOf("xiaomi", "redmi", "poco", "huawei", "honor", "oppo", "realme", "vivo", "oneplus")
@@ -48,6 +51,12 @@ fun izinDiberikan(context: Context, izin: Izin): Boolean = when (izin) {
     Izin.Notifikasi -> NotificationManagerCompat.from(context).areNotificationsEnabled()
     Izin.Baterai -> context.getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(context.packageName)
     Izin.TampilDiAtas -> Settings.canDrawOverlays(context)
+    // Daftar layanan Aksesibilitas yang dinyalakan pengguna, dipisah ":" (contoh "id.noto.app/id.noto.app.service.PengunciAksesibilitas").
+    Izin.Aksesibilitas -> {
+        val milikNoto = ComponentName(context, PengunciAksesibilitas::class.java)
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES).orEmpty()
+            .split(':').any { ComponentName.unflattenFromString(it) == milikNoto }
+    }
     // Izin pabrik tidak bisa dicek aplikasi; dianggap beres hanya di perangkat yang tidak membutuhkannya.
     Izin.Perangkat -> !perluIzinPerangkat()
 }
@@ -88,6 +97,11 @@ fun bukaSetelanNotifikasi(context: Context) {
  */
 fun bukaSetelanBaterai(context: Context) {
     bukaSalahSatu(context, Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+}
+
+/** Halaman Aksesibilitas di Setelan Android; pengguna memilih Noto lalu menyalakannya. */
+fun bukaSetelanAksesibilitas(context: Context) {
+    bukaSalahSatu(context, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
 }
 
 /** Halaman Setelan Android untuk izin tampil di atas aplikasi lain, langsung ke Noto. */
