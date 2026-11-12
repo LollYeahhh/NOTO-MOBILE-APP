@@ -37,23 +37,28 @@ data class HariRitme(val hari: Int, val menit: Int, val hariIni: Boolean = false
 /** Satu kategori di bar proporsi Distribusi Penggunaan. */
 data class KategoriPersen(val nama: Int, val persen: Int)
 
-/** Satu aplikasi di Distribusi Penggunaan. [selisihMenit] null = "Stabil". */
+/** Satu aplikasi di Distribusi Penggunaan. [selisihMenit] null = "Stabil". [logo] = contoh; data asli memakai [ikon]. */
 data class AplikasiMingguan(
-    val logo: Int,
+    val logo: Int?,
     val nama: String,
     val keterangan: Int,
     val argumen: List<Int>,
     val menit: Int,
     val selisihMenit: Int?,
+    val ikon: ImageBitmap? = null,
+    val paket: String = nama,
 )
 
-/** Isi "Statistik - Minggu Ini". */
+/**
+ * Isi "Statistik - Minggu Ini". [perubahanPersen] negatif = turun (badge "Lebih Sadar"); ≥ 0 = badge disembunyikan.
+ * [batasMenit] null = belum ada aturan aktif: garis dan teks batas disembunyikan.
+ */
 data class StatistikMingguan(
     val rataRataMenit: Int,
     val perubahanPersen: Int,
     val skor: Int,
     val labelSkor: Int,
-    val batasMenit: Int,
+    val batasMenit: Int?,
     val ritme: List<HariRitme>,
     val kategori: List<KategoriPersen>,
     val aplikasi: List<AplikasiMingguan>,

@@ -121,6 +121,7 @@ pengguna harus menyalakannya lagi. Baris Setelan otomatis kembali "Izinkan".
 | J3 | Pasang versi baru di atas database versi 2 | Tidak crash, aturan dan pemakaian lama tetap ada | E, X | E ✓ 2026-11-12 |
 | J4 | Kuota habis, buka aplikasinya 2 kali, tutup lewat "Kembali" lalu tombol back | Detail Aplikasi: Latihan napas 2x, Batal membuka 2 kali, Kena time out 1x dengan jam habis | E, X | E ✓ 2026-11-12 |
 | J5 | Layar Terkunci tertutup sendiri saat jadwal selesai | Tidak menambah "Batal membuka" | E | |
+| J6 | Buka Statistik - Minggu Ini lalu Detail | 7 hari terakhir (Sen–Min, hari ini disorot), badge "Lebih Sadar" hanya saat turun, skor dan label, kategori 3 bagian berjumlah 100%, keterangan jeda/tertahan/dibuka | E, X | E ✓ 2026-11-12 |
 
 ## F. Otomatis (dijalankan tiap build)
 

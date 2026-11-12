@@ -1,5 +1,7 @@
 package id.noto.app.ui.stats
 
+import android.content.pm.ApplicationInfo
+import id.noto.app.R
 import id.noto.app.data.AturanLengkap
 import id.noto.app.data.JenisKejadian
 import id.noto.app.data.Kejadian
@@ -117,5 +119,111 @@ fun kejadianAplikasi(
             val w = Instant.ofEpochMilli(it.waktu).atZone(zona)
             formatJam(w.hour * 60 + w.minute)
         },
+    )
+}
+
+// ---------- Minggu Ini (Tahap 8C) ----------
+
+private val NAMA_HARI = listOf(
+    R.string.hari_sen, R.string.hari_sel, R.string.hari_rab, R.string.hari_kam, R.string.hari_jum, R.string.hari_sab, R.string.hari_min,
+)
+
+/** Kategori Distribusi dari ApplicationInfo.category: Sosial → Sosmed, Video → Video, Produktivitas → Karya. */
+private fun kategoriDistribusi(kategoriSistem: Int): Int = when (kategoriSistem) {
+    ApplicationInfo.CATEGORY_SOCIAL -> R.string.kategori_sosmed
+    ApplicationInfo.CATEGORY_VIDEO -> R.string.kategori_video
+    ApplicationInfo.CATEGORY_PRODUCTIVITY -> R.string.kategori_karya
+    else -> R.string.kategori_lainnya
+}
+
+/** Persen bulat yang jumlahnya tepat 100 (sisa pembulatan diberikan ke pecahan terbesar). */
+internal fun persenBulat(nilai: List<Long>): List<Int> {
+    val total = nilai.sum()
+    if (total <= 0) return nilai.map { 0 }
+    val dasar = nilai.map { (it * 100 / total).toInt() }
+    val urut = nilai.indices.sortedByDescending { (nilai[it] * 100) % total }
+    val hasil = dasar.toMutableList()
+    repeat(100 - dasar.sum()) { hasil[urut[it]]++ }
+    return hasil
+}
+
+/** Label skor: ≥ 80 Tenang, 50–79 Cukup Seimbang, di bawahnya Perlu Jeda (frame "Statistik - Label Skor"). */
+internal fun labelSkor(skor: Int): Int = when {
+    skor >= 80 -> R.string.skor_tenang
+    skor >= 50 -> R.string.skor_cukup_seimbang
+    else -> R.string.skor_perlu_jeda
+}
+
+/**
+ * "Statistik - Minggu Ini" untuk 7 hari terakhir s.d. [hari] (seperti "Ritme 7 Hari Terakhir" di desain);
+ * pembanding = 7 hari sebelumnya. Batang Ritme tetap berurutan Sen–Min, hari ini disorot.
+ * Skor = 100 × hari yang di bawah 90% batas ÷ 7, +10 kalau rata-rata turun, maksimal 100.
+ * Batas harian = jumlah kuota aturan aktif (null kalau belum ada). [StatistikMingguan.aplikasi] berisi semua
+ * aplikasi dengan rata-rata ≥ 1 menit; Minggu Ini menampilkan 3 teratas.
+ */
+fun statistikMingguan(
+    pemakaian: List<Pemakaian>,
+    kejadian: List<Kejadian>,
+    hari: LocalDate,
+    aplikasi: Map<String, AplikasiPilihan>,
+    aturan: List<AturanLengkap>,
+    zona: ZoneId = ZoneId.systemDefault(),
+): StatistikMingguan {
+    val awal = hari.minusDays(6)
+    val milik = pemakaian.milik(aplikasi)
+    val mingguIni = milik.antara(awal, hari)
+    val mingguLalu = milik.antara(awal.minusDays(7), awal.minusDays(1))
+    val rata = menit(mingguIni.sumOf { it.detik }) / 7
+    val rataLalu = menit(mingguLalu.sumOf { it.detik }) / 7
+    val perubahan = if (rataLalu > 0 && rata < rataLalu) -((rataLalu - rata) * 100 / rataLalu) else 0
+    val batas = aturan.filter { it.aturan.aktif }.sumOf { it.aturan.kuotaMenit }.takeIf { it > 0 }
+
+    // Indeks 0 = Senin … 6 = Minggu; tiap hari diambil dari tanggalnya di 7 hari terakhir.
+    val indeksHariIni = hari.dayOfWeek.value - 1
+    val menitHari = (0..6).map { i ->
+        val d = hari.minusDays(((indeksHariIni - i + 7) % 7).toLong())
+        menit(milik.antara(d, d).sumOf { it.detik })
+    }
+    val sesuai = menitHari.count { batas == null || !mendekatiBatas(it, batas) }
+    val skor = (100 * sesuai / 7 + if (perubahan < 0) 10 else 0).coerceAtMost(100)
+
+    // Kategori: 2 terbesar (Sosmed/Video/Karya), sisanya digabung "Lainnya", supaya cocok dengan 3 warna bar.
+    val perKategori = mingguIni.groupBy { kategoriDistribusi(aplikasi.getValue(it.paket).kategoriSistem) }
+        .mapValues { (_, b) -> b.sumOf { it.detik } }
+    val utama = perKategori.filterKeys { it != R.string.kategori_lainnya }.entries.sortedByDescending { it.value }.take(2)
+    val lainnya = perKategori.values.sum() - utama.sumOf { it.value }
+    val kelompok = utama.map { it.key to it.value } + listOfNotNull((R.string.kategori_lainnya to lainnya).takeIf { lainnya > 0 })
+    val persen = persenBulat(kelompok.map { it.second })
+
+    // Kejadian minggu ini per aplikasi, untuk keterangan baris.
+    val awalMinggu = awal.atStartOfDay(zona).toInstant().toEpochMilli()
+    val kejadianMinggu = kejadian.filter { it.waktu >= awalMinggu }
+    val diAturan = aturan.flatMap { it.paket }.toSet()
+    val apps = mingguIni.groupBy { it.paket }.map { (paket, baris) ->
+        val a = aplikasi.getValue(paket)
+        val avg = menit(baris.sumOf { it.detik }) / 7
+        val avgLalu = menit(mingguLalu.filter { it.paket == paket }.sumOf { it.detik }) / 7
+        val napas = kejadianMinggu.count { it.paket == paket && it.jenis == JenisKejadian.NAPAS }
+        val batal = kejadianMinggu.count { it.paket == paket && it.jenis == JenisKejadian.BATAL }
+        val (ket, arg) = when {
+            batal > 0 -> R.string.jeda_tertahan to listOf(napas, batal)
+            napas > 0 -> R.string.jeda_napas_sadar to listOf(napas)
+            paket in diAturan -> R.string.terkendali_terjadwal to emptyList()
+            else -> R.string.dibuka_per_hari to listOf(baris.sumOf { it.dibuka } / 7)
+        }
+        // Beda kurang dari 5 menit dari minggu lalu = "Stabil".
+        val selisih = (avg - avgLalu).takeIf { kotlin.math.abs(it) >= 5 }
+        AplikasiMingguan(a.logoContoh, a.nama, ket, arg, avg, selisih, a.ikon, paket)
+    }.filter { it.menit >= 1 }.sortedByDescending { it.menit }
+
+    return StatistikMingguan(
+        rataRataMenit = rata,
+        perubahanPersen = perubahan,
+        skor = skor,
+        labelSkor = labelSkor(skor),
+        batasMenit = batas,
+        ritme = menitHari.mapIndexed { i, m -> HariRitme(NAMA_HARI[i], m, hariIni = i == indeksHariIni) },
+        kategori = kelompok.mapIndexed { i, (nama, _) -> KategoriPersen(nama, persen[i]) },
+        aplikasi = apps,
     )
 }

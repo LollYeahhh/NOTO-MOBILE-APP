@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.noto.app.R
+import id.noto.app.ui.components.painterAplikasi
 import id.noto.app.ui.theme.NOTOAPPTheme
 import id.noto.app.ui.theme.NotoTeks
 import id.noto.app.ui.theme.NotoWarna
@@ -98,8 +99,8 @@ private fun KartuHero(data: StatistikMingguan) {
                         )
                     }
                 }
-                // Badge tren: Garis, sudut penuh, padding 4/10, ikon + teks jarak 4.
-                Row(
+                // Badge tren: Garis, sudut penuh, padding 4/10, ikon + teks jarak 4. Hanya saat pemakaian turun.
+                if (data.perubahanPersen < 0) Row(
                     Modifier.background(NotoWarna.Garis, CircleShape).padding(horizontal = 10.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -175,22 +176,26 @@ private fun KartuRitme(data: StatistikMingguan) {
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.ritme_7_hari), style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
-            Text(stringResource(R.string.batas_nilai, formatDurasiRinci(data.batasMenit)), style = NotoTeks.KecilLabel, color = NotoWarna.TeksSekunder)
+            data.batasMenit?.let {
+                Text(stringResource(R.string.batas_nilai, formatDurasiRinci(it)), style = NotoTeks.KecilLabel, color = NotoWarna.TeksSekunder)
+            }
         }
+        // Tanpa batas (belum ada aturan aktif): batang tertinggi setinggi garis batas, semua "Sesuai Niat Sadar".
+        val skala = data.batasMenit ?: (data.ritme.maxOfOrNull { it.menit } ?: 0).coerceAtLeast(1)
         Box(Modifier.fillMaxWidth().height(160.dp)) {
             // Kolom hari: tinggi 96 mulai y40 (padding 24 + 16), jarak 8, isi rata bawah.
             Row(Modifier.padding(top = 40.dp).fillMaxWidth().height(96.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                data.ritme.forEach { KolomHari(it, data.batasMenit) }
+                data.ritme.forEach { KolomHari(it, skala, mendekati = data.batasMenit?.let { b -> mendekatiBatas(it.menit, b) } == true) }
             }
             // Garis Batas Harian: putus-putus 3/2 seperti FigCraft.
-            Box(
+            if (data.batasMenit != null) Box(
                 Modifier.offset(y = 48.dp).fillMaxWidth().height(1.dp).drawBehind {
                     val putus = PathEffect.dashPathEffect(floatArrayOf(3.dp.toPx(), 2.dp.toPx()))
                     val y = size.height / 2
                     drawLine(NotoWarna.Garis, Offset(0f, y), Offset(size.width, y), strokeWidth = size.height, pathEffect = putus)
                 },
             )
-            Text(
+            if (data.batasMenit != null) Text(
                 stringResource(R.string.batas_harian),
                 Modifier.offset(x = 263.dp, y = 36.dp).background(NotoWarna.Garis).padding(horizontal = 4.dp),
                 style = NotoTeks.KecilTeks,
@@ -218,7 +223,7 @@ private fun KartuRitme(data: StatistikMingguan) {
  * Isinya bisa lebih tinggi dari kolom 96 (Senin), jadi kelebihannya menjulur ke atas seperti di FigCraft.
  */
 @Composable
-private fun androidx.compose.foundation.layout.RowScope.KolomHari(hari: HariRitme, batasMenit: Int) {
+private fun androidx.compose.foundation.layout.RowScope.KolomHari(hari: HariRitme, batasMenit: Int, mendekati: Boolean) {
     Box(Modifier.weight(1f).fillMaxHeight()) {
         Column(
             Modifier.align(Alignment.BottomCenter).wrapContentHeight(Alignment.Bottom, unbounded = true),
@@ -232,7 +237,7 @@ private fun androidx.compose.foundation.layout.RowScope.KolomHari(hari: HariRitm
                     .width(26.dp)
                     .height(tinggiBatang(hari.menit, batasMenit).dp)
                     .background(
-                        if (mendekatiBatas(hari.menit, batasMenit)) NotoWarna.TeksSekunder else NotoWarna.Primer,
+                        if (mendekati) NotoWarna.TeksSekunder else NotoWarna.Primer,
                         RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
                     ),
             )
@@ -351,7 +356,7 @@ private fun BarisAplikasiMingguan(app: AplikasiMingguan, pertama: Boolean, onKli
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(36.dp).background(NotoWarna.Garis, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                Image(painterResource(app.logo), contentDescription = null, modifier = Modifier.size(27.dp))
+                Image(painterAplikasi(app.ikon, app.logo), contentDescription = null, modifier = Modifier.size(27.dp))
             }
             Column {
                 Text(app.nama, style = NotoTeks.JudulItem, color = NotoWarna.TeksUtama, maxLines = 1)

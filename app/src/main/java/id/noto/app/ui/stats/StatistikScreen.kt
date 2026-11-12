@@ -37,6 +37,7 @@ fun StatistikScreen(
     periodeAwal: Int = 0,
     hariIni: StatistikHariIni = contohHariIni,
     bulanan: StatistikBulanan = contohBulanan,
+    mingguan: StatistikMingguan = contohMingguan,
     onDistribusi: () -> Unit = {},
     onAplikasi: (AplikasiStatistik) -> Unit = {},
 ) {
@@ -48,7 +49,10 @@ fun StatistikScreen(
             Crossfade(periode, animationSpec = tween(DURASI_GANTI_PERIODE_MS, easing = EaseOut), label = "periode") {
                 when (it) {
                     0 -> ScreenTimeIsi(hariIni) { a -> onAplikasi(AplikasiStatistik(a.logo, a.nama, a.menit, a.ikon, a.paket)) }
-                    1 -> MingguIniIsi(contohMingguan, onDistribusi) { a -> onAplikasi(AplikasiStatistik(a.logo, a.nama, a.menit)) }
+                    // Minggu Ini menampilkan 3 teratas; semuanya di Detail Distribusi.
+                    1 -> MingguIniIsi(mingguan.copy(aplikasi = mingguan.aplikasi.take(3)), onDistribusi) { a ->
+                        onAplikasi(AplikasiStatistik(a.logo, a.nama, a.menit, a.ikon, a.paket))
+                    }
                     // Angka di Detail Aplikasi diambil dari pemakaian hari ini (NavGraph), bukan total sebulan ini.
                     else -> BulanIniIsi(bulanan) { a -> onAplikasi(AplikasiStatistik(a.logo, a.nama, a.menit, a.ikon, a.paket)) }
                 }

@@ -164,6 +164,8 @@
     <string name="skor_keseimbangan">Skor Keseimbangan Batin</string>
     <string name="skor_nilai">%1$d / 100 • %2$s</string>
     <string name="skor_tenang">Tenang</string>
+    <string name="skor_cukup_seimbang">Cukup Seimbang</string>
+    <string name="skor_perlu_jeda">Perlu Jeda</string>
     <string name="ritme_7_hari">Ritme 7 Hari Terakhir</string>
     <string name="batas_nilai">Batas: %1$s</string>
     <string name="batas_harian">Batas Harian</string>

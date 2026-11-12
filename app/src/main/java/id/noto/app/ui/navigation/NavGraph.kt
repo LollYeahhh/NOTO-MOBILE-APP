@@ -77,6 +77,7 @@ import id.noto.app.ui.stats.harianAplikasi
 import id.noto.app.ui.stats.kejadianAplikasi
 import id.noto.app.ui.stats.statistikBulanan
 import id.noto.app.ui.stats.statistikHariIni
+import id.noto.app.ui.stats.statistikMingguan
 import java.time.LocalDate
 
 /** Durasi animasi geser pill nav saat pindah tab (smart animate 400 ms di FigCraft). */
@@ -475,6 +476,9 @@ private fun CangkangTab(
                 StatistikScreen(
                     hariIni = remember(pemakaian, petaAplikasi, hari) { statistikHariIni(pemakaian, hari, petaAplikasi) },
                     bulanan = remember(pemakaian, petaAplikasi, hari) { statistikBulanan(pemakaian, hari, petaAplikasi) },
+                    mingguan = remember(pemakaian, kejadian, petaAplikasi, aturan, hari) {
+                        statistikMingguan(pemakaian, kejadian, hari, petaAplikasi, aturan)
+                    },
                     onDistribusi = { navController.navigate(RUTE_STAT_DISTRIBUSI) },
                     onAplikasi = { aplikasiStat = it; navController.navigate(RUTE_STAT_APLIKASI) },
                 )
@@ -495,8 +499,12 @@ private fun CangkangTab(
                 ) {
                     val kembali: () -> Unit = { navController.popBackStack() }
                     if (rute == RUTE_STAT_DISTRIBUSI) {
-                        DetailDistribusiScreen(kembali) { a ->
-                            aplikasiStat = AplikasiStatistik(a.logo, a.nama, a.menit)
+                        val hari = LocalDate.now()
+                        val data = remember(pemakaian, kejadian, petaAplikasi, aturan, hari) {
+                            statistikMingguan(pemakaian, kejadian, hari, petaAplikasi, aturan)
+                        }
+                        DetailDistribusiScreen(kembali, data) { a ->
+                            aplikasiStat = AplikasiStatistik(a.logo, a.nama, a.menit, a.ikon, a.paket)
                             navController.navigate(RUTE_STAT_APLIKASI)
                         }
                     } else {

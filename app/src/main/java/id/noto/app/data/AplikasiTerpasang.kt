@@ -28,6 +28,7 @@ fun muatAplikasiTerpasang(context: Context): List<AplikasiPilihan> {
                 paket = info.packageName,
                 nama = info.loadLabel(pm).toString(),
                 kategori = kategoriDari(info.category),
+                kategoriSistem = info.category,
                 // Gagal dimuat = null, nanti diganti ikon cadangan.
                 ikon = runCatching { info.loadIcon(pm).toBitmap(ukuran, ukuran).asImageBitmap() }.getOrNull(),
             )

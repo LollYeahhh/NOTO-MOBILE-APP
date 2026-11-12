@@ -167,6 +167,8 @@
     <string name="skor_keseimbangan">Inner Balance Score</string>
     <string name="skor_nilai">%1$d / 100 • %2$s</string>
     <string name="skor_tenang">Calm</string>
+    <string name="skor_cukup_seimbang">Fairly Balanced</string>
+    <string name="skor_perlu_jeda">Needs a Break</string>
     <string name="ritme_7_hari">Last 7 Days Rhythm</string>
     <string name="batas_nilai">Limit: %1$s</string>
     <string name="batas_harian">Daily Limit</string>

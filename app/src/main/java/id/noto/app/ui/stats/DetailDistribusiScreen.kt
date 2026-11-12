@@ -18,12 +18,16 @@ import id.noto.app.ui.theme.NotoWarna
  * kartu Distribusi berjudul "Rata-rata per hari" dengan semua aplikasi. Baris aplikasi membuka Detail Aplikasi.
  */
 @Composable
-fun DetailDistribusiScreen(onKembali: () -> Unit, onAplikasi: (AplikasiMingguan) -> Unit) {
+fun DetailDistribusiScreen(
+    onKembali: () -> Unit,
+    data: StatistikMingguan = contohMingguan.copy(aplikasi = contohDistribusiLengkap),
+    onAplikasi: (AplikasiMingguan) -> Unit,
+) {
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderHalaman(stringResource(R.string.distribusi_penggunaan), onIkonKiri = onKembali)
         IsiSetelan {
             KartuDistribusi(
-                contohMingguan.copy(aplikasi = contohDistribusiLengkap),
+                data,
                 judul = R.string.rata_rata_per_hari_judul,
                 onDetail = null,
                 onAplikasi = onAplikasi,
@@ -35,5 +39,5 @@ fun DetailDistribusiScreen(onKembali: () -> Unit, onAplikasi: (AplikasiMingguan)
 @Preview(name = "Statistik - Detail Distribusi", widthDp = 393, heightDp = 852)
 @Composable
 private fun PreviewDetailDistribusi() {
-    NOTOAPPTheme { DetailDistribusiScreen({}, {}) }
+    NOTOAPPTheme { DetailDistribusiScreen({}, onAplikasi = {}) }
 }

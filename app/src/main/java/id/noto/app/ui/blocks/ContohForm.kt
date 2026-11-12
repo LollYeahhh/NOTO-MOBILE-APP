@@ -66,6 +66,8 @@ data class AplikasiPilihan(
     val kategori: Int,
     val ikon: ImageBitmap? = null,
     val logoContoh: Int? = null,
+    /** ApplicationInfo.category dari sistem (-1 = tidak diisi), untuk kategori Distribusi di Statistik. */
+    val kategoriSistem: Int = -1,
 )
 
 /** Kelompok di Pilih Aplikasi; [judul] = id string nama kategori. */
