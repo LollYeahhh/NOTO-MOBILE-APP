@@ -101,18 +101,6 @@ private val daftarIkon = listOf(
     "lama Minggu Ini" to R.drawable.ic_lama_minggu_ini,
 )
 
-private val daftarLogo = listOf(
-    "Facebook" to R.drawable.logo_facebook,
-    "Instagram" to R.drawable.logo_instagram,
-    "Twitter" to R.drawable.logo_twitter,
-    "TikTok" to R.drawable.logo_tiktok,
-    "WhatsApp" to R.drawable.logo_whatsapp,
-    "YouTube" to R.drawable.logo_youtube,
-    "Discord" to R.drawable.logo_discord,
-    "Pinterest" to R.drawable.logo_pinterest,
-    "Gmail" to R.drawable.logo_gmail,
-)
-
 @Composable
 private fun Judul(teks: String) {
     Text(teks, style = NotoTeks.JudulKartu, color = NotoWarna.TeksUtama)
@@ -228,7 +216,6 @@ private fun PreviewLogo() {
             Judul("Ikon besar & logo")
             GridAset(listOf("lama blokir kosong" to R.drawable.ic_lama_blokir_kosong))
             GridAset(listOf("logo NOTO" to R.drawable.ic_logo_noto), latar = NotoWarna.Permukaan)
-            GridAset(daftarLogo)
         }
     }
 }

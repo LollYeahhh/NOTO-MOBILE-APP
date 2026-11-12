@@ -115,11 +115,11 @@ fun NotoKartuBlokir(
 @Composable
 private fun PreviewKartuBlokir() {
     val logo = listOf(
-        painterResource(R.drawable.logo_facebook),
-        painterResource(R.drawable.logo_instagram),
-        painterResource(R.drawable.logo_twitter),
-        painterResource(R.drawable.logo_tiktok),
-        painterResource(R.drawable.logo_whatsapp),
+        painterResource(R.drawable.ic_aplikasi_cadangan),
+        painterResource(R.drawable.ic_aplikasi_cadangan),
+        painterResource(R.drawable.ic_aplikasi_cadangan),
+        painterResource(R.drawable.ic_aplikasi_cadangan),
+        painterResource(R.drawable.ic_aplikasi_cadangan),
     )
     val jadwal = "07.00–21.00 · Sen–Jum"
     NOTOAPPTheme {

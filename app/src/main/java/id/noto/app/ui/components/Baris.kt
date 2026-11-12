@@ -144,7 +144,7 @@ private fun PreviewBaris() {
                 val lonceng = painterResource(R.drawable.ic_lonceng)
                 NotoBarisSetelan(lonceng, "Notifikasi & Pengingat", keterangan = "Pengingat kuota dan ringkasan harian", nilai = "15m")
                 NotoBarisSetelan(lonceng, "Notifikasi & Pengingat", keterangan = "Pengingat kuota dan ringkasan harian", toggle = true)
-                val ig = painterResource(R.drawable.logo_instagram)
+                val ig = painterResource(R.drawable.ic_aplikasi_cadangan)
                 NotoItemAplikasi(ig, "Instagram", "Rata-rata 1j 10m per hari", durasi = "25m")
                 NotoItemAplikasi(ig, "Instagram", "Rata-rata 1j 10m per hari", dipilih = true)
             }

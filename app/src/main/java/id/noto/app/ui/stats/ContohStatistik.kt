@@ -20,14 +20,14 @@ val contohHariIni = StatistikHariIni(
     // Tinggi batang di FigCraft (2, 29, … px) diubah ke menit dengan skala grafik 1j = 78.
     menitPerJam = listOf(2, 29, 51, 79, 74, 42, 63).map { it * 60f / 78f },
     aplikasi = listOf(
-        PemakaianHariIni(R.drawable.logo_whatsapp_kotak, "WhatsApp", 120),
-        PemakaianHariIni(R.drawable.logo_youtube_kotak, "YouTube", 105),
-        PemakaianHariIni(R.drawable.logo_discord_kotak, "Discord", 90),
-        PemakaianHariIni(R.drawable.logo_pinterest_kotak, "Pinterest", 75),
-        PemakaianHariIni(R.drawable.logo_gmail_kotak, "Gmail", 45),
-        PemakaianHariIni(R.drawable.logo_twitter_kotak, "Twitter", 30),
-        PemakaianHariIni(R.drawable.logo_instagram_kotak, "Instagram", 15),
-        PemakaianHariIni(R.drawable.logo_facebook_kotak, "Facebook", 4),
+        PemakaianHariIni(null, "WhatsApp", 120),
+        PemakaianHariIni(null, "YouTube", 105),
+        PemakaianHariIni(null, "Discord", 90),
+        PemakaianHariIni(null, "Pinterest", 75),
+        PemakaianHariIni(null, "Gmail", 45),
+        PemakaianHariIni(null, "Twitter", 30),
+        PemakaianHariIni(null, "Instagram", 15),
+        PemakaianHariIni(null, "Facebook", 4),
     ),
 )
 
@@ -85,9 +85,9 @@ val contohMingguan = StatistikMingguan(
         KategoriPersen(R.string.kategori_karya, 23),
     ),
     aplikasi = listOf(
-        AplikasiMingguan(R.drawable.logo_instagram, "Instagram", R.string.jeda_napas_sadar, listOf(3), 70, -18),
-        AplikasiMingguan(R.drawable.logo_tiktok, "TikTok", R.string.jeda_tertahan, listOf(5, 2), 55, -45),
-        AplikasiMingguan(R.drawable.logo_youtube_kecil, "YouTube", R.string.terkendali_terjadwal, emptyList(), 40, null),
+        AplikasiMingguan(null, "Instagram", R.string.jeda_napas_sadar, listOf(3), 70, -18),
+        AplikasiMingguan(null, "TikTok", R.string.jeda_tertahan, listOf(5, 2), 55, -45),
+        AplikasiMingguan(null, "YouTube", R.string.terkendali_terjadwal, emptyList(), 40, null),
     ),
 )
 
@@ -120,16 +120,16 @@ val contohBulanan = StatistikBulanan(
     turunPersen = 32,
     menitPerPekan = listOf(170, 150, 130, 115),
     aplikasi = listOf(
-        AplikasiBulanan(R.drawable.logo_instagram, "Instagram", 486, 18 * 60 + 20),
-        AplikasiBulanan(R.drawable.logo_whatsapp, "WhatsApp", 372, 14 * 60),
-        AplikasiBulanan(R.drawable.logo_tiktok, "TikTok", 294, 12 * 60 + 10),
+        AplikasiBulanan(null, "Instagram", 486, 18 * 60 + 20),
+        AplikasiBulanan(null, "WhatsApp", 372, 14 * 60),
+        AplikasiBulanan(null, "TikTok", 294, 12 * 60 + 10),
     ),
 )
 
 /** Daftar lengkap "Statistik - Detail Distribusi" (node 5558): aplikasi Minggu Ini, ditambah X dan Facebook. */
 val contohDistribusiLengkap = contohMingguan.aplikasi + listOf(
-    AplikasiMingguan(R.drawable.logo_twitter, "X", R.string.dibuka_per_hari, listOf(9), 25, null),
-    AplikasiMingguan(R.drawable.logo_facebook, "Facebook", R.string.dibuka_per_hari, listOf(4), 15, null),
+    AplikasiMingguan(null, "X", R.string.dibuka_per_hari, listOf(9), 25, null),
+    AplikasiMingguan(null, "Facebook", R.string.dibuka_per_hari, listOf(4), 15, null),
 )
 
 /** Aplikasi yang dibuka di Detail Aplikasi: logo, nama, dan total menit dari baris yang diketuk. */

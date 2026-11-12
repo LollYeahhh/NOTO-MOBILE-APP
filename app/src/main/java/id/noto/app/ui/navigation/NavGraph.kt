@@ -353,7 +353,7 @@ private fun CangkangTab(
     // Sheet Hapus Aturan dari tombol "Hapus aturan" di Detail.
     var hapusDariDetail by remember { mutableStateOf(false) }
     // Aplikasi yang dibuka di Detail Aplikasi (disimpan di memori, bukan argumen rute).
-    var aplikasiStat by remember { mutableStateOf(AplikasiStatistik(R.drawable.logo_instagram, "Instagram", 70)) }
+    var aplikasiStat by remember { mutableStateOf(AplikasiStatistik(null, "Instagram", 70)) }
     val statistikVm: StatistikViewModel = viewModel()
     val pemakaian by statistikVm.pemakaian.collectAsState()
     val kejadian by statistikVm.kejadian.collectAsState()

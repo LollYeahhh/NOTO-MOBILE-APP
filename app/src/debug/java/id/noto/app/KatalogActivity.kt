@@ -177,7 +177,7 @@ private fun HalamanBaris() {
     val ket = stringResource(R.string.katalog_setelan_ket)
     NotoBarisSetelan(lonceng, judul, Modifier.width(329.dp), keterangan = ket, nilai = stringResource(R.string.katalog_setelan_nilai))
     NotoBarisSetelan(lonceng, judul, Modifier.width(329.dp), keterangan = ket, toggle = toggleSetelan, onUbah = { toggleSetelan = it })
-    val ig = painterResource(R.drawable.logo_instagram)
+    val ig = painterResource(R.drawable.ic_aplikasi_cadangan)
     val nama = stringResource(R.string.katalog_app_nama)
     val ketApp = stringResource(R.string.katalog_app_ket)
     NotoItemAplikasi(ig, nama, ketApp, Modifier.width(329.dp), durasi = stringResource(R.string.katalog_app_durasi))
@@ -209,7 +209,7 @@ private fun HalamanTab() {
 // Halaman 4: Berlaku, Hampir Habis, Time Out. Halaman 5: Di Luar Jadwal, Nonaktif.
 @Composable
 private fun HalamanKartu(awal: Boolean) {
-    val logo = listOf(R.drawable.logo_facebook, R.drawable.logo_instagram, R.drawable.logo_twitter, R.drawable.logo_tiktok, R.drawable.logo_whatsapp)
+    val logo = List(5) { R.drawable.ic_aplikasi_cadangan }
         .map { painterResource(it) }
     val judul = stringResource(R.string.katalog_kartu_judul)
     val jadwal = stringResource(R.string.katalog_kartu_jadwal)

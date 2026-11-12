@@ -265,7 +265,7 @@ private fun LegendaJam(warna: Color, label: String) {
 @Composable
 private fun PreviewDetailAplikasi() {
     NOTOAPPTheme { DetailAplikasiScreen(
-            AplikasiStatistik(R.drawable.logo_instagram, "Instagram", 70),
+            AplikasiStatistik(null, "Instagram", 70),
             Aturan(nama = "Sosmed", hariAktif = hariKeBitmask(setOf(0, 1, 2, 3, 4)), mulaiMenit = 7 * 60, selesaiMenit = 21 * 60, kuotaMenit = 90),
             {}, {},
         ) }

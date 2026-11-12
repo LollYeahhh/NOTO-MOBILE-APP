@@ -75,11 +75,11 @@ data class KategoriAplikasi(val judul: Int, val aplikasi: List<AplikasiPilihan>)
 
 /** Data contoh untuk Preview dan Statistik; aplikasi asli dari muatAplikasiTerpasang(). */
 val contohAplikasi = listOf(
-    AplikasiPilihan("com.instagram.android", "Instagram", R.string.kategori_sosial_media, logoContoh = R.drawable.logo_instagram),
-    AplikasiPilihan("com.twitter.android", "X", R.string.kategori_sosial_media, logoContoh = R.drawable.logo_twitter),
-    AplikasiPilihan("com.facebook.katana", "Facebook", R.string.kategori_sosial_media, logoContoh = R.drawable.logo_facebook),
-    AplikasiPilihan("com.zhiliaoapp.musically", "TikTok", R.string.kategori_hiburan, logoContoh = R.drawable.logo_tiktok),
-    AplikasiPilihan("com.whatsapp", "WhatsApp", R.string.kategori_komunikasi, logoContoh = R.drawable.logo_whatsapp),
+    AplikasiPilihan("com.instagram.android", "Instagram", R.string.kategori_sosial_media),
+    AplikasiPilihan("com.twitter.android", "X", R.string.kategori_sosial_media),
+    AplikasiPilihan("com.facebook.katana", "Facebook", R.string.kategori_sosial_media),
+    AplikasiPilihan("com.zhiliaoapp.musically", "TikTok", R.string.kategori_hiburan),
+    AplikasiPilihan("com.whatsapp", "WhatsApp", R.string.kategori_komunikasi),
 )
 
 /** Template cepat di Sheet Atur Jadwal: id string nama, jam mulai dan selesai (menit). */
