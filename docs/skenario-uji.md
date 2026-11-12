@@ -136,6 +136,15 @@ pengguna harus menyalakannya lagi. Baris Setelan otomatis kembali "Izinkan".
 | K7 | Minggu, ringkasan mingguan nyala | "Ringkasan minggu ini — Rata-rata … per hari[, x% lebih sadar]." menggantikan harian | X | (unit test) |
 | K8 | Nyalakan ulang perangkat | Alarm ringkasan tersetel lagi tanpa membuka Noto | X | |
 
+## L. Aturan Pembatasan (Tahap 8E)
+
+| No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
+|---|---|---|---|---|
+| L1 | Aturan sedang berlaku, jeda 10 detik, matikan "Aturan aktif" | Sheet "Tunggu sebentar, ya" menghitung mundur; habis → aturan mati | E, X | E ✓ 2026-11-12 |
+| L2 | Saat hitung mundur: "Batal, tetap aktif", X, atau tombol Home | Aturan tetap aktif | E, X | E ✓ 2026-11-12 |
+| L3 | "Hapus aturan" → "Ya, hapus aturan" (Detail atau Edit) | Hitung mundur dulu; batal → aturan tetap ada | E, X | E ✓ 2026-11-12 (Detail) |
+| L4 | Di luar jadwal, atau "Tanpa jeda" | Aturan langsung mati/terhapus tanpa hitung mundur | E | (unit test) |
+
 ## F. Otomatis (dijalankan tiap build)
 
 `./gradlew testDebugUnitTest`: format waktu, jadwal, nama otomatis, saring aplikasi, kategori, hitung kuota.

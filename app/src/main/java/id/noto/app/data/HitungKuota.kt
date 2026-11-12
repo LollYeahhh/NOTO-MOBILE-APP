@@ -43,3 +43,10 @@ fun pemakaianJendela(a: Aturan, kuota: List<Kuota>, t: LocalDateTime): List<Kuot
 }
 
 private fun java.time.LocalDate.atMenit(menit: Int): LocalDateTime = atTime(menit / 60, menit % 60)
+
+/**
+ * "Jeda sebelum mematikan" (Setelan > Aturan Pembatasan): hitung mundur [jedaDetik] dulu sebelum aturan [a]
+ * dimatikan atau dihapus, tapi hanya saat aturannya sedang berlaku (aktif dan di dalam jadwal, termasuk time out).
+ */
+fun perluJeda(a: Aturan, t: LocalDateTime, jedaDetik: Int): Boolean =
+    jedaDetik > 0 && a.aktif && jendelaSekarang(a, t) != null

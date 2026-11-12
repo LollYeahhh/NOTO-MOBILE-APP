@@ -179,7 +179,7 @@ fun FormAturanScreen(
             )
         }
         NotoSheet(tampil = sheet == SheetForm.Hapus, onTutup = { sheet = null }) {
-            SheetHapus(nama, form.aplikasi.size, onTutup = { sheet = null }, onHapus = onHapus)
+            SheetHapus(nama, form.aplikasi.size, onTutup = { sheet = null }, onHapus = { sheet = null; onHapus() })
         }
         // Sheet Jam: X, back, dan ketuk di luar kembali ke Atur Jadwal tanpa menyimpan jam.
         val kembaliKeJadwal = { dariJam = true; sheet = SheetForm.Jadwal }

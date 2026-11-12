@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import id.noto.app.R
 import id.noto.app.data.AturanLengkap
 import id.noto.app.data.Kuota
+import id.noto.app.data.perluJeda
 import id.noto.app.ui.blocks.AturanViewModel
 import id.noto.app.ui.blocks.BlokirScreen
 import id.noto.app.ui.blocks.AplikasiPilihan
@@ -49,6 +50,7 @@ import id.noto.app.ui.blocks.ModeForm
 import id.noto.app.ui.blocks.PilihAplikasiScreen
 import id.noto.app.ui.blocks.SheetForm
 import id.noto.app.ui.blocks.SheetHapus
+import id.noto.app.ui.blocks.SheetJedaBerjalan
 import id.noto.app.ui.components.NotoSheet
 import id.noto.app.ui.blocks.namaOtomatis
 import id.noto.app.ui.home.BerandaScreen
@@ -79,6 +81,7 @@ import id.noto.app.ui.stats.statistikBulanan
 import id.noto.app.ui.stats.statistikHariIni
 import id.noto.app.ui.stats.statistikMingguan
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 /** Durasi animasi geser pill nav saat pindah tab (smart animate 400 ms di FigCraft). */
 const val DURASI_GESER_MS = 400
@@ -152,6 +155,19 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
     var bukaJadwal by remember { mutableStateOf(false) }
     // Sheet izin yang menunggu tampil (setelah aturan disimpan, atau dari baris izin di Setelan).
     var antreanIzin by remember { mutableStateOf(emptyList<Izin>()) }
+    // "Jeda sebelum mematikan": nama aturan dan aksi (matikan/hapus) yang dijalankan setelah hitungan habis.
+    var jeda by remember { mutableStateOf<Pair<String, () -> Unit>?>(null) }
+    // Isi terakhir, supaya sheet tetap berisi selama memudar setelah ditutup.
+    var jedaTerakhir by remember { mutableStateOf<Pair<String, () -> Unit>?>(null) }
+    fun denganJeda(aksi: () -> Unit) {
+        val a = aturanDetail?.aturan
+        if (a != null && perluJeda(a, LocalDateTime.now(), setelan.jedaDetik)) {
+            jeda = a.nama to aksi
+            jedaTerakhir = jeda
+        } else {
+            aksi()
+        }
+    }
     // Sheet izin pabrik (tidak bisa dicek) dan Aksesibilitas (opsional) hanya muncul otomatis sekali;
     // setelahnya lewat baris Setelan.
     val antreanSetelahSimpan = Izin.entries.filterNot {
@@ -197,8 +213,8 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
                 aturanDetail = aturanDetail,
                 onBukaDetail = { idDetail = it; dihapus = false },
                 dihapus = dihapus,
-                onHapus = { aturanVm.hapus(idDetail); dihapus = true },
-                onAktif = { aturanVm.ubahAktif(idDetail, it) },
+                onHapus = { denganJeda { aturanVm.hapus(idDetail); dihapus = true } },
+                onAktif = { aktif -> if (aktif) aturanVm.ubahAktif(idDetail, true) else denganJeda { aturanVm.ubahAktif(idDetail, false) } },
                 onSenyap = { aturanVm.ubahSenyap(idDetail, it) },
                 onMintaIzin = { antreanIzin = listOf(it) },
                 keStatistik = keStatistik,
@@ -283,7 +299,7 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
                     antreanIzin = antreanSetelahSimpan
                     navController.popBackStack()
                 },
-                onHapus = { aturanVm.hapus(idDetail); dihapus = true; navController.popBackStack() },
+                onHapus = { denganJeda { aturanVm.hapus(idDetail); dihapus = true; navController.popBackStack() } },
                 onPilihAplikasi = { pilihLewatTombol = false; bukaJadwal = false; navController.navigate(RUTE_PILIH) },
                 // Nama aturan yang sedang diedit tidak dihitung terpakai.
                 namaTerpakai = namaAturan - aturanDetail?.aturan?.nama.orEmpty(),
@@ -302,6 +318,14 @@ fun NotoNavGraph(keStatistik: Boolean = false, onKeStatistik: () -> Unit = {}) {
             }
         },
     ) { antreanIzin = it }
+    // Sheet hitung mundur menutupi seluruh layar (Detail maupun Edit). Habis → aksi dijalankan; batal → tidak.
+    NotoSheet(tampil = jeda != null, onTutup = { jeda = null }) {
+        SheetJedaBerjalan(jedaTerakhir?.first.orEmpty(), setelan.jedaDetik, onBatal = { jeda = null }) {
+            // Dicek lagi: hitungan bisa habis tepat saat sheet sedang ditutup (sudah batal).
+            jeda?.second?.invoke()
+            jeda = null
+        }
+    }
     }
 }
 

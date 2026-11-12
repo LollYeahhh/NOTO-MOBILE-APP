@@ -312,6 +312,9 @@
     <string name="jeda_maksimal">up to 10 minutes</string>
     <string name="tanpa_jeda">No pause</string>
     <string name="catatan_jeda">While the pause runs, you can still cancel if you change your mind.</string>
+    <string name="jeda_berjalan_judul">Hold on a moment</string>
+    <string name="jeda_berjalan_ket">%1$s turns off when this countdown ends. Still sure?</string>
+    <string name="batal_tetap_aktif">Cancel, keep it on</string>
     <string name="simpan">Save</string>
     <string name="versi_teks">Version 0.1</string>
     <string name="hak_cipta">© 2026 HKL</string>
