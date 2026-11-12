@@ -11,6 +11,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import id.noto.app.ui.blocks.JadwalForm
 import id.noto.app.ui.settings.SetelanNoto
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 // File DataStore "setelan" (pasangan kunci–nilai). Satu objek untuk seluruh aplikasi.
@@ -24,6 +25,13 @@ class SetelanRepository(context: Context) {
 
     suspend fun simpan(setelan: SetelanNoto) {
         dataStore.edit { it.tulis(setelan) }
+    }
+
+    /** Riwayat pemakaian sebelum Noto dipasang sudah dimasukkan ke Statistik (hanya sekali). */
+    suspend fun riwayatSudahDiimpor(): Boolean = dataStore.data.first()[Kunci.riwayatDiimpor] ?: false
+
+    suspend fun tandaiRiwayatDiimpor() {
+        dataStore.edit { it[Kunci.riwayatDiimpor] = true }
     }
 }
 
@@ -46,6 +54,7 @@ private object Kunci {
     val sisaWaktu = booleanPreferencesKey("sisa_waktu")
     val izinPerangkatDijawab = booleanPreferencesKey("izin_perangkat_dijawab")
     val izinAksesibilitasDijawab = booleanPreferencesKey("izin_aksesibilitas_dijawab")
+    val riwayatDiimpor = booleanPreferencesKey("riwayat_diimpor")
 }
 
 /** Isi DataStore → [SetelanNoto]; kunci yang belum ada memakai nilai bawaan. */

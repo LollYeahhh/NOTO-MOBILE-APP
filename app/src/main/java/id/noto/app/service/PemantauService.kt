@@ -36,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -98,7 +99,33 @@ class PemantauService : Service() {
             db.kuotaDao().hapusSebelum(batas)
             db.kejadianDao().hapusSebelum(batas)
         }
+        // Diambil sebelum putaran mulai: riwayat diimpor sampai titik ini, putaran mencatat sesudahnya.
+        val mulaiPantau = System.currentTimeMillis()
+        cakupan.launch { imporRiwayat(mulaiPantau) }
         if (getSystemService(PowerManager::class.java).isInteractive) mulaiPutaran()
+    }
+
+    /**
+     * Sekali saja: isi Statistik dengan pemakaian 7 hari terakhir dari riwayat Android, supaya tidak kosong
+     * setelah Noto baru dipasang. Hanya tabel pemakaian; kuota aturan tidak ikut dikurangi.
+     * Kalau sudah ada catatan dari pemantau (pengguna versi lama), riwayat berhenti di jam catatan pertama
+     * supaya tidak terhitung dua kali.
+     */
+    private suspend fun imporRiwayat(mulaiPantau: Long) {
+        val repo = SetelanRepository(this)
+        if (repo.riwayatSudahDiimpor()) return
+        val dao = NotoDatabase.ambil(this).pemakaianDao()
+        val zona = ZoneId.systemDefault()
+        val sampai = dao.jamPertama()?.let { j ->
+            LocalDate.ofEpochDay(j / 24).atTime((j % 24).toInt(), 0).atZone(zona).toInstant().toEpochMilli()
+        }?.coerceAtMost(mulaiPantau) ?: mulaiPantau
+        val dari = mulaiPantau - 7L * 24 * 60 * 60 * 1000
+        if (sampai > dari) {
+            val kejadian = bacaPeristiwaBerwaktu(getSystemService(UsageStatsManager::class.java), dari, sampai)
+            ringkasRiwayat(kejadian, sampai, setOfNotNull(packageName, paketLauncher()), zona)
+                .forEach { dao.tambah(it.tanggal, it.jam, it.paket, it.detik, it.dibuka) }
+        }
+        repo.tandaiRiwayatDiimpor()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -188,17 +215,21 @@ class PemantauService : Service() {
         packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)?.activityInfo?.packageName
 
     /** Kejadian pindah aplikasi dan layar mati pada [dari]..[sampai]. */
+    private suspend fun bacaPeristiwa(usm: UsageStatsManager, dari: Long, sampai: Long): List<Peristiwa> =
+        bacaPeristiwaBerwaktu(usm, dari, sampai).map { it.second }
+
+    /** Sama dengan [bacaPeristiwa], beserta waktu tiap kejadian (milidetik). */
     @Suppress("DEPRECATION") // MOVE_TO_FOREGROUND/BACKGROUND = ACTIVITY_RESUMED/PAUSED, tersedia sejak API 26.
-    private suspend fun bacaPeristiwa(usm: UsageStatsManager, dari: Long, sampai: Long): List<Peristiwa> = withContext(Dispatchers.IO) {
-        val hasil = mutableListOf<Peristiwa>()
+    private suspend fun bacaPeristiwaBerwaktu(usm: UsageStatsManager, dari: Long, sampai: Long): List<Pair<Long, Peristiwa>> = withContext(Dispatchers.IO) {
+        val hasil = mutableListOf<Pair<Long, Peristiwa>>()
         val kejadian = usm.queryEvents(dari, sampai)
         val e = UsageEvents.Event()
         while (kejadian.hasNextEvent()) {
             kejadian.getNextEvent(e)
             when (e.eventType) {
-                UsageEvents.Event.MOVE_TO_FOREGROUND -> hasil += Peristiwa.Masuk(e.packageName)
-                UsageEvents.Event.MOVE_TO_BACKGROUND -> hasil += Peristiwa.Keluar(e.packageName)
-                UsageEvents.Event.SCREEN_NON_INTERACTIVE -> hasil += Peristiwa.LayarMati
+                UsageEvents.Event.MOVE_TO_FOREGROUND -> hasil += e.timeStamp to Peristiwa.Masuk(e.packageName)
+                UsageEvents.Event.MOVE_TO_BACKGROUND -> hasil += e.timeStamp to Peristiwa.Keluar(e.packageName)
+                UsageEvents.Event.SCREEN_NON_INTERACTIVE -> hasil += e.timeStamp to Peristiwa.LayarMati
             }
         }
         hasil

@@ -28,6 +28,10 @@ interface PemakaianDao {
     )
     suspend fun tambahKeAda(tanggal: Long, jam: Int, paket: String, detik: Long, dibuka: Int): Int
 
+    /** Jam pertama yang tercatat (tanggal × 24 + jam), null kalau tabel masih kosong. */
+    @Query("SELECT MIN(tanggal * 24 + jam) FROM pemakaian")
+    suspend fun jamPertama(): Long?
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun sisipkan(pemakaian: Pemakaian)
 }
