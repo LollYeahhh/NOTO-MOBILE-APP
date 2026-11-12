@@ -112,6 +112,16 @@ Catatan I: di emulator kunci muncul 0,4–0,9 detik setelah aplikasi dibuka (tan
 "Paksa berhenti" Noto (termasuk Run ▶ dari Android Studio) membuat Android mematikan layanan Aksesibilitas Noto;
 pengguna harus menyalakannya lagi. Baris Setelan otomatis kembali "Izinkan".
 
+## J. Statistik dan kejadian (Tahap 8A–8B)
+
+| No | Langkah | Hasil yang diharapkan | Perangkat | Hasil |
+|---|---|---|---|---|
+| J1 | Buka Statistik - Screen Time | Total, grafik per jam, dan daftar aplikasi (≥ 1 menit) dari pemakaian hari ini | E, X | E ✓ 2026-11-12 |
+| J2 | Buka Statistik - Bulan Ini | Rata-rata, bulan lalu, 4 pekan, dan top 3 dari data asli; chip "% turun" hilang kalau tidak turun | E, X | E ✓ 2026-11-12 |
+| J3 | Pasang versi baru di atas database versi 2 | Tidak crash, aturan dan pemakaian lama tetap ada | E, X | E ✓ 2026-11-12 |
+| J4 | Kuota habis, buka aplikasinya 2 kali, tutup lewat "Kembali" lalu tombol back | Detail Aplikasi: Latihan napas 2x, Batal membuka 2 kali, Kena time out 1x dengan jam habis | E, X | E ✓ 2026-11-12 |
+| J5 | Layar Terkunci tertutup sendiri saat jadwal selesai | Tidak menambah "Batal membuka" | E | |
+
 ## F. Otomatis (dijalankan tiap build)
 
 `./gradlew testDebugUnitTest`: format waktu, jadwal, nama otomatis, saring aplikasi, kategori, hitung kuota.

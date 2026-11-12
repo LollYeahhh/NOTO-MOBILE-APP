@@ -74,6 +74,7 @@ import id.noto.app.ui.stats.DetailDistribusiScreen
 import id.noto.app.ui.stats.StatistikScreen
 import id.noto.app.ui.stats.StatistikViewModel
 import id.noto.app.ui.stats.harianAplikasi
+import id.noto.app.ui.stats.kejadianAplikasi
 import id.noto.app.ui.stats.statistikBulanan
 import id.noto.app.ui.stats.statistikHariIni
 import java.time.LocalDate
@@ -329,6 +330,7 @@ private fun CangkangTab(
     var aplikasiStat by remember { mutableStateOf(AplikasiStatistik(R.drawable.logo_instagram, "Instagram", 70)) }
     val statistikVm: StatistikViewModel = viewModel()
     val pemakaian by statistikVm.pemakaian.collectAsState()
+    val kejadian by statistikVm.kejadian.collectAsState()
     val petaAplikasi = remember(terpasang) { terpasang.associateBy { it.paket } }
 
     // Setelah aturan dihapus dari Edit, Detail-nya tidak ada lagi: pindah ke Blokir - Daftar tanpa animasi.
@@ -509,6 +511,7 @@ private fun CangkangTab(
                             kategori = terpasangApp?.kategori,
                             // Aplikasi contoh (Minggu Ini, sampai Tahap 8C) tidak terpasang: tetap data contoh.
                             harian = terpasangApp?.let { harianAplikasi(pemakaian, it.paket, LocalDate.now()) },
+                            kejadian = terpasangApp?.let { kejadianAplikasi(kejadian, it.paket, aturan, LocalDate.now()) },
                         )
                     }
                 }

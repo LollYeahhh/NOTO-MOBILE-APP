@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface KuotaDao {
     /** Catatan jendela yang dimulai sejak [batas] (epoch milidetik). Jendela terpanjang 24 jam. */
+    @Query("DELETE FROM kuota WHERE mulaiJendela < :batas")
+    suspend fun hapusSebelum(batas: Long)
+
     @Query("SELECT * FROM kuota WHERE mulaiJendela >= :batas")
     fun sejak(batas: Long): Flow<List<Kuota>>
 

@@ -1,8 +1,14 @@
 package id.noto.app.ui.stats
 
+import id.noto.app.data.AturanLengkap
+import id.noto.app.data.JenisKejadian
+import id.noto.app.data.Kejadian
 import id.noto.app.data.Pemakaian
 import id.noto.app.ui.blocks.AplikasiPilihan
+import id.noto.app.util.formatJam
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 // Hitungan Statistik dari tabel pemakaian (per jam per aplikasi). Fungsi murni supaya mudah diuji.
 // Hanya aplikasi di [aplikasi] (punya ikon di launcher, tanpa Noto) yang dihitung; komponen sistem diabaikan.
@@ -76,5 +82,40 @@ fun harianAplikasi(data: List<Pemakaian>, paket: String, hari: LocalDate): Haria
         menit = menit(hariIni.sumOf { it.detik }),
         dibuka = hariIni.sumOf { it.dibuka },
         dibukaKemarin = milik.antara(hari.minusDays(1), hari.minusDays(1)).sumOf { it.dibuka },
+    )
+}
+
+/**
+ * Seksi "Hari ini" Detail Aplikasi dari tabel kejadian. Time out = aturan berisi aplikasi ini yang kuotanya habis
+ * hari ini; [aturanTimeOut]/[jamTimeOut] dari yang terakhir habis (null kalau belum pernah).
+ */
+data class KejadianAplikasi(
+    val latihanNapas: Int,
+    val batalMembuka: Int,
+    val timeOut: Int,
+    val aturanTimeOut: String?,
+    val jamTimeOut: String?,
+)
+
+fun kejadianAplikasi(
+    kejadian: List<Kejadian>,
+    paket: String,
+    aturan: List<AturanLengkap>,
+    hari: LocalDate,
+    zona: ZoneId = ZoneId.systemDefault(),
+): KejadianAplikasi {
+    val hariIni = kejadian.filter { Instant.ofEpochMilli(it.waktu).atZone(zona).toLocalDate() == hari }
+    val aturanApp = aturan.filter { paket in it.paket }.associateBy { it.aturan.id }
+    val timeOut = hariIni.filter { it.jenis == JenisKejadian.TIME_OUT && it.aturanId in aturanApp }
+    val terakhir = timeOut.maxByOrNull { it.waktu }
+    return KejadianAplikasi(
+        latihanNapas = hariIni.count { it.jenis == JenisKejadian.NAPAS && it.paket == paket },
+        batalMembuka = hariIni.count { it.jenis == JenisKejadian.BATAL && it.paket == paket },
+        timeOut = timeOut.size,
+        aturanTimeOut = terakhir?.let { aturanApp.getValue(it.aturanId).aturan.nama },
+        jamTimeOut = terakhir?.let {
+            val w = Instant.ofEpochMilli(it.waktu).atZone(zona)
+            formatJam(w.hour * 60 + w.minute)
+        },
     )
 }

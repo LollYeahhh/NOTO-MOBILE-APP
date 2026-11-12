@@ -11,17 +11,18 @@ import androidx.room.RoomDatabase
  * Kalau struktur tabel berubah, naikkan [version] dan tambahkan migrasi (skema lama ada di app/schemas).
  */
 @Database(
-    entities = [Aturan::class, AturanAplikasi::class, Pemakaian::class, Kuota::class],
-    version = 2,
+    entities = [Aturan::class, AturanAplikasi::class, Pemakaian::class, Kuota::class, Kejadian::class],
+    version = 3,
     exportSchema = true,
     // Versi 2 menambah tabel kuota. Room membuat migrasinya sendiri dari skema di app/schemas;
-    // data aturan dan pemakaian yang sudah ada tidak berubah.
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    // data aturan dan pemakaian yang sudah ada tidak berubah. Versi 3 menambah tabel kejadian.
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class NotoDatabase : RoomDatabase() {
     abstract fun aturanDao(): AturanDao
     abstract fun pemakaianDao(): PemakaianDao
     abstract fun kuotaDao(): KuotaDao
+    abstract fun kejadianDao(): KejadianDao
 
     companion object {
         @Volatile

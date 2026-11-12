@@ -16,13 +16,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import id.noto.app.MainActivity
+import androidx.lifecycle.lifecycleScope
+import id.noto.app.data.JenisKejadian
 import id.noto.app.data.KunciAplikasi
+import id.noto.app.data.jendelaSekarang
 import id.noto.app.data.SetelanRepository
 import id.noto.app.ui.blocks.InfoTerkunci
 import id.noto.app.ui.blocks.TerkunciScreen
 import id.noto.app.ui.blocks.rememberWaktu
 import id.noto.app.ui.theme.NOTOAPPTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
@@ -40,8 +46,12 @@ class TerkunciActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
         )
         data = intent
-        onBackPressedDispatcher.addCallback(this) { keLayarUtama() }
+        onBackPressedDispatcher.addCallback(this) { batalMembuka() }
         val repository = SetelanRepository(this)
+        // Layar baru muncul (bukan dibuat ulang karena layar diputar): catat latihan napas kalau panelnya tampil.
+        if (savedInstanceState == null) {
+            lifecycleScope.launch { if (repository.setelan.first().latihanNapas) catat(JenisKejadian.NAPAS) }
+        }
         setContent {
             // null sampai DataStore terbaca, supaya Panel Napas/badge yang dimatikan tidak sempat berkedip.
             val setelan by remember { repository.setelan }.collectAsState(null)
@@ -66,7 +76,7 @@ class TerkunciActivity : ComponentActivity() {
                         bebasMenit = data.getIntExtra(BEBAS_MENIT, 0),
                         sisaMenit = sisaMenit,
                     ),
-                    onKembali = ::keLayarUtama,
+                    onKembali = ::batalMembuka,
                     onStatistik = ::keStatistik,
                     tampilNapas = s.latihanNapas,
                     tampilSisa = s.sisaWaktu,
@@ -79,6 +89,15 @@ class TerkunciActivity : ComponentActivity() {
         super.onNewIntent(intent)
         data = intent
     }
+
+    /** Pengguna memilih tidak membuka aplikasinya: dicatat "batal membuka", lalu ke layar utama. */
+    private fun batalMembuka() {
+        catat(JenisKejadian.BATAL)
+        keLayarUtama()
+    }
+
+    private fun catat(jenis: String) =
+        catatKejadian(this, jenis, data.getLongExtra(ATURAN_ID, 0), data.getStringExtra(PAKET).orEmpty(), data.getLongExtra(MULAI, 0))
 
     private fun keLayarUtama() {
         startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -100,9 +119,12 @@ class TerkunciActivity : ComponentActivity() {
         private const val APLIKASI = "aplikasi"
         private const val BEBAS_MENIT = "bebas_menit"
         private const val SELESAI = "selesai"
+        private const val ATURAN_ID = "aturan_id"
+        private const val PAKET = "paket"
+        private const val MULAI = "mulai"
 
-        /** Intent layar Terkunci untuk aplikasi bernama [aplikasi] yang dikunci [kunci]. */
-        fun intent(context: Context, kunci: KunciAplikasi, aplikasi: String): Intent =
+        /** Intent layar Terkunci untuk aplikasi [paket] bernama [aplikasi] yang dikunci [kunci]. */
+        fun intent(context: Context, kunci: KunciAplikasi, aplikasi: String, paket: String): Intent =
             Intent(context, TerkunciActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .putExtra(NAMA_ATURAN, kunci.aturan.nama)
@@ -110,5 +132,8 @@ class TerkunciActivity : ComponentActivity() {
                 .putExtra(APLIKASI, aplikasi)
                 .putExtra(BEBAS_MENIT, kunci.selesai.hour * 60 + kunci.selesai.minute)
                 .putExtra(SELESAI, kunci.selesai.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+                .putExtra(ATURAN_ID, kunci.aturan.id)
+                .putExtra(PAKET, paket)
+                .putExtra(MULAI, jendelaSekarang(kunci.aturan, LocalDateTime.now())?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli() ?: 0L)
     }
 }

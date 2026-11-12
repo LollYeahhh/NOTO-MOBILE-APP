@@ -3,12 +3,14 @@ package id.noto.app.ui.stats
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import id.noto.app.data.Kejadian
 import id.noto.app.data.NotoDatabase
 import id.noto.app.data.Pemakaian
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
+import java.time.ZoneId
 
 /** ViewModel Statistik: catatan pemakaian yang dibutuhkan Screen Time, Bulan Ini, dan Detail Aplikasi. */
 class StatistikViewModel(app: Application) : AndroidViewModel(app) {
@@ -20,5 +22,10 @@ class StatistikViewModel(app: Application) : AndroidViewModel(app) {
 
     val pemakaian: StateFlow<List<Pemakaian>> = NotoDatabase.ambil(app).pemakaianDao()
         .rentang(dari, Long.MAX_VALUE)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Kejadian (time out, napas, batal) sejak awal [dari] yang sama. */
+    val kejadian: StateFlow<List<Kejadian>> = NotoDatabase.ambil(app).kejadianDao()
+        .sejak(LocalDate.ofEpochDay(dari).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli())
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 }

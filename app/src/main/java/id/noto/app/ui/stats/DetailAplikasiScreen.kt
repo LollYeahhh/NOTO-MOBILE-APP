@@ -65,9 +65,13 @@ fun DetailAplikasiScreen(
     kategori: Int? = contohAplikasi.firstOrNull { it.nama == app.nama }?.kategori,
     // Data asli hari ini; null = data contoh (Preview, aplikasi contoh Minggu Ini sampai Tahap 8C).
     harian: HarianAplikasi? = null,
+    // Kejadian asli hari ini; null = data contoh.
+    kejadian: KejadianAplikasi? = null,
 ) {
-    // shortcut: latihan napas, batal membuka, dan time out masih angka contoh; data asli di Tahap 8B.
     val hariIni = contohHariIniAplikasi
+    val napas = kejadian?.latihanNapas ?: hariIni.latihanNapas
+    val batal = kejadian?.batalMembuka ?: hariIni.batalMembuka
+    val timeOut = kejadian?.timeOut ?: hariIni.timeOut
     Column(Modifier.fillMaxSize().background(NotoWarna.Putih)) {
         NotoHeaderHalaman(app.nama, onIkonKiri = onKembali)
         IsiSetelan {
@@ -84,15 +88,20 @@ fun DetailAplikasiScreen(
                     NotoBarisSetelan(
                         painterResource(R.drawable.ic_jeda),
                         stringResource(R.string.latihan_napas_judul),
-                        keterangan = stringResource(R.string.batal_membuka, hariIni.batalMembuka),
-                        nilai = stringResource(R.string.jumlah_kali, hariIni.latihanNapas),
+                        keterangan = stringResource(R.string.batal_membuka, batal),
+                        nilai = stringResource(R.string.jumlah_kali, napas),
                         onKlik = null,
                     )
                     NotoBarisSetelan(
                         painterResource(R.drawable.ic_jam_pasir),
                         stringResource(R.string.kena_time_out),
-                        keterangan = stringResource(R.string.kuota_habis_pukul, aturan.nama, hariIni.jamTimeOut),
-                        nilai = stringResource(R.string.jumlah_kali, hariIni.timeOut),
+                        // Belum pernah habis hari ini: tanpa keterangan (tidak ada jam untuk ditulis).
+                        keterangan = when {
+                            kejadian == null -> stringResource(R.string.kuota_habis_pukul, aturan.nama, hariIni.jamTimeOut)
+                            kejadian.jamTimeOut == null -> null
+                            else -> stringResource(R.string.kuota_habis_pukul, kejadian.aturanTimeOut.orEmpty(), kejadian.jamTimeOut)
+                        },
+                        nilai = stringResource(R.string.jumlah_kali, timeOut),
                         onKlik = null,
                     )
                 }

@@ -1,0 +1,299 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "778c0104c6486974c2883d6e230a5320",
+    "entities": [
+      {
+        "tableName": "aturan",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nama` TEXT NOT NULL, `hariAktif` INTEGER NOT NULL, `mulaiMenit` INTEGER NOT NULL, `selesaiMenit` INTEGER NOT NULL, `kuotaMenit` INTEGER NOT NULL, `aktif` INTEGER NOT NULL, `senyap` INTEGER NOT NULL, `dibuatPada` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nama",
+            "columnName": "nama",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hariAktif",
+            "columnName": "hariAktif",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mulaiMenit",
+            "columnName": "mulaiMenit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selesaiMenit",
+            "columnName": "selesaiMenit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kuotaMenit",
+            "columnName": "kuotaMenit",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aktif",
+            "columnName": "aktif",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "senyap",
+            "columnName": "senyap",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dibuatPada",
+            "columnName": "dibuatPada",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "aturan_aplikasi",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`aturanId` INTEGER NOT NULL, `paket` TEXT NOT NULL, PRIMARY KEY(`aturanId`, `paket`), FOREIGN KEY(`aturanId`) REFERENCES `aturan`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "aturanId",
+            "columnName": "aturanId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paket",
+            "columnName": "paket",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "aturanId",
+            "paket"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_aturan_aplikasi_paket",
+            "unique": false,
+            "columnNames": [
+              "paket"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_aturan_aplikasi_paket` ON `${TABLE_NAME}` (`paket`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "aturan",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "aturanId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "pemakaian",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tanggal` INTEGER NOT NULL, `jam` INTEGER NOT NULL, `paket` TEXT NOT NULL, `detik` INTEGER NOT NULL, `dibuka` INTEGER NOT NULL, PRIMARY KEY(`tanggal`, `jam`, `paket`))",
+        "fields": [
+          {
+            "fieldPath": "tanggal",
+            "columnName": "tanggal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jam",
+            "columnName": "jam",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paket",
+            "columnName": "paket",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detik",
+            "columnName": "detik",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dibuka",
+            "columnName": "dibuka",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "tanggal",
+            "jam",
+            "paket"
+          ]
+        }
+      },
+      {
+        "tableName": "kuota",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`aturanId` INTEGER NOT NULL, `mulaiJendela` INTEGER NOT NULL, `paket` TEXT NOT NULL, `detik` INTEGER NOT NULL, `dibuka` INTEGER NOT NULL, PRIMARY KEY(`aturanId`, `mulaiJendela`, `paket`), FOREIGN KEY(`aturanId`) REFERENCES `aturan`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "aturanId",
+            "columnName": "aturanId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mulaiJendela",
+            "columnName": "mulaiJendela",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paket",
+            "columnName": "paket",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detik",
+            "columnName": "detik",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dibuka",
+            "columnName": "dibuka",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "aturanId",
+            "mulaiJendela",
+            "paket"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_kuota_mulaiJendela",
+            "unique": false,
+            "columnNames": [
+              "mulaiJendela"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_kuota_mulaiJendela` ON `${TABLE_NAME}` (`mulaiJendela`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "aturan",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "aturanId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "kejadian",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `waktu` INTEGER NOT NULL, `jenis` TEXT NOT NULL, `aturanId` INTEGER NOT NULL, `paket` TEXT NOT NULL, `mulaiJendela` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "waktu",
+            "columnName": "waktu",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jenis",
+            "columnName": "jenis",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aturanId",
+            "columnName": "aturanId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paket",
+            "columnName": "paket",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mulaiJendela",
+            "columnName": "mulaiJendela",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_kejadian_waktu",
+            "unique": false,
+            "columnNames": [
+              "waktu"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_kejadian_waktu` ON `${TABLE_NAME}` (`waktu`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '778c0104c6486974c2883d6e230a5320')"
+    ]
+  }
+}

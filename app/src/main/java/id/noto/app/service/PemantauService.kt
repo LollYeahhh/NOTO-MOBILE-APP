@@ -86,6 +86,13 @@ class PemantauService : Service() {
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
         cakupan.launch { NotoDatabase.ambil(this@PemantauService).aturanDao().semua().collect { aturan = it } }
+        // Catatan kuota dan kejadian lebih dari 1 tahun tidak dipakai lagi: dihapus sekali tiap pemantau mulai.
+        cakupan.launch {
+            val db = NotoDatabase.ambil(this@PemantauService)
+            val batas = System.currentTimeMillis() - 366L * 24 * 60 * 60 * 1000
+            db.kuotaDao().hapusSebelum(batas)
+            db.kejadianDao().hapusSebelum(batas)
+        }
         if (getSystemService(PowerManager::class.java).isInteractive) mulaiPutaran()
     }
 
